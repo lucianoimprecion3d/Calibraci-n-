@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Giovannetti">
+<meta name="theme-color" content="#0f2a5e">
+<title>Giovannetti Refrigeración</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:#1B5EA6;--azul-dark:#0f2a5e;--azul-light:#E8F1FB;--azul-mid:#4A90D9;
+    --verde:#1A9E6E;--verde-light:#E6F7F1;
+    --naranja:#E07B2A;--naranja-light:#FEF3E8;
+    --rojo:#DC2626;--cyan:#0891b2;--cyan-light:#e0f2fe;
+    --gris-1:#F5F7FA;--gris-2:#EDF0F4;--gris-3:#C8D0DC;--gris-4:#8A96A8;--gris-5:#4A5568;
+    --texto:#1A2233;--blanco:#FFFFFF;
+    --sombra-sm:0 1px 4px rgba(0,0,0,.06),0 2px 12px rgba(0,0,0,.05);
+    --radio:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--gris-1);color:var(--texto);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:40px}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,var(--azul-dark) 0%,var(--azul) 100%);padding:16px 20px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(15,42,94,.4);position:sticky;top:0;z-index:100}
+  .logo-img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 12px rgba(0,0,0,.3);flex-shrink:0}
+  .logo-textos{flex:1}
+  .logo-nombre{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+  .logo-sub{font-size:11px;color:rgba(255,255,255,.65);font-weight:500;margin-top:3px;letter-spacing:.3px}
+  .badge-live{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px}
+  .badge-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulso 2s ease-in-out infinite}
+  @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .badge-text{font-size:11px;font-weight:600;color:rgba(255,255,255,.9)}
+
+  main{padding:20px 16px;max-width:700px;margin:0 auto}
+  .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gris-4);margin:20px 0 10px}
+  .section-title:first-child{margin-top:0}
+
+  /* TABS */
+  .tabs-nav{display:flex;gap:8px;background:var(--gris-2);border-radius:12px;padding:4px;margin-bottom:20px}
+  .tab-btn{flex:1;border:none;background:transparent;padding:10px 8px;border-radius:9px;font-family:inherit;font-size:12px;font-weight:600;color:var(--gris-4);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .tab-btn.activo{background:var(--blanco);color:var(--azul);box-shadow:var(--sombra-sm)}
+  .panel{display:none}.panel.activo{display:block}
+
+  /* CARDS */
+  .card{background:var(--blanco);border-radius:var(--radio);padding:16px 18px;box-shadow:var(--sombra-sm);margin-bottom:10px}
+  .card-label{font-size:12px;font-weight:700;color:var(--gris-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+  .input-fila{display:flex;align-items:center;background:var(--gris-1);border:2px solid var(--gris-2);border-radius:10px;padding:0 14px;transition:border-color .2s}
+  .input-fila:focus-within{border-color:var(--azul-mid)}
+  .input-fila input{flex:1;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--texto);padding:12px 0;outline:none;width:100%}
+  .input-unidad{font-size:14px;font-weight:600;color:var(--gris-4);margin-left:8px}
+  .unidad-tabs{display:flex;gap:6px;margin-top:10px}
+  .utab{flex:1;border:none;cursor:pointer;background:var(--gris-2);border-radius:8px;padding:7px 0;font-family:inherit;font-size:12px;font-weight:600;color:var(--gris-5);transition:all .15s}
+  .utab.activo{background:var(--azul);color:var(--blanco)}
+  .inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* RESULTADOS */
+  .resultados{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+  .res-card{background:var(--blanco);border-radius:var(--radio);padding:14px;box-shadow:var(--sombra-sm);border-top:4px solid var(--gris-2);opacity:0;transition:opacity .3s}
+  .res-card.visible{opacity:1}
+  .tipo-pol{border-top-color:var(--azul-mid)}.tipo-iso{border-top-color:var(--verde)}.tipo-tot{border-top-color:var(--naranja)}
+  .res-etiqueta{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--gris-4);margin-bottom:6px}
+  .res-principal{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--texto)}
+  .res-detalles{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gris-4);margin-top:4px;line-height:1.5}
+
+  /* TABLA */
+  .tabla-card{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);overflow:hidden}
+  .tabla-top{padding:16px 20px;border-bottom:1px solid var(--gris-2)}
+  .tabla-top-titulo{font-size:14px;font-weight:700;color:var(--texto)}
+  .tabla-top-desc{font-size:12px;color:var(--gris-4);margin-top:4px}
+  .tabla-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:var(--gris-1);padding:11px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-4);white-space:nowrap;border-bottom:2px solid var(--gris-2)}
+  thead th:first-child{text-align:left}
+  tbody td{padding:11px 14px;text-align:right;font-size:13px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--gris-2)}
+  tbody td:first-child{text-align:left;font-family:'Plus Jakarta Sans',sans-serif}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--gris-1)}
+  .fila-nom{background:linear-gradient(90deg,rgba(26,158,110,.07),rgba(26,158,110,.03))}
+  .td-ratio{font-weight:700;color:var(--azul);font-size:14px}
+  .td-iso-g{color:var(--verde);font-weight:600}.td-iso-kg{color:var(--verde)}.td-iso-l{color:var(--azul-mid)}
+  .td-tot-g{color:var(--naranja);font-weight:600}.td-tot-kg{color:var(--naranja)}.td-tot-l{color:var(--naranja)}
+  .pill-nom{display:inline-block;background:var(--verde);color:#fff;font-size:9px;font-family:'Plus Jakarta Sans';font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-radius:20px;padding:2px 7px;margin-left:7px;vertical-align:middle}
+  .vacio{padding:40px 24px;text-align:center;color:var(--gris-4)}
+  .vacio-icono{font-size:36px;margin-bottom:12px}
+  .vacio-texto{font-size:14px;line-height:1.6}
+  .vacio-texto strong{color:var(--azul)}
+  .leyenda{padding:12px 20px;border-top:1px solid var(--gris-2);background:var(--gris-1);display:flex;gap:16px;flex-wrap:wrap}
+  .ley{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--gris-4);font-weight:500}
+  .ley-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+  /* ANOTADOR */
+  .anotador-form{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);padding:18px;margin-bottom:14px}
+  .form-titulo{font-size:15px;font-weight:800;color:var(--azul-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .form-field{display:flex;flex-direction:column;gap:5px}
+  .form-field.full{grid-column:1/-1}
+  .form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--gris-4)}
+  .form-field input,.form-field textarea,.form-field select{border:2px solid var(--gris-2);border-radius:9px;padding:10px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--texto);background:var(--gris-1);outline:none;transition:border-color .2s;width:100%}
+  .form-field input:focus,.form-field textarea:focus{border-color:var(--azul-mid);background:var(--blanco)}
+  .form-field input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
+  .form-field textarea{resize:vertical;min-height:70px;font-size:13px}
+
+  /* Temperatura */
+  .temp-fila{display:flex;align-items:stretch;gap:0;border:2px solid var(--gris-2);border-radius:9px;background:var(--gris-1);overflow:hidden;transition:border-color .2s}
+  .temp-fila:focus-within{border-color:var(--cyan)}
+  .temp-fila input{flex:1;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--texto);padding:10px 12px;outline:none}
+  .temp-toggle{display:flex;border-left:2px solid var(--gris-2)}
+  .temp-btn{border:none;background:transparent;padding:0 12px;font-size:12px;font-weight:700;color:var(--gris-4);cursor:pointer;transition:all .15s}
+  .temp-btn.activo{background:var(--cyan);color:#fff}
+  .temp-badge{display:inline-flex;align-items:center;gap:5px;background:var(--cyan-light);border:1px solid #bae6fd;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--cyan);margin-top:5px}
+
+  .btn-guardar{width:100%;margin-top:14px;background:linear-gradient(135deg,var(--azul),var(--azul-mid));color:#fff;border:none;border-radius:10px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.3px;box-shadow:0 4px 14px rgba(27,94,166,.35);transition:transform .1s,box-shadow .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-guardar:active{transform:scale(.98)}
+
+  /* HISTORIAL */
+  .pruebas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .pruebas-count{background:var(--azul);color:#fff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700}
+  .btn-exportar{border:2px solid var(--azul);background:transparent;color:var(--azul);border-radius:8px;padding:7px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+  .btn-exportar:hover{background:var(--azul);color:#fff}
+  .prueba-card{background:var(--blanco);border-radius:12px;box-shadow:var(--sombra-sm);padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--azul);position:relative;animation:slideIn .3s ease}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .prueba-num{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--gris-4);margin-bottom:8px}
+  .prueba-fila{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .prueba-dato{display:flex;flex-direction:column;gap:2px;background:var(--gris-1);border-radius:7px;padding:6px 10px;min-width:72px}
+  .prueba-dato-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-4)}
+  .prueba-dato-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--texto)}
+  .prueba-dato-val.iso{color:var(--verde)}.prueba-dato-val.hz{color:var(--naranja)}.prueba-dato-val.ratio{color:var(--azul)}.prueba-dato-val.temp{color:var(--cyan)}
+  .prueba-nota{font-size:12px;color:var(--gris-5);margin-top:6px;font-style:italic;line-height:1.4}
+  .btn-del{position:absolute;top:10px;right:12px;background:transparent;border:none;cursor:pointer;font-size:16px;color:var(--gris-3);transition:color .15s;padding:4px}
+  .btn-del:hover{color:var(--rojo)}
+  .lista-vacia{padding:40px 20px;text-align:center;color:var(--gris-4)}
+  .lista-vacia-ico{font-size:36px;margin-bottom:12px}
+  .lista-vacia-txt{font-size:13px;line-height:1.6}
+
+  /* LOGO TAB */
+  .logo-panel{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);padding:20px}
+  .logo-preview{display:flex;justify-content:center;margin:20px 0}
+  .logo-instrucciones{background:var(--gris-1);border-radius:10px;padding:14px 16px;margin-top:14px}
+  .logo-instr-titulo{font-size:12px;font-weight:700;color:var(--azul-dark);margin-bottom:10px}
+  .logo-instr-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:13px;color:var(--gris-5);line-height:1.5}
+  .logo-instr-num{background:var(--azul);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+  .btn-dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:13px;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s}
+  .btn-dl-512{background:linear-gradient(135deg,var(--azul),var(--azul-mid));color:#fff;box-shadow:0 4px 14px rgba(27,94,166,.3);margin-bottom:8px}
+  .btn-dl-192{background:var(--gris-2);color:var(--azul-dark)}
+  .btn-dl:active{transform:scale(.98)}
+  .platform-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .chip{background:var(--azul-light);color:var(--azul);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;border:1px solid #c2d8f0}
+
+  footer{text-align:center;padding:20px 16px;font-size:11px;color:var(--gris-4);letter-spacing:.4px}
+
+  @media(max-width:480px){
+    .inputs-grid,.form-grid{grid-template-columns:1fr}
+    .form-field.full{grid-column:1}
+    .resultados{grid-template-columns:1fr}
+    table{font-size:11px}
+    thead th,tbody td{padding:9px 10px}
+    .badge-live{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <canvas id="logo-header" width="54" height="54" class="logo-img"></canvas>
+  <div class="logo-textos">
+    <div class="logo-nombre">Giovannetti</div>
+    <div class="logo-sub">Calibrador ISO · Voracor CD 1299 + CE 101</div>
+  </div>
+  <div class="badge-live">
+    <div class="badge-dot"></div>
+    <div class="badge-text">Activo</div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs-nav" style="margin-top:16px">
+    <button class="tab-btn activo" onclick="setTab('calibrador',this)">⚗️ Calibrador</button>
+    <button class="tab-btn" onclick="setTab('anotador',this)">📋 Anotador</button>
+    <button class="tab-btn" onclick="setTab('historial',this)">📊 Historial</button>
+    <button class="tab-btn" onclick="setTab('logo',this)">🎨 Logo</button>
+  </div>
+
+  <!-- ========== CALIBRADOR ========== -->
+  <div id="panel-calibrador" class="panel activo">
+    <div class="section-title">Datos de la prueba</div>
+    <div class="inputs-grid">
+      <div class="card">
+        <div class="card-label">⏱ Segundos de inyección</div>
+        <div class="input-fila">
+          <input type="number" id="segundos" placeholder="0" min="1" max="300" step="1">
+          <span class="input-unidad">seg</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">💧 Poliol recolectado</div>
+        <div class="input-fila">
+          <input type="number" id="poliol-val" placeholder="0" min="0" step="any">
+          <span class="input-unidad" id="unidad-display">g</span>
+        </div>
+        <div class="unidad-tabs">
+          <button class="utab activo" onclick="setUnidad('g',this)">gramos</button>
+          <button class="utab" onclick="setUnidad('kg',this)">kilos</button>
+          <button class="utab" onclick="setUnidad('l',this)">litros</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Resultado — ratio nominal 130 PBW</div>
+    <div class="resultados" id="resultados">
+      <div class="res-card tipo-pol" id="rc-pol">
+        <div class="res-etiqueta">Poliol medido</div>
+        <div class="res-principal" id="rp-pol">—</div>
+        <div class="res-detalles" id="rd-pol">—</div>
+      </div>
+      <div class="res-card tipo-iso" id="rc-iso">
+        <div class="res-etiqueta">ISO requerido (130 PBW)</div>
+        <div class="res-principal" id="rp-iso">—</div>
+        <div class="res-detalles" id="rd-iso">—</div>
+      </div>
+      <div class="res-card tipo-tot" id="rc-tot">
+        <div class="res-etiqueta">Mezcla total</div>
+        <div class="res-principal" id="rp-tot">—</div>
+        <div class="res-detalles" id="rd-tot">—</div>
+      </div>
+    </div>
+
+    <div class="section-title">Tabla de ajuste — 125 → 130 PBW</div>
+    <div class="tabla-card">
+      <div class="tabla-top">
+        <div class="tabla-top-titulo">Isocianato requerido según ratio</div>
+        <div class="tabla-top-desc" id="tabla-desc">Ingresá los datos para ver la tabla</div>
+      </div>
+      <div class="tabla-scroll">
+        <div id="tabla-cuerpo">
+          <div class="vacio"><div class="vacio-icono">⚗️</div><div class="vacio-texto">Ingresá los <strong>segundos</strong> de inyección<br>y la cantidad de <strong>poliol recolectado</strong>.</div></div>
+        </div>
+      </div>
+      <div class="leyenda" id="leyenda" style="display:none">
+        <div class="ley"><div class="ley-dot" style="background:var(--azul)"></div>Ratio ISO (PBW)</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--verde)"></div>ISO requerido</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--naranja)"></div>Mezcla total</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--verde-light);border:1px solid var(--verde)"></div>Nominal 130 PBW</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ANOTADOR ========== -->
+  <div id="panel-anotador" class="panel">
+    <div class="anotador-form">
+      <div class="form-titulo">📋 Nueva prueba de calibración</div>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label>🧪 Isocianato (g)</label>
+          <input type="number" id="an-iso" placeholder="0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>💧 Poliol (g)</label>
+          <input type="number" id="an-pol" placeholder="0" min="0" step="0.1">
+        </div>
+
+        <div class="form-field">
+          <label>⚡ Hz Bomba ISO</label>
+          <input type="number" id="an-hz-iso" placeholder="0.0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>⚡ Hz Bomba Poliol</label>
+          <input type="number" id="an-hz-pol" placeholder="0.0" min="0" step="0.1">
+        </div>
+
+        <!-- TEMPERATURA ISO -->
+        <div class="form-field">
+          <label>🌡️ Temp. Isocianato</label>
+          <div class="temp-fila" id="tf-iso">
+            <input type="number" id="an-temp-iso" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('iso','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('iso','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEMPERATURA POLIOL -->
+        <div class="form-field">
+          <label>🌡️ Temp. Poliol</label>
+          <div class="temp-fila" id="tf-pol">
+            <input type="number" id="an-temp-pol" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('pol','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('pol','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEMPERATURA AMBIENTE -->
+        <div class="form-field">
+          <label>🏭 Temp. Ambiente</label>
+          <div class="temp-fila" id="tf-amb">
+            <input type="number" id="an-temp-amb" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('amb','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('amb','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>📅 Fecha</label>
+          <input type="date" id="an-fecha">
+        </div>
+        <div class="form-field">
+          <label>🕐 Hora</label>
+          <input type="time" id="an-hora">
+        </div>
+
+        <div class="form-field full">
+          <label>📝 Notas / Observaciones</label>
+          <textarea id="an-nota" placeholder="Ej: ajuste de bomba, resultado visual, temperatura ambiente..."></textarea>
+        </div>
+
+      </div>
+
+      <div id="ratio-preview" style="display:none;margin-top:12px;padding:12px 14px;background:var(--azul-light);border-radius:10px;border:1px solid #C2D8F0">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--azul);margin-bottom:4px">Ratio calculado</div>
+        <div id="ratio-val" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--azul)">—</div>
+        <div id="ratio-status" style="font-size:12px;color:var(--gris-4);margin-top:3px">—</div>
+      </div>
+
+      <button class="btn-guardar" onclick="guardarPrueba()">💾 Guardar prueba</button>
+    </div>
+  </div>
+
+  <!-- ========== HISTORIAL ========== -->
+  <div id="panel-historial" class="panel">
+    <div class="pruebas-header">
+      <div class="section-title" style="margin:0">Pruebas registradas</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pruebas-count" id="pruebas-count">0</span>
+        <button class="btn-exportar" onclick="exportarCSV()">⬇ CSV</button>
+      </div>
+    </div>
+    <div id="lista-pruebas">
+      <div class="lista-vacia"><div class="lista-vacia-ico">📋</div><div class="lista-vacia-txt">No hay pruebas registradas aún.<br>Usá el <strong>Anotador</strong> para agregar la primera.</div></div>
+    </div>
+  </div>
+
+  <!-- ========== LOGO ========== -->
+  <div id="panel-logo" class="panel">
+    <div class="logo-panel">
+      <div class="form-titulo">🎨 Logo para acceso directo</div>
+      <p style="font-size:13px;color:var(--gris-4);margin-bottom:16px;line-height:1.6">Descargá el ícono y guardalo como acceso directo en tu celular o computadora. Funciona en iPhone, Android, Windows y Mac.</p>
+
+      <div class="logo-preview">
+        <canvas id="logo-grande" width="256" height="256" style="border-radius:28%;box-shadow:0 8px 32px rgba(15,42,94,.3)"></canvas>
+      </div>
+
+      <div class="platform-chips">
+        <span class="chip">📱 iPhone / iPad</span>
+        <span class="chip">🤖 Android</span>
+        <span class="chip">🪟 Windows</span>
+        <span class="chip">🍎 Mac</span>
+      </div>
+
+      <button class="btn-dl btn-dl-512" onclick="descargarLogo(512)">⬇ Descargar logo 512×512 px (recomendado)</button>
+      <button class="btn-dl btn-dl-192" onclick="descargarLogo(192)">⬇ Descargar logo 192×192 px (Android)</button>
+
+      <div class="logo-instrucciones">
+        <div class="logo-instr-titulo">📲 Cómo agregar al teléfono</div>
+        <div class="logo-instr-item">
+          <div class="logo-instr-num">1</div>
+          Descargá el logo (arriba)
+        </div>
+        <div class="logo-instr-item">
+          <div class="logo-instr-num">2</div>
+          <span><strong>iPhone:</strong> Abrí esta página en Safari → tocá el ícono de compartir → "Añadir a pantalla de inicio"</span>
+        </div>
+        <div class="logo-instr-item">
+          <div class="logo-instr-num">3</div>
+          <span><strong>Android:</strong> Abrí en Chrome → menú (⋮) → "Agregar a pantalla de inicio"</span>
+        </div>
+        <div class="logo-instr-item">
+          <div class="logo-instr-num">4</div>
+          <span><strong>PC / Mac:</strong> En Chrome, clic en el ícono de instalar (⊕) en la barra de direcciones, o guardá el archivo HTML en el escritorio</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Giovannetti Refrigeración &nbsp;·&nbsp; Densidad Poliol: 1,17 g/ml &nbsp;·&nbsp; Densidad ISO: 1,235 g/ml</footer>
+
+<script>
+// ─── LOGO RENDERER ──────────────────────────────────────────────
+function dibujarLogo(canvas, size) {
+  const c = canvas; c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  const s = size, r = s * 0.18;
+  // Fondo gradiente azul oscuro
+  const bg = ctx.createLinearGradient(0,0,s,s);
+  bg.addColorStop(0,'#0f2a5e'); bg.addColorStop(1,'#1B5EA6');
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(s-r,0); ctx.quadraticCurveTo(s,0,s,r);
+  ctx.lineTo(s,s-r); ctx.quadraticCurveTo(s,s,s-r,s);
+  ctx.lineTo(r,s); ctx.quadraticCurveTo(0,s,0,s-r);
+  ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+  ctx.fill();
+
+  // Copo de nieve estilizado (6 brazos)
+  const cx=s/2, cy=s*0.42, rad=s*0.28;
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=s*0.006;
+  for(let a=0;a<6;a++){
+    const ang=a*60*(Math.PI/180);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+rad*Math.cos(ang), cy+rad*Math.sin(ang));
+    ctx.stroke();
+  }
+  // Brazos del copo - línea principal brillante
+  ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=s*0.022;
+  ctx.lineCap='round';
+  for(let a=0;a<6;a++){
+    const ang=a*60*(Math.PI/180);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+rad*Math.cos(ang), cy+rad*Math.sin(ang));
+    ctx.stroke();
+  }
+  // Ramitas del copo
+  ctx.strokeStyle='rgba(147,210,255,0.8)'; ctx.lineWidth=s*0.012;
+  for(let a=0;a<6;a++){
+    const ang=a*60*(Math.PI/180);
+    for(let t=0.35;t<=0.85;t+=0.25){
+      const bx=cx+rad*t*Math.cos(ang), by=cy+rad*t*Math.sin(ang);
+      const pa=(ang+Math.PI/2); const rl=rad*0.18;
+      ctx.beginPath(); ctx.moveTo(bx-rl*Math.cos(pa),by-rl*Math.sin(pa));
+      ctx.lineTo(bx+rl*Math.cos(pa),by+rl*Math.sin(pa)); ctx.stroke();
+    }
+  }
+  // Círculo central
+  ctx.beginPath(); ctx.arc(cx,cy,s*0.045,0,Math.PI*2);
+  ctx.fillStyle='#fff'; ctx.fill();
+
+  // Termómetro a la derecha del copo (pequeño)
+  const tx=cx+rad*0.72, ty=cy-rad*0.12, tw=s*0.038, th=s*0.15;
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.beginPath(); ctx.roundRect(tx-tw/2, ty-th, tw, th+tw, tw/2); ctx.fill();
+  ctx.fillStyle='#f97316';
+  const fill=th*0.6;
+  ctx.beginPath(); ctx.roundRect(tx-tw/2*0.6, ty-th+th*0.4, tw*0.6, fill+tw*0.6, tw*0.25); ctx.fill();
+  ctx.beginPath(); ctx.arc(tx, ty+tw*0.3, tw*0.75, 0, Math.PI*2);
+  ctx.fillStyle='#f97316'; ctx.fill();
+
+  // Texto "G" grande
+  ctx.font=`900 ${s*0.13}px 'Arial Black',sans-serif`;
+  ctx.fillStyle='rgba(255,255,255,0.12)';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('G', s*0.82, s*0.28);
+
+  // Nombre empresa abajo
+  ctx.font=`700 ${s*0.09}px 'Arial',sans-serif`;
+  ctx.fillStyle='#ffffff';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('GIOVANNETTI', s/2, s*0.77);
+  ctx.font=`500 ${s*0.055}px 'Arial',sans-serif`;
+  ctx.fillStyle='rgba(147,210,255,0.9)';
+  ctx.fillText('REFRIGERACIÓN', s/2, s*0.87);
+
+  // Línea decorativa
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.fillRect(s*0.15, s*0.72, s*0.7, s*0.005);
+}
+
+function descargarLogo(size) {
+  const c = document.createElement('canvas');
+  dibujarLogo(c, size);
+  const a = document.createElement('a');
+  a.download = `giovannetti-logo-${size}.png`;
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+
+// ─── TABS ───────────────────────────────────────────────────────
+function setTab(nombre, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('activo'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('activo'));
+  document.getElementById('panel-'+nombre).classList.add('activo');
+  btn.classList.add('activo');
+  if(nombre==='historial') renderHistorial();
+  if(nombre==='logo') setTimeout(()=>dibujarLogo(document.getElementById('logo-grande'),256),50);
+}
+
+// ─── CALIBRADOR ─────────────────────────────────────────────────
+const DENS_POL=1.17, DENS_ISO=1.235;
+let unidad='g';
+function setUnidad(u,btn){
+  unidad=u;
+  document.querySelectorAll('.utab').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  document.getElementById('unidad-display').textContent=u==='l'?'L':u;
+  calcular();
+}
+function aGramos(v,u){if(u==='g')return v;if(u==='kg')return v*1000;return v*1000*DENS_POL}
+function f(n,d=1){return n.toFixed(d).replace('.',',')}
+function calcular(){
+  const seg=parseFloat(document.getElementById('segundos').value);
+  const pv=parseFloat(document.getElementById('poliol-val').value);
+  const ok=seg>0&&pv>0;
+  ['rc-pol','rc-iso','rc-tot'].forEach(id=>document.getElementById(id).classList.toggle('visible',ok));
+  if(!ok){
+    document.getElementById('tabla-cuerpo').innerHTML='<div class="vacio"><div class="vacio-icono">⚗️</div><div class="vacio-texto">Ingresá los <strong>segundos</strong> de inyección<br>y la cantidad de <strong>poliol recolectado</strong>.</div></div>';
+    document.getElementById('tabla-desc').textContent='Ingresá los datos para ver la tabla';
+    document.getElementById('leyenda').style.display='none';
+    return;
+  }
+  const polG=aGramos(pv,unidad);
+  const polKg=polG/1000, polL=polG/DENS_POL/1000;
+  const isoG=polG*(130/100), isoKg=isoG/1000, isoL=isoG/DENS_ISO/1000;
+  const totG=polG+isoG, totKg=totG/1000, totL=(polG/DENS_POL+isoG/DENS_ISO)/1000;
+  document.getElementById('rp-pol').textContent=f(polKg,3)+' kg';
+  document.getElementById('rd-pol').innerHTML=f(polG)+' g<br>'+f(polL,3)+' L';
+  document.getElementById('rp-iso').textContent=f(isoKg,3)+' kg';
+  document.getElementById('rd-iso').innerHTML=f(isoG)+' g<br>'+f(isoL,3)+' L';
+  document.getElementById('rp-tot').textContent=f(totKg,3)+' kg';
+  document.getElementById('rd-tot').innerHTML=f(totG)+' g<br>'+f(totL,3)+' L';
+  document.getElementById('tabla-desc').textContent='Poliol: '+f(polG)+' g · '+seg+' seg';
+  let html=`<table><thead><tr><th>Ratio ISO</th><th>ISO (g)</th><th>ISO (kg)</th><th>ISO (L)</th><th>Total (g)</th><th>Total (kg)</th><th>Total (L)</th></tr></thead><tbody>`;
+  for(let r=125;r<=130;r++){
+    const ig=polG*(r/100), ikg=ig/1000, il=ig/DENS_ISO/1000;
+    const tg=polG+ig, tkg=tg/1000, tl=(polG/DENS_POL+ig/DENS_ISO)/1000;
+    const nom=r===130;
+    html+=`<tr class="${nom?'fila-nom':''}"><td class="td-ratio">${r} PBW${nom?'<span class="pill-nom">nominal</span>':''}</td><td class="td-iso-g">${f(ig)}</td><td class="td-iso-kg">${f(ikg,3)}</td><td class="td-iso-l">${f(il,3)}</td><td class="td-tot-g">${f(tg)}</td><td class="td-tot-kg">${f(tkg,3)}</td><td class="td-tot-l">${f(tl,3)}</td></tr>`;
+  }
+  html+='</tbody></table>';
+  document.getElementById('tabla-cuerpo').innerHTML=html;
+  document.getElementById('leyenda').style.display='flex';
+}
+document.getElementById('segundos').addEventListener('input',calcular);
+document.getElementById('poliol-val').addEventListener('input',calcular);
+
+// ─── TEMPERATURA ────────────────────────────────────────────────
+const tempUnits={iso:'C', pol:'C', amb:'C'};
+function setTempUnit(cual, unit, btn) {
+  const container=btn.closest('.temp-toggle');
+  container.querySelectorAll('.temp-btn').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  const prevUnit=tempUnits[cual];
+  tempUnits[cual]=unit;
+  // Convertir valor existente si hay
+  const input=document.getElementById('an-temp-'+cual);
+  const v=parseFloat(input.value);
+  if(!isNaN(v)){
+    if(prevUnit==='C'&&unit==='F') input.value=((v*9/5)+32).toFixed(1);
+    else if(prevUnit==='F'&&unit==='C') input.value=(((v-32)*5/9)).toFixed(1);
+  }
+}
+
+// ─── ANOTADOR ───────────────────────────────────────────────────
+function setFechaHoraAhora(){
+  const now=new Date();
+  if(!document.getElementById('an-fecha').value) document.getElementById('an-fecha').value=now.toISOString().slice(0,10);
+  if(!document.getElementById('an-hora').value) document.getElementById('an-hora').value=now.toTimeString().slice(0,5);
+}
+function actualizarRatioPreview(){
+  const iso=parseFloat(document.getElementById('an-iso').value);
+  const pol=parseFloat(document.getElementById('an-pol').value);
+  const prev=document.getElementById('ratio-preview');
+  if(iso>0&&pol>0){
+    const ratio=(iso/pol*100).toFixed(1);
+    document.getElementById('ratio-val').textContent=ratio+' PBW';
+    const diff=Math.abs(iso/pol*100-130);
+    document.getElementById('ratio-status').textContent=diff<1?'✅ Dentro de especificación nominal (130 PBW)':diff<3?'⚠️ Cerca del nominal, ajuste fino recomendado':'🔴 Fuera de rango — ajuste necesario';
+    prev.style.display='block';
+  } else { prev.style.display='none'; }
+}
+document.getElementById('an-iso').addEventListener('input',actualizarRatioPreview);
+document.getElementById('an-pol').addEventListener('input',actualizarRatioPreview);
+document.querySelectorAll('.tab-btn')[1].addEventListener('click',setFechaHoraAhora);
+
+function guardarPrueba(){
+  const iso=parseFloat(document.getElementById('an-iso').value);
+  const pol=parseFloat(document.getElementById('an-pol').value);
+  const hzIso=parseFloat(document.getElementById('an-hz-iso').value);
+  const hzPol=parseFloat(document.getElementById('an-hz-pol').value);
+  const tempIso=document.getElementById('an-temp-iso').value;
+  const tempPol=document.getElementById('an-temp-pol').value;
+  const tempAmb=document.getElementById('an-temp-amb').value;
+  const fecha=document.getElementById('an-fecha').value;
+  const hora=document.getElementById('an-hora').value;
+  const nota=document.getElementById('an-nota').value.trim();
+  if(!iso||!pol||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+  const pruebas=getPruebas();
+  pruebas.unshift({
+    id:Date.now(), iso, pol, hzIso, hzPol,
+    tempIso: tempIso ? tempIso+'°'+tempUnits.iso : '',
+    tempPol: tempPol ? tempPol+'°'+tempUnits.pol : '',
+    tempAmb: tempAmb ? tempAmb+'°'+tempUnits.amb : '',
+    fecha, hora, nota,
+    ratio:+(iso/pol*100).toFixed(2)
+  });
+  savePruebas(pruebas);
+  ['an-iso','an-pol','an-hz-iso','an-hz-pol','an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ratio-preview').style.display='none';
+  document.querySelectorAll('.tab-btn')[2].click();
+}
+
+// ─── STORAGE ────────────────────────────────────────────────────
+function getPruebas(){try{return JSON.parse(localStorage.getItem('pruebas_giovannetti')||'[]')}catch(e){return[]}}
+function savePruebas(arr){localStorage.setItem('pruebas_giovannetti',JSON.stringify(arr));document.getElementById('pruebas-count').textContent=arr.length}
+
+function eliminarPrueba(id){
+  if(!confirm('¿Eliminar esta prueba?')) return;
+  const arr=getPruebas().filter(p=>p.id!==id);
+  savePruebas(arr); renderHistorial();
+}
+
+// ─── HISTORIAL ──────────────────────────────────────────────────
+function renderHistorial(){
+  const pruebas=getPruebas();
+  document.getElementById('pruebas-count').textContent=pruebas.length;
+  const cont=document.getElementById('lista-pruebas');
+  if(!pruebas.length){
+    cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">📋</div><div class="lista-vacia-txt">No hay pruebas registradas aún.<br>Usá el <strong>Anotador</strong> para agregar la primera.</div></div>';
+    return;
+  }
+  cont.innerHTML=pruebas.map((p,i)=>{
+    const temps=[];
+    if(p.tempIso) temps.push(`<div class="prueba-dato"><span class="prueba-dato-label">🌡 ISO</span><span class="prueba-dato-val temp">${p.tempIso}</span></div>`);
+    if(p.tempPol) temps.push(`<div class="prueba-dato"><span class="prueba-dato-label">🌡 Poliol</span><span class="prueba-dato-val temp">${p.tempPol}</span></div>`);
+    if(p.tempAmb) temps.push(`<div class="prueba-dato"><span class="prueba-dato-label">🏭 Amb.</span><span class="prueba-dato-val temp">${p.tempAmb}</span></div>`);
+    return `<div class="prueba-card">
+      <button class="btn-del" onclick="eliminarPrueba(${p.id})" title="Eliminar">🗑</button>
+      <div class="prueba-num">Prueba #${pruebas.length-i} &nbsp;·&nbsp; ${p.fecha} ${p.hora}</div>
+      <div class="prueba-fila">
+        <div class="prueba-dato"><span class="prueba-dato-label">ISO</span><span class="prueba-dato-val iso">${p.iso} g</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Poliol</span><span class="prueba-dato-val">${p.pol} g</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Ratio</span><span class="prueba-dato-val ratio">${p.ratio} PBW</span></div>
+        ${p.hzIso?`<div class="prueba-dato"><span class="prueba-dato-label">Hz ISO</span><span class="prueba-dato-val hz">${p.hzIso} Hz</span></div>`:''}
+        ${p.hzPol?`<div class="prueba-dato"><span class="prueba-dato-label">Hz Pol</span><span class="prueba-dato-val hz">${p.hzPol} Hz</span></div>`:''}
+        ${temps.join('')}
+      </div>
+      ${p.nota?`<div class="prueba-nota">"${p.nota}"</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── EXPORTAR CSV ───────────────────────────────────────────────
+function exportarCSV(){
+  const pruebas=getPruebas();
+  if(!pruebas.length){alert('No hay pruebas para exportar');return}
+  const h='Fecha,Hora,ISO (g),Poliol (g),Ratio (PBW),Hz ISO,Hz Poliol,Temp ISO,Temp Poliol,Temp Ambiente,Notas';
+  const rows=pruebas.map(p=>`${p.fecha},${p.hora},${p.iso},${p.pol},${p.ratio},${p.hzIso||''},${p.hzPol||''},${p.tempIso||''},${p.tempPol||''},${p.tempAmb||''},"${p.nota||''}"`);
+  const blob=new Blob(['\uFEFF'+[h,...rows].join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='pruebas_giovannetti.csv'; a.click();
+}
+
+
+// ─── PWA: SERVICE WORKER (archivos reales: manifest.json + sw.js) ──
+(function(){
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+
+  // Banner de instalación nativo (Android/Chrome)
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    mostrarBannerInstalar();
+  });
+
+  function mostrarBannerInstalar(){
+    if(document.getElementById('banner-instalar')) return;
+    const banner=document.createElement('div');
+    banner.id='banner-instalar';
+    banner.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f2a5e;color:#fff;padding:12px 20px;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:12px;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;font-size:14px;font-weight:600;max-width:320px;width:90%';
+    banner.innerHTML=`
+      <span style="font-size:24px">📲</span>
+      <div style="flex:1;line-height:1.3">Instalá la app en tu pantalla de inicio</div>
+      <button onclick="instalarApp()" style="background:#4A90D9;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Instalar</button>
+      <button onclick="document.getElementById('banner-instalar').remove()" style="background:transparent;color:rgba(255,255,255,.5);border:none;font-size:20px;cursor:pointer;padding:0 2px;line-height:1">×</button>
+    `;
+    document.body.appendChild(banner);
+  }
+
+  window.instalarApp=function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{
+      deferredPrompt=null;
+      const b=document.getElementById('banner-instalar');
+      if(b) b.remove();
+    });
+  };
+})();
+
+// ─── INIT ────────────────────────────────────────────────────────
+document.getElementById('pruebas-count').textContent=getPruebas().length;
+dibujarLogo(document.getElementById('logo-header'),54);
+</script>
+</body>
+</html>
