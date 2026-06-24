@@ -275,6 +275,11 @@
           <input type="number" id="an-hz-pol" placeholder="0.0" min="0" step="0.1">
         </div>
 
+        <div class="form-field full">
+          <label>⏱ Segundos de inyección</label>
+          <input type="number" id="an-seg-iny" placeholder="0" min="0" step="0.1">
+        </div>
+
         <!-- TEMPERATURA ISO -->
         <div class="form-field">
           <label>🌡️ Temp. Isocianato</label>
@@ -331,6 +336,20 @@
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--azul);margin-bottom:4px">Ratio calculado</div>
         <div id="ratio-val" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--azul)">—</div>
         <div id="ratio-status" style="font-size:12px;color:var(--gris-4);margin-top:3px">—</div>
+      </div>
+
+      <div id="mezcla-preview" style="display:none;margin-top:12px;padding:14px 16px;background:var(--naranja-light);border-radius:10px;border:1px solid #f3d4ad">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--naranja);margin-bottom:8px">Mezcla total y caudal</div>
+        <div style="display:flex;gap:24px">
+          <div>
+            <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">TOTAL MEZCLA</div>
+            <div id="mp-tot" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--naranja)">—</div>
+          </div>
+          <div id="mp-iny-box" style="display:none">
+            <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">CAUDAL</div>
+            <div id="mp-iny" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--naranja)">—</div>
+          </div>
+        </div>
       </div>
 
       <button class="btn-guardar" onclick="guardarPrueba()">💾 Guardar prueba</button>
@@ -585,11 +604,30 @@ document.getElementById('an-iso').addEventListener('input',actualizarRatioPrevie
 document.getElementById('an-pol').addEventListener('input',actualizarRatioPreview);
 document.querySelectorAll('.tab-btn')[1].addEventListener('click',setFechaHoraAhora);
 
+// ─── MEZCLA TOTAL Y CAUDAL (nuevo, no toca lo anterior) ──────────
+function actualizarMezclaPreview(){
+  const iso=parseFloat(document.getElementById('an-iso').value);
+  const pol=parseFloat(document.getElementById('an-pol').value);
+  const segIny=parseFloat(document.getElementById('an-seg-iny').value);
+  const prev=document.getElementById('mezcla-preview');
+  if(!(iso>0&&pol>0)){ prev.style.display='none'; return; }
+  const totKg=(iso+pol)/1000;
+  document.getElementById('mp-tot').textContent=totKg.toFixed(2)+' kg';
+  const inyBox=document.getElementById('mp-iny-box');
+  if(segIny>0){
+    document.getElementById('mp-iny').textContent=(totKg/segIny).toFixed(2)+' kg/s';
+    inyBox.style.display='block';
+  } else { inyBox.style.display='none'; }
+  prev.style.display='block';
+}
+['an-iso','an-pol','an-seg-iny'].forEach(id=>document.getElementById(id).addEventListener('input',actualizarMezclaPreview));
+
 function guardarPrueba(){
   const iso=parseFloat(document.getElementById('an-iso').value);
   const pol=parseFloat(document.getElementById('an-pol').value);
   const hzIso=parseFloat(document.getElementById('an-hz-iso').value);
   const hzPol=parseFloat(document.getElementById('an-hz-pol').value);
+  const segIny=parseFloat(document.getElementById('an-seg-iny').value);
   const tempIso=document.getElementById('an-temp-iso').value;
   const tempPol=document.getElementById('an-temp-pol').value;
   const tempAmb=document.getElementById('an-temp-amb').value;
@@ -597,6 +635,12 @@ function guardarPrueba(){
   const hora=document.getElementById('an-hora').value;
   const nota=document.getElementById('an-nota').value.trim();
   if(!iso||!pol||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+
+  // Mezcla total y caudal (nuevo) — mismo criterio de decimales que el Ratio (2)
+  const totKgRaw=(iso+pol)/1000;
+  const totKg=+totKgRaw.toFixed(2);
+  const caudalKg=segIny>0?+(totKgRaw/segIny).toFixed(2):'';
+
   const pruebas=getPruebas();
   pruebas.unshift({
     id:Date.now(), iso, pol, hzIso, hzPol,
@@ -604,11 +648,14 @@ function guardarPrueba(){
     tempPol: tempPol ? tempPol+'°'+tempUnits.pol : '',
     tempAmb: tempAmb ? tempAmb+'°'+tempUnits.amb : '',
     fecha, hora, nota,
-    ratio:+(iso/pol*100).toFixed(2)
+    ratio:+(iso/pol*100).toFixed(2),
+    segIny: segIny>0?segIny:'',
+    totKg, caudalKg
   });
   savePruebas(pruebas);
-  ['an-iso','an-pol','an-hz-iso','an-hz-pol','an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
+  ['an-iso','an-pol','an-hz-iso','an-hz-pol','an-seg-iny','an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ratio-preview').style.display='none';
+  document.getElementById('mezcla-preview').style.display='none';
   document.querySelectorAll('.tab-btn')[2].click();
 }
 
@@ -647,6 +694,11 @@ function renderHistorial(){
         ${p.hzPol?`<div class="prueba-dato"><span class="prueba-dato-label">Hz Pol</span><span class="prueba-dato-val hz">${p.hzPol} Hz</span></div>`:''}
         ${temps.join('')}
       </div>
+      ${p.totKg?`<div class="prueba-fila">
+        <div class="prueba-dato"><span class="prueba-dato-label">Mezcla total</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.totKg} kg</span></div>
+        ${p.segIny?`<div class="prueba-dato"><span class="prueba-dato-label">Seg. inyección</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.segIny} s</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Caudal</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.caudalKg} kg/s</span></div>`:''}
+      </div>`:''}
       ${p.nota?`<div class="prueba-nota">"${p.nota}"</div>`:''}
     </div>`;
   }).join('');
@@ -656,8 +708,8 @@ function renderHistorial(){
 function exportarCSV(){
   const pruebas=getPruebas();
   if(!pruebas.length){alert('No hay pruebas para exportar');return}
-  const h='Fecha,Hora,ISO (g),Poliol (g),Ratio (PBW),Hz ISO,Hz Poliol,Temp ISO,Temp Poliol,Temp Ambiente,Notas';
-  const rows=pruebas.map(p=>`${p.fecha},${p.hora},${p.iso},${p.pol},${p.ratio},${p.hzIso||''},${p.hzPol||''},${p.tempIso||''},${p.tempPol||''},${p.tempAmb||''},"${p.nota||''}"`);
+  const h='Fecha,Hora,ISO (g),Poliol (g),Ratio (PBW),Hz ISO,Hz Poliol,Temp ISO,Temp Poliol,Temp Ambiente,Notas,Mezcla total (kg),Seg. inyección,Caudal (kg/s)';
+  const rows=pruebas.map(p=>`${p.fecha},${p.hora},${p.iso},${p.pol},${p.ratio},${p.hzIso||''},${p.hzPol||''},${p.tempIso||''},${p.tempPol||''},${p.tempAmb||''},"${p.nota||''}",${p.totKg||''},${p.segIny||''},${p.caudalKg||''}`);
   const blob=new Blob(['\uFEFF'+[h,...rows].join('\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='pruebas_giovannetti.csv'; a.click();
