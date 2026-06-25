@@ -339,7 +339,7 @@
       </div>
 
       <div id="mezcla-preview" style="display:none;margin-top:12px;padding:14px 16px;background:var(--naranja-light);border-radius:10px;border:1px solid #f3d4ad">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--naranja);margin-bottom:8px">Mezcla total y caudal</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--naranja);margin-bottom:8px">Mezcla total y caudal — kilogramos</div>
         <div style="display:flex;gap:24px">
           <div>
             <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">TOTAL MEZCLA</div>
@@ -348,6 +348,20 @@
           <div id="mp-iny-box" style="display:none">
             <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">CAUDAL</div>
             <div id="mp-iny" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--naranja)">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mezcla-preview-l" style="display:none;margin-top:10px;padding:14px 16px;background:var(--cyan-light);border-radius:10px;border:1px solid #bae6fd">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cyan);margin-bottom:8px">Mezcla total y caudal — litros</div>
+        <div style="display:flex;gap:24px">
+          <div>
+            <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">TOTAL MEZCLA</div>
+            <div id="mp-tot-l" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--cyan)">—</div>
+          </div>
+          <div id="mp-iny-l-box" style="display:none">
+            <div style="font-size:10px;color:var(--gris-4);font-weight:600;margin-bottom:2px">CAUDAL</div>
+            <div id="mp-iny-l" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--cyan)">—</div>
           </div>
         </div>
       </div>
@@ -610,15 +624,22 @@ function actualizarMezclaPreview(){
   const pol=parseFloat(document.getElementById('an-pol').value);
   const segIny=parseFloat(document.getElementById('an-seg-iny').value);
   const prev=document.getElementById('mezcla-preview');
-  if(!(iso>0&&pol>0)){ prev.style.display='none'; return; }
+  const prevL=document.getElementById('mezcla-preview-l');
+  if(!(iso>0&&pol>0)){ prev.style.display='none'; prevL.style.display='none'; return; }
   const totKg=(iso+pol)/1000;
-  document.getElementById('mp-tot').textContent=totKg.toFixed(2)+' kg';
+  const totL=(pol/DENS_POL+iso/DENS_ISO)/1000;
+  document.getElementById('mp-tot').textContent=totKg.toFixed(3)+' kg';
+  document.getElementById('mp-tot-l').textContent=totL.toFixed(3)+' L';
   const inyBox=document.getElementById('mp-iny-box');
+  const inyLBox=document.getElementById('mp-iny-l-box');
   if(segIny>0){
-    document.getElementById('mp-iny').textContent=(totKg/segIny).toFixed(2)+' kg/s';
+    document.getElementById('mp-iny').textContent=(totKg/segIny).toFixed(3)+' kg/s';
+    document.getElementById('mp-iny-l').textContent=(totL/segIny).toFixed(3)+' L/s';
     inyBox.style.display='block';
-  } else { inyBox.style.display='none'; }
+    inyLBox.style.display='block';
+  } else { inyBox.style.display='none'; inyLBox.style.display='none'; }
   prev.style.display='block';
+  prevL.style.display='block';
 }
 ['an-iso','an-pol','an-seg-iny'].forEach(id=>document.getElementById(id).addEventListener('input',actualizarMezclaPreview));
 
@@ -638,8 +659,11 @@ function guardarPrueba(){
 
   // Mezcla total y caudal (nuevo) — mismo criterio de decimales que el Ratio (2)
   const totKgRaw=(iso+pol)/1000;
-  const totKg=+totKgRaw.toFixed(2);
-  const caudalKg=segIny>0?+(totKgRaw/segIny).toFixed(2):'';
+  const totLRaw=(pol/DENS_POL+iso/DENS_ISO)/1000;
+  const totKg=+totKgRaw.toFixed(3);
+  const totL=+totLRaw.toFixed(3);
+  const caudalKg=segIny>0?+(totKgRaw/segIny).toFixed(3):'';
+  const caudalL =segIny>0?+(totLRaw/segIny).toFixed(3):'';
 
   const pruebas=getPruebas();
   pruebas.unshift({
@@ -650,12 +674,13 @@ function guardarPrueba(){
     fecha, hora, nota,
     ratio:+(iso/pol*100).toFixed(2),
     segIny: segIny>0?segIny:'',
-    totKg, caudalKg
+    totKg, totL, caudalKg, caudalL
   });
   savePruebas(pruebas);
   ['an-iso','an-pol','an-hz-iso','an-hz-pol','an-seg-iny','an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ratio-preview').style.display='none';
   document.getElementById('mezcla-preview').style.display='none';
+  document.getElementById('mezcla-preview-l').style.display='none';
   document.querySelectorAll('.tab-btn')[2].click();
 }
 
@@ -695,9 +720,9 @@ function renderHistorial(){
         ${temps.join('')}
       </div>
       ${p.totKg?`<div class="prueba-fila">
-        <div class="prueba-dato"><span class="prueba-dato-label">Mezcla total</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.totKg} kg</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Mezcla total</span><span class="prueba-dato-val" style="color:var(--naranja)">${Number(p.totKg).toFixed(3)} kg${p.totL!=null&&p.totL!==''?' · '+Number(p.totL).toFixed(3)+' L':''}</span></div>
         ${p.segIny?`<div class="prueba-dato"><span class="prueba-dato-label">Seg. inyección</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.segIny} s</span></div>
-        <div class="prueba-dato"><span class="prueba-dato-label">Caudal</span><span class="prueba-dato-val" style="color:var(--naranja)">${p.caudalKg} kg/s</span></div>`:''}
+        <div class="prueba-dato"><span class="prueba-dato-label">Caudal</span><span class="prueba-dato-val" style="color:var(--naranja)">${Number(p.caudalKg).toFixed(3)} kg/s${p.caudalL!=null&&p.caudalL!==''?' · '+Number(p.caudalL).toFixed(3)+' L/s':''}</span></div>`:''}
       </div>`:''}
       ${p.nota?`<div class="prueba-nota">"${p.nota}"</div>`:''}
     </div>`;
@@ -708,8 +733,16 @@ function renderHistorial(){
 function exportarCSV(){
   const pruebas=getPruebas();
   if(!pruebas.length){alert('No hay pruebas para exportar');return}
-  const h='Fecha,Hora,ISO (g),Poliol (g),Ratio (PBW),Hz ISO,Hz Poliol,Temp ISO,Temp Poliol,Temp Ambiente,Notas,Mezcla total (kg),Seg. inyección,Caudal (kg/s)';
-  const rows=pruebas.map(p=>`${p.fecha},${p.hora},${p.iso},${p.pol},${p.ratio},${p.hzIso||''},${p.hzPol||''},${p.tempIso||''},${p.tempPol||''},${p.tempAmb||''},"${p.nota||''}",${p.totKg||''},${p.segIny||''},${p.caudalKg||''}`);
+  // Formato Argentina/España: columnas separadas por ";" y decimales con ","
+  const num=v=>(v===''||v==null||(typeof v==='number'&&isNaN(v)))?'':String(v).replace('.',',');
+  const num2=v=>(v===''||v==null||isNaN(Number(v)))?'':Number(v).toFixed(3).replace('.',',');
+  const txt=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
+  const h=['Fecha','Hora','ISO (g)','Poliol (g)','Ratio (PBW)','Hz ISO','Hz Poliol','Temp ISO','Temp Poliol','Temp Ambiente','Notas','Mezcla total (kg)','Mezcla total (L)','Seg. inyección','Caudal (kg/s)','Caudal (L/s)'].join(';');
+  const rows=pruebas.map(p=>[
+    p.fecha, p.hora, num(p.iso), num(p.pol), num(p.ratio),
+    num(p.hzIso), num(p.hzPol), p.tempIso||'', p.tempPol||'', p.tempAmb||'',
+    txt(p.nota), num2(p.totKg), num2(p.totL), num(p.segIny), num2(p.caudalKg), num2(p.caudalL)
+  ].join(';'));
   const blob=new Blob(['\uFEFF'+[h,...rows].join('\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='pruebas_giovannetti.csv'; a.click();
