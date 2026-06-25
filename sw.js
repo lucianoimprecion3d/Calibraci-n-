@@ -1,4 +1,4 @@
-const CACHE = 'giovannetti-v2';
+const CACHE = 'giovannetti-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -22,17 +22,17 @@ self.addEventListener('activate', e => {
   );
 });
 
+// Estrategia "red primero": si hay internet, siempre trae la versión más nueva
+// y la guarda. Si no hay internet, usa la última guardada (para que la app
+// siga funcionando offline).
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r =>
-      r || fetch(e.request).then(resp => {
-        // Guarda en caché las fuentes de Google para uso offline
-        if (e.request.url.startsWith('https://fonts.')) {
-          const copy = resp.clone();
-          caches.open(CACHE).then(c => c.put(e.request, copy));
-        }
-        return resp;
-      }).catch(() => caches.match('./index.html'))
+    fetch(e.request).then(resp => {
+      const copy = resp.clone();
+      caches.open(CACHE).then(c => c.put(e.request, copy));
+      return resp;
+    }).catch(() =>
+      caches.match(e.request).then(r => r || caches.match('./index.html'))
     )
   );
 });
