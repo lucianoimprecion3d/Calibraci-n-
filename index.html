@@ -852,6 +852,10 @@
   <!-- ========== AJUSTES ========== -->
   <div id="panel-ajustes" class="panel">
 
+    <div class="alerta azul" style="margin-bottom:12px;text-align:center;font-size:16px">
+      Versión instalada: <b id="sello-version">—</b>
+    </div>
+
     <div class="anotador-form">
       <div class="form-titulo">🧪 Producto con el que trabajamos</div>
       <div class="form-grid">
@@ -953,6 +957,15 @@
     </div>
 
     <div class="logo-panel">
+      <div class="form-titulo">🔄 Forzar actualización</div>
+      <p style="font-size:14px;color:var(--gris-5);line-height:1.6;margin-bottom:12px">
+        Si subiste una versión nueva y seguís viendo la vieja, tocá acá. Borra la copia guardada
+        y vuelve a bajar la app de internet. <b>No toca tus datos.</b>
+      </p>
+      <button class="btn-sec" onclick="forzarActualizacion()">Buscar la última versión</button>
+    </div>
+
+    <div class="logo-panel">
       <div class="form-titulo">🗑 Borrar datos</div>
       <button class="btn-sec" style="background:var(--rojo-light);color:#8F1717" onclick="borrarTodo()">Borrar todo el historial</button>
     </div>
@@ -966,6 +979,8 @@
 <div id="hoja-impresion"></div>
 
 <script>
+const VERSION='v6 · 27-07-2026';
+
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
 // ═══════════════════════════════════════════════════════════════
@@ -1152,7 +1167,10 @@ function sumarMeses(iso,m){
 function pintarTodo(){
   document.getElementById('header-producto').textContent=DB.producto.nombre||'Sin producto cargado';
   document.getElementById('pie').innerHTML='Giovannetti Refrigeración · '+(DB.producto.nombre||'')+'<br>'
-    +'Ratio '+ratio()+' PBW · Poliol '+f(DB.producto.pePol,3)+' g/ml · ISO '+f(DB.producto.peIso,3)+' g/ml';
+    +'Ratio '+ratio()+' PBW · Poliol '+f(DB.producto.pePol,3)+' g/ml · ISO '+f(DB.producto.peIso,3)+' g/ml'
+    +'<br><b style="color:var(--azul)">Versión '+VERSION+'</b>';
+  const sv2=document.getElementById('sello-version');
+  if(sv2) sv2.textContent=VERSION;
   document.getElementById('titulo-resultado').textContent='Resultado — ratio nominal '+ratio()+' PBW';
   document.getElementById('et-iso').textContent='ISO requerido ('+ratio()+' PBW)';
   const r=ratio();
@@ -2377,6 +2395,17 @@ function importarRespaldo(ev){
   ev.target.value='';
 }
 
+function forzarActualizacion(){
+  if(!confirm('Se va a borrar la copia guardada de la app y volver a bajarla de internet.\n\nTus datos NO se tocan. ¿Seguimos?')) return;
+  const tareas=[];
+  if(window.caches && caches.keys) tareas.push(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))));
+  if(navigator.serviceWorker && navigator.serviceWorker.getRegistrations)
+    tareas.push(navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))));
+  Promise.all(tareas).catch(()=>{}).then(()=>{
+    location.reload(true);
+  });
+}
+
 function borrarTodo(){
   if(!confirm('¿Borrar TODAS las calibraciones, inyecciones y movimientos?')) return;
   if(!confirm('Última confirmación. Esto no se puede deshacer.\n\n¿Descargaste un respaldo?')) return;
@@ -2531,10 +2560,13 @@ function descargarLogo(size){
       document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
     }catch(e){}
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
-      const sw="const CACHE='giovannetti-v3';const ASSETS=[self.location.href];"
-        +"self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});"
+      // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
+      const sw="const CACHE='giovannetti-v6';"
+        +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
-        +"self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(ASSETS[0]))))});";
+        +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
+        +"e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r})"
+        +".catch(()=>caches.match(e.request).then(r=>r||caches.match('./'))))});";
       navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});
     }
   }
