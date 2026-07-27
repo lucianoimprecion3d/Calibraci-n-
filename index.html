@@ -216,6 +216,25 @@
   .platform-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   .chip{background:var(--azul-light);color:var(--azul);border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:700;border:1px solid #c2d8f0}
 
+  /* GUÍA */
+  .btn-ayuda{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid rgba(255,255,255,.45);
+    background:rgba(255,255,255,.12);color:#fff;font-family:inherit;font-size:20px;font-weight:800;cursor:pointer}
+  .btn-ayuda:hover{background:rgba(255,255,255,.25)}
+  .g-item{background:var(--blanco);border-radius:12px;box-shadow:var(--sombra-sm);margin-bottom:9px;overflow:hidden}
+  .g-cab{width:100%;display:flex;align-items:center;gap:12px;padding:16px 16px;border:none;background:none;
+    font-family:inherit;font-size:16px;font-weight:800;color:var(--azul-dark);cursor:pointer;text-align:left}
+  .g-cab .g-ico{font-size:21px;flex:none}
+  .g-cab .g-tit{flex:1}
+  .g-cab .g-fle{font-size:15px;color:var(--gris-4);transition:transform .2s}
+  .g-item.abierto .g-cab{border-bottom:1px solid var(--gris-2)}
+  .g-item.abierto .g-fle{transform:rotate(90deg)}
+  .g-cuerpo{display:none;padding:4px 18px 18px}
+  .g-item.abierto .g-cuerpo{display:block}
+  .g-cuerpo p{font-size:15px;line-height:1.65;color:var(--gris-5);margin:11px 0}
+  .g-cuerpo b{color:var(--azul-dark)}
+  .g-cuerpo ol{margin:11px 0 11px 20px;padding:0}
+  .g-cuerpo li{font-size:15px;line-height:1.65;color:var(--gris-5);margin-bottom:8px;padding-left:3px}
+
   /* HOJA PARA IMPRIMIR / PDF */
   #hoja-impresion{display:none}
   .btn-print{position:absolute;top:9px;right:44px;background:var(--blanco);border:2px solid var(--gris-2);
@@ -301,10 +320,7 @@
     <div class="logo-nombre">Giovannetti</div>
     <div class="logo-sub" id="header-producto">—</div>
   </div>
-  <div class="badge-live">
-    <div class="badge-dot"></div>
-    <div class="badge-text">Activo</div>
-  </div>
+  <button class="btn-ayuda" onclick="irATab('guia')" title="Instructivo de uso">?</button>
 </header>
 
 <div class="alarma-nivel" id="alarma-nivel">
@@ -327,6 +343,7 @@
     <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
     <button class="tab-btn" onclick="setTab('historial',this)">🖨 Registros</button>
     <button class="tab-btn" onclick="setTab('ajustes',this)">⚙️ Parámetros</button>
+    <button class="tab-btn" onclick="setTab('guia',this)">📘 Instructivo</button>
   </div>
 
   <!-- ========== CALIBRADOR ========== -->
@@ -899,10 +916,45 @@
         </div>
       </div>
       <button class="btn-guardar" onclick="guardarProducto()">💾 Guardar producto</button>
-      <div class="alerta azul" style="margin-top:12px">
-        Al cambiar de producto, cargá acá el ratio y los pesos específicos nuevos. Todo lo demás se recalcula solo.
-        Los rangos de temperatura, crema e hilos son los del ALKURAN: si cambiás de material, pedime que los actualice.
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">📄 Rangos de la ficha técnica</div>
+      <div class="hint" style="margin-bottom:14px">
+        Estos son los valores contra los que la app marca verde o rojo. Vienen de la ficha del ALKURAN.
+        Si cambiás de producto, cargá los de la ficha nueva: si no, te va a avisar mal.
       </div>
+      <div class="form-grid">
+        <div class="form-field"><label>Temperatura A/B · mínima</label><input type="number" id="fi-temp0" step="any"><div class="hint">°C</div></div>
+        <div class="form-field"><label>Temperatura A/B · máxima</label><input type="number" id="fi-temp1" step="any"><div class="hint">°C</div></div>
+        <div class="form-field"><label>Crema · mínimo</label><input type="number" id="fi-crema0" step="any"><div class="hint">seg</div></div>
+        <div class="form-field"><label>Crema · máximo</label><input type="number" id="fi-crema1" step="any"><div class="hint">seg</div></div>
+        <div class="form-field"><label>Hilos · mínimo</label><input type="number" id="fi-hilos0" step="any"><div class="hint">seg</div></div>
+        <div class="form-field"><label>Hilos · máximo</label><input type="number" id="fi-hilos1" step="any"><div class="hint">seg</div></div>
+        <div class="form-field"><label>Densidad libre · mínima</label><input type="number" id="fi-libre0" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Densidad libre · máxima</label><input type="number" id="fi-libre1" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Temp. molde · mínima</label><input type="number" id="fi-moldeT0" step="any"><div class="hint">°C</div></div>
+        <div class="form-field"><label>Temp. molde · máxima</label><input type="number" id="fi-moldeT1" step="any"><div class="hint">°C</div></div>
+        <div class="form-field"><label>Densidad de molde · mínima</label><input type="number" id="fi-moldeD0" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Densidad de molde · máxima</label><input type="number" id="fi-moldeD1" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Densidad de núcleo · mínima</label><input type="number" id="fi-nucleo0" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Densidad de núcleo · máxima</label><input type="number" id="fi-nucleo1" step="any"><div class="hint">kg/m³</div></div>
+        <div class="form-field"><label>Vida útil poliol</label><input type="number" id="fi-vidaPol" step="1"><div class="hint">meses</div></div>
+        <div class="form-field"><label>Vida útil ISO</label><input type="number" id="fi-vidaIso" step="1"><div class="hint">meses</div></div>
+      </div>
+
+      <div class="card-label" style="margin-top:18px">Datos de referencia (solo para consulta)</div>
+      <div class="form-grid">
+        <div class="form-field full"><label>Viscosidad A / B</label><input type="text" id="fi-visc"></div>
+        <div class="form-field full"><label>NCO libre</label><input type="text" id="fi-nco"></div>
+        <div class="form-field full"><label>Conductividad térmica</label><input type="text" id="fi-cond"></div>
+        <div class="form-field full"><label>Estabilidad dimensional</label><input type="text" id="fi-estab"></div>
+        <div class="form-field full"><label>Almacenamiento poliol / ISO</label><input type="text" id="fi-almac"></div>
+        <div class="form-field full"><label>Envases</label><input type="text" id="fi-envases"></div>
+      </div>
+
+      <button class="btn-guardar" onclick="guardarFicha()">💾 Guardar ficha</button>
+      <button class="btn-sec" onclick="restaurarAlkuran()">↩️ Volver a los valores del ALKURAN RF-30 H4</button>
     </div>
 
     <div class="anotador-form">
@@ -984,6 +1036,19 @@
 
   </div>
 
+
+  <!-- ========== CÓMO SE USA ========== -->
+  <div id="panel-guia" class="panel">
+    <div class="anotador-form">
+      <div class="form-titulo">📘 Instructivo de uso</div>
+      <div class="hint">Tocá el tema que te interese y se abre. Está escrito para leer en el taller, no de corrido.</div>
+    </div>
+    <div id="guia-lista"></div>
+    <div class="alerta azul" style="margin-top:14px">
+      Si algo no está explicado acá o no se entiende, decilo y lo agregamos. Este instructivo es parte de la app.
+    </div>
+  </div>
+
 </main>
 
 <footer id="pie">—</footer>
@@ -991,31 +1056,57 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v10 · 27-07-2026';
+const VERSION='v13 · 27-07-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
 // ═══════════════════════════════════════════════════════════════
-const R_TEMP=[20,23], R_CREMA=[27,33], R_HILOS=[120,160];
-const R_LIBRE=[38,42], R_MOLDE_T=[39,47], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
-const VIDA_POL=4, VIDA_ISO=6;
+// Estos rangos ya no son fijos: se llenan desde la ficha cargada en Parámetros.
+let R_TEMP=[20,23], R_CREMA=[27,33], R_HILOS=[120,160];
+let R_LIBRE=[38,42], R_MOLDE_T=[39,47], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
+let VIDA_POL=4, VIDA_ISO=6;
 
-const FICHA_FILAS=[
-  ['Relación A/B en peso','100 : 156'],
-  ['Temperatura A / B','20 – 23 °C'],
-  ['Tiempo de crema','27 – 33 seg'],
-  ['Tiempo de hilos','120 – 160 seg'],
-  ['Densidad libre (vaso 1 lt)','38 – 42 kg/m³'],
-  ['Temperatura de molde','43 ± 4 °C'],
-  ['Densidad de molde','38 – 42 kg/m³'],
-  ['Densidad de núcleo','36 – 38 kg/m³'],
-  ['Densidad 20 °C A / B','1,09 / 1,22–1,25 g/cm³'],
-  ['Viscosidad 20 °C A / B','250 / 150–250 cps'],
-  ['NCO libre (B)','30,2 – 32,0 %'],
-  ['Almacenamiento poliol / ISO','15–25 / 15–35 °C'],
-  ['Vida útil poliol / ISO','4 / 6 meses'],
-  ['Envase poliol / ISO','220 / 250 kg']
-];
+const FICHA_ALKURAN={
+  nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, tabla:4, pePol:1.09, peIso:1.235,
+  temp:[20,23], crema:[27,33], hilos:[120,160], libre:[38,42],
+  moldeT:[39,47], moldeD:[38,42], nucleo:[36,38], vidaPol:4, vidaIso:6,
+  visc:'250 / 150–250 cps', nco:'30,2 – 32,0 %', cond:'0,022 – 0,023 W/m·K',
+  estab:'< 3 %Vol', almac:'15–25 / 15–35 °C', envases:'220 (o IBC) / 250 kg'
+};
+
+function aplicarFicha(){
+  const p=DB.producto;
+  const par=(v,d)=>(Array.isArray(v)&&v.length===2&&Number.isFinite(+v[0])&&Number.isFinite(+v[1]))?[+v[0],+v[1]]:d;
+  R_TEMP=par(p.temp,[20,23]); R_CREMA=par(p.crema,[27,33]); R_HILOS=par(p.hilos,[120,160]);
+  R_LIBRE=par(p.libre,[38,42]); R_MOLDE_T=par(p.moldeT,[39,47]);
+  R_MOLDE_D=par(p.moldeD,[38,42]); R_NUCLEO=par(p.nucleo,[36,38]);
+  VIDA_POL=Number.isFinite(+p.vidaPol)?+p.vidaPol:4;
+  VIDA_ISO=Number.isFinite(+p.vidaIso)?+p.vidaIso:6;
+}
+
+function fichaFilas(){
+  const p=DB.producto, r=(a,u)=>a[0]+' – '+a[1]+(u?' '+u:'');
+  return [
+    ['Relación A/B en peso','100 : '+p.ratio],
+    ['Tolerancia del ratio','± '+p.tol+' %'],
+    ['Temperatura A / B',r(R_TEMP,'°C')],
+    ['Tiempo de crema',r(R_CREMA,'seg')],
+    ['Tiempo de hilos',r(R_HILOS,'seg')],
+    ['Densidad libre',r(R_LIBRE,'kg/m³')],
+    ['Temperatura de molde',r(R_MOLDE_T,'°C')],
+    ['Densidad de molde',r(R_MOLDE_D,'kg/m³')],
+    ['Densidad de núcleo',r(R_NUCLEO,'kg/m³')],
+    ['Peso específico A / B',f(p.pePol,3)+' / '+f(p.peIso,3)+' g/ml'],
+    ['Viscosidad 20 °C A / B',p.visc||'—'],
+    ['NCO libre (B)',p.nco||'—'],
+    ['Conductividad térmica',p.cond||'—'],
+    ['Estabilidad dimensional',p.estab||'—'],
+    ['Almacenamiento poliol / ISO',p.almac||'—'],
+    ['Vida útil poliol / ISO',VIDA_POL+' / '+VIDA_ISO+' meses'],
+    ['Envases',p.envases||'—']
+  ];
+}
+
 
 // ═══════════════════════════════════════════════════════════════
 // BASE DE DATOS
@@ -1026,7 +1117,7 @@ const OLD_KEYS=['giovannetti_v2','pruebas_giovannetti'];
 
 function dbVacia(){
   return {
-    producto:{ nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, tabla:4, pePol:1.09, peIso:1.235 },
+    producto:Object.assign({},FICHA_ALKURAN),
     marchas:{
       baja:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
       media:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
@@ -1073,7 +1164,7 @@ function idbEscribir(obj){
 function normalizar(d){
   const base=dbVacia();
   if(!d||typeof d!=='object') return base;
-  base.producto=Object.assign(base.producto,d.producto||{});
+  base.producto=Object.assign({},FICHA_ALKURAN,base.producto,d.producto||{});
   base.marchas=Object.assign(base.marchas,d.marchas||{});
   ['baja','media','alta'].forEach(m=>{ base.marchas[m]=Object.assign({g:'',seg:'',gs:0,rg:'',rseg:'',rgs:0,caida:''},(d.marchas||{})[m]||{}); });
   base.tanques.pol=Object.assign(base.tanques.pol,(d.tanques||{}).pol||{});
@@ -1188,8 +1279,8 @@ function pintarTodo(){
   const r=ratio();
   const pasoT2=Math.max(1,Math.round(DB.producto.tabla||4));
   document.getElementById('titulo-tabla').textContent='Tabla de ajuste — '+(r-pasoT2)+' a '+(r+pasoT2)+' PBW';
-  document.getElementById('tabla-ficha').innerHTML=FICHA_FILAS.map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('');
-  pintarProducto(); pintarMarchasConfig(); pintarMarchasSel();
+  document.getElementById('tabla-ficha').innerHTML=fichaFilas().map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('');
+  aplicarFicha(); pintarProducto(); pintarFicha(); pintarMarchasConfig(); pintarMarchasSel();
   precargarInyeccion();
   renderModelos(); renderTanques(); renderChequeos(); pintarMarchasCal(); calcularDensidad(); renderDensidades();
   renderUltimasCal(); renderUltimosMov(); renderUltimasTandas(); calcularInyeccion(); renderTanda(); calcular();
@@ -1257,6 +1348,45 @@ function pintarProducto(){
   document.getElementById('pr-pe-pol').value=DB.producto.pePol;
   document.getElementById('pr-pe-iso').value=DB.producto.peIso;
 }
+const CAMPOS_FICHA=[['temp',2],['crema',2],['hilos',2],['libre',2],['moldeT',2],['moldeD',2],['nucleo',2]];
+const CAMPOS_TEXTO=['visc','nco','cond','estab','almac','envases'];
+
+function pintarFicha(){
+  const p=DB.producto;
+  CAMPOS_FICHA.forEach(([k])=>{
+    const a=p[k]||[0,0];
+    const e0=document.getElementById('fi-'+k+'0'), e1=document.getElementById('fi-'+k+'1');
+    if(e0) e0.value=a[0]; if(e1) e1.value=a[1];
+  });
+  const vp=document.getElementById('fi-vidaPol'), vi=document.getElementById('fi-vidaIso');
+  if(vp) vp.value=p.vidaPol; if(vi) vi.value=p.vidaIso;
+  CAMPOS_TEXTO.forEach(k=>{ const e=document.getElementById('fi-'+k); if(e) e.value=p[k]||''; });
+}
+
+function guardarFicha(){
+  const nuevo={};
+  for(const [k] of CAMPOS_FICHA){
+    const a=gv('fi-'+k+'0'), b=gv('fi-'+k+'1');
+    if(!Number.isFinite(a)||!Number.isFinite(b)){ alert('Faltan valores en la ficha. Revisá que estén todos los mínimos y máximos.'); return; }
+    if(a>b){ alert('En "'+k+'" el mínimo es mayor que el máximo. Revisalo.'); return; }
+    nuevo[k]=[a,b];
+  }
+  const vp=gv('fi-vidaPol'), vi=gv('fi-vidaIso');
+  nuevo.vidaPol=Number.isFinite(vp)?vp:4;
+  nuevo.vidaIso=Number.isFinite(vi)?vi:6;
+  CAMPOS_TEXTO.forEach(k=>{ nuevo[k]=sv('fi-'+k).trim(); });
+  DB.producto=Object.assign({},DB.producto,nuevo);
+  guardarDB(); aplicarFicha(); pintarTodo();
+  alert('Ficha guardada.\n\nTodos los controles de la app ya usan estos rangos.');
+}
+
+function restaurarAlkuran(){
+  if(!confirm('Se vuelven a cargar todos los valores de la ficha ALKURAN RF-30 H4 / ISO-200, incluidos nombre, ratio y pesos específicos.\n\n¿Seguimos?')) return;
+  DB.producto=Object.assign({},FICHA_ALKURAN);
+  guardarDB(); aplicarFicha(); pintarTodo();
+  alert('Listo. Ficha del ALKURAN restaurada.');
+}
+
 function guardarProducto(){
   const nom=sv('pr-nombre').trim();
   const r=gv('pr-ratio'), tol=gv('pr-tol'), pp=gv('pr-pe-pol'), pi=gv('pr-pe-iso');
@@ -1266,7 +1396,7 @@ function guardarProducto(){
   let anchoT=gv('pr-tabla');
   if(!Number.isFinite(anchoT)||anchoT<1) anchoT=4;
   anchoT=Math.min(15,Math.round(anchoT));
-  DB.producto={ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi };
+  DB.producto=Object.assign({},DB.producto,{ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi });
   guardarDB(); pintarTodo();
   alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir las tres marchas por cabezal antes de inyectar.');
 }
@@ -2213,6 +2343,100 @@ function renderHistorial(){
   }).join('');
 }
 
+const GUIA=[
+{t:'Antes de empezar: qué cargar', i:'🚦', c:`
+<p><b>La app no sirve hasta que le cargues cuatro cosas.</b> Son de una sola vez, salvo que cambie algo.</p>
+<ol>
+<li><b>El producto.</b> Parámetros → Producto. Nombre, ratio, tolerancia y los dos pesos específicos.</li>
+<li><b>La ficha.</b> Parámetros → Rangos de la ficha técnica. Son los números contra los que la app te marca verde o rojo.</li>
+<li><b>Las marchas.</b> Parámetros → Marchas. Cuánto tira la máquina en baja, media y alta, medido a la salida del cabezal.</li>
+<li><b>Los tanques.</b> Tanques → Cargar. Los kilos que tenés hoy en planta.</li>
+</ol>
+<p>Recién ahí empezás a registrar inyecciones. Si falta alguna, la app te va avisando en naranja.</p>`},
+
+{t:'Calibrador', i:'⚗️', c:`
+<p><b>Para qué sirve.</b> Te dice cuánto isocianato le corresponde al poliol que recolectaste, según el ratio del producto.</p>
+<p><b>Cuándo se usa.</b> Cuando estás ajustando las bombas y querés saber a qué peso tenés que llegar.</p>
+<p><b>Cómo.</b> Ponés los segundos que disparaste y cuánto poliol juntaste. Abajo te muestra la tabla de ajuste: cada renglón es un ratio posible y cuánto ISO le toca. El renglón verde fuerte es el nominal; los verdes suaves están dentro de tolerancia; los apagados con el sello "fuera", no.</p>
+<p><b>Ojo.</b> El caudal que muestra acá es el teórico de las bombas. Para inyectar no se usa ese, se usa el de las marchas.</p>`},
+
+{t:'Anotador', i:'📋', c:`
+<p><b>Para qué sirve.</b> Es donde queda registrada cada prueba de calibración. El Calibrador calcula; el Anotador guarda.</p>
+<p><b>Cómo se hace la prueba.</b> Recolectás cada componente por separado en un balde tarado, los pesás, y cargás los dos pesos y los segundos.</p>
+<p><b>Qué te devuelve.</b> El ratio real, cuánto te desviaste del nominal, y la corrección: cuántos gramos le faltan o le sobran al ISO, y a qué Hz llevar cada bomba. Es una estimación: cambiás, disparás de nuevo y confirmás.</p>
+<p><b>La potencia.</b> Abajo elegís a qué marcha calibraste. Si querés, con un botón guardás esa medición como el caudal de mangueras libres de esa marcha.</p>`},
+
+{t:'Densidad libre', i:'🥤', c:`
+<p><b>Para qué sirve.</b> Para saber si el material está reaccionando bien, aparte del ratio. Es la prueba del vaso.</p>
+<p><b>Cómo.</b> Elegís el tamaño del recipiente y la app te dice cuántos gramos pesar de poliol y cuántos de isocianato. Los mezclás a mano, volcás, cronometrás crema e hilos, dejás curar, cortás al ras y pesás.</p>
+<p><b>Lo más importante.</b> Los dos componentes tienen que estar a la temperatura que pide la ficha. Si están fríos o calientes, el resultado no sirve para comparar con nada. Por eso hay que anotar las temperaturas.</p>
+<p><b>Qué te dice.</b> Los gramos de espuma por litro son directamente la densidad en kg/m³. Si da liviana, mirá ratio y agitación del poliol. Si da pesada, mirá temperatura y si el tambor perdió gas por calor.</p>`},
+
+{t:'Inyección', i:'🎯', c:`
+<p><b>Para qué sirve.</b> Calcula cuánta mezcla lleva cada panel y cuántos segundos hay que disparar. Es el corazón de la app.</p>
+<p><b>Cómo.</b> Cargás largo, ancho y espesor en centímetros, la densidad que aplicás y el sobreempaque. Elegís la potencia. Te da los gramos y los segundos.</p>
+<p><b>La tanda.</b> Tocás "Agregar a la tanda" y cargás el siguiente panel. Podés meter siete paneles distintos, cada uno con su medida y su potencia. Cuando están todos, "Registrar tanda" los guarda juntos y descuenta una sola vez del tanque.</p>
+<p><b>Modelos.</b> Si una medida se repite todos los días, guardala como modelo: después la cargás con un toque.</p>
+<p><b>Bien o falló.</b> Cada panel de la lista se puede marcar. Los dos descuentan del tanque, porque el material salió igual, pero queda registrado cuál falló.</p>
+<p><b>La hoja para la máquina.</b> Antes de inyectar podés bajar el PDF de la tanda: sale con cada panel numerado, sus segundos y una casilla para tildar.</p>`},
+
+{t:'Tanques', i:'🛢️', c:`
+<p><b>Para qué sirve.</b> Saber cuánto material te queda de verdad, sin ir a mirar el tambor.</p>
+<p><b>Cargar.</b> Cuando entra un tambor, ponés los kilos, el lote y la fecha de elaboración. La app calcula sola el vencimiento con los meses de la ficha.</p>
+<p><b>Purga.</b> Lo que sale sin hacer panel —limpieza, purga, lo que gotea— se descuenta con este botón. Si no lo cargás, el tanque te va a mentir de a poco.</p>
+<p><b>Fijar nivel.</b> Si pesás el tambor y no coincide, ponés el número real y la app lo corrige.</p>
+<p><b>La alarma.</b> Cuando un componente baja del mínimo, aparece una barra roja arriba de todo, en todas las pantallas. El mínimo lo ponés vos en kilos.</p>`},
+
+{t:'Registros', i:'🖨', c:`
+<p><b>Para qué sirve.</b> Todo lo que hiciste, junto y buscable.</p>
+<p><b>Filtros.</b> Los botones de arriba te dejan ver solo calibraciones, solo inyecciones, solo densidad o solo movimientos de tanque.</p>
+<p><b>Descargar PDF.</b> Una hoja armada para leer, firmar o archivar, con el logo, el producto y espacio para firmas. Cada registro tiene su botón PDF propio; el de arriba baja todo lo que estés viendo.</p>
+<p><b>Descargar Excel.</b> La planilla con todas las columnas, para sacar cuentas. Una fila por panel.</p>
+<p><b>Para guardar como PDF</b> en vez de imprimir: cuando se abre el cuadro de impresión, elegí "Guardar como PDF" en lugar de una impresora.</p>`},
+
+{t:'Cambiar de producto', i:'🔄', c:`
+<p>El día que cambies de material, hacé esto en orden:</p>
+<ol>
+<li><b>Parámetros → Producto.</b> Nombre nuevo, ratio nuevo, y los dos pesos específicos de la ficha nueva.</li>
+<li><b>Parámetros → Rangos de la ficha.</b> Temperaturas, crema, hilos, densidades y vida útil. Si no los cambiás, la app te va a marcar rojo cosas que están bien.</li>
+<li><b>Volvé a medir las tres marchas por cabezal.</b> La caída depende del producto: con material distinto, el caudal real cambia.</li>
+<li><b>Tanques.</b> Ajustá las capacidades si los envases son de otro tamaño.</li>
+</ol>
+<p>Si te equivocaste tocando algo, hay un botón para volver a los valores del ALKURAN de una.</p>`},
+
+{t:'No perder los datos', i:'💾', c:`
+<p><b>Dónde viven.</b> Adentro de este dispositivo, guardados por duplicado en dos lugares distintos. No están en internet.</p>
+<p><b>Lo que hay que hacer.</b> Al terminar el turno, Parámetros → "Enviar respaldo por WhatsApp o mail". Te lo mandás a vos mismo. Esa copia es la única que sobrevive si se rompe o se pierde el teléfono.</p>
+<p><b>Si aparece el cartel naranja</b> avisando que hace días que no hacés respaldo, hacelo. Es la única advertencia que te va a dar.</p>
+<p><b>Para recuperar.</b> En un teléfono nuevo, abrís la app y usás "Restaurar desde un respaldo" con el archivo que te mandaste. Vuelve todo, incluido el nivel de los tanques.</p>
+<p><b>Importante.</b> Registrá siempre desde un solo dispositivo. Si cargás una inyección en el teléfono y otra en la computadora, cada uno lleva su propia cuenta y el tanque queda mal en los dos.</p>`},
+
+{t:'Si algo no anda', i:'🛠️', c:`
+<p><b>"Subí una versión nueva y sigo viendo la vieja."</b> Fijate el número de versión al pie o arriba en Parámetros. Si no cambió, tocá "Buscar la última versión" en Parámetros. No toca tus datos.</p>
+<p><b>"Me marca rojo algo que está bien."</b> Los rangos son los de la ficha cargada. Si cambiaste de producto y no actualizaste la ficha, va a marcar mal. Parámetros → Rangos de la ficha técnica.</p>
+<p><b>"El tanque no coincide con la realidad."</b> Puede ser purga sin cargar, o que se disparó distinta cantidad de segundos que la que dijo la app. Pesá el tambor y usá "Fijar nivel medido".</p>
+<p><b>"Los segundos me parecen pocos o muchos."</b> Revisá que la marcha tenga el caudal medido por cabezal y no solo el de mangueras. Si dice "estimado", ese es el problema.</p>
+<p><b>"No aparece el botón PDF."</b> Sale en cada registro guardado. Si no guardaste ninguno todavía, no hay nada para imprimir.</p>`}
+];
+
+function renderGuia(){
+  const cont=document.getElementById('guia-lista');
+  if(!cont||cont.dataset.listo) return;
+  cont.innerHTML=GUIA.map((g,i)=>
+    '<div class="g-item" id="g-'+i+'">'
+    +'<button class="g-cab" onclick="toggleGuia('+i+')">'
+    +'<span class="g-ico">'+g.i+'</span><span class="g-tit">'+g.t+'</span><span class="g-fle">▶</span></button>'
+    +'<div class="g-cuerpo">'+g.c+'</div></div>').join('');
+  cont.dataset.listo='1';
+}
+function toggleGuia(i){
+  const el=document.getElementById('g-'+i);
+  if(!el) return;
+  const abierto=el.classList.contains('abierto');
+  document.querySelectorAll('.g-item').forEach(x=>x.classList.remove('abierto'));
+  if(!abierto){ el.classList.add('abierto'); el.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // LISTAS CORTAS EN CADA PESTAÑA
 // ═══════════════════════════════════════════════════════════════
@@ -2566,7 +2790,7 @@ function exportarCSV(){
 // ═══════════════════════════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════════════════════════
-const ORDEN_TABS=['calibrador','anotador','densidad','inyeccion','tanques','historial','ajustes'];
+const ORDEN_TABS=['calibrador','anotador','densidad','inyeccion','tanques','historial','ajustes','guia'];
 function irATab(nombre){
   const i=ORDEN_TABS.indexOf(nombre);
   const b=document.querySelectorAll('.tab-btn')[i];
@@ -2583,7 +2807,8 @@ function setTab(nombre,btn){
   if(nombre==='inyeccion'){ pintarMarchasSel(); renderModelos(); calcularInyeccion(); renderTanda(); renderUltimasTandas(); }
   if(nombre==='anotador'){ setFechaHoraAhora(); renderChequeos(); pintarMarchasCal(); renderUltimasCal(); }
   if(nombre==='densidad'){ calcularDensidad(); renderDensidades(); }
-  if(nombre==='ajustes'){ pintarEstadoDatos(); pintarProducto(); pintarMarchasConfig(); setTimeout(()=>{dibujarLogo(document.getElementById('logo-grande'),512,'completo');dibujarLogo(document.getElementById('logo-chico'),512,'compacto');},50); }
+  if(nombre==='guia') renderGuia();
+  if(nombre==='ajustes'){ pintarEstadoDatos(); pintarProducto(); pintarFicha(); pintarMarchasConfig(); setTimeout(()=>{dibujarLogo(document.getElementById('logo-grande'),512,'completo');dibujarLogo(document.getElementById('logo-chico'),512,'compacto');},50); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -2697,7 +2922,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v10';"
+      const sw="const CACHE='giovannetti-v13';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
