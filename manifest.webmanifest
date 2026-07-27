@@ -1,0 +1,15 @@
+{
+  "name": "Giovannetti Refrigeración",
+  "short_name": "Giovannetti",
+  "description": "Calibración e inyección de poliuretano",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f2a5e",
+  "theme_color": "#0f2a5e",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

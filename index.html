@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="Giovannetti">
 <meta name="theme-color" content="#0f2a5e">
 <title>Giovannetti Refrigeración</title>
-<link rel="manifest" id="pwa-manifest">
-<link rel="apple-touch-icon" id="apple-touch-icon">
+<link rel="manifest" id="pwa-manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" id="apple-touch-icon" href="icon-512.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -991,7 +991,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v9 · 27-07-2026';
+const VERSION='v10 · 27-07-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -2674,26 +2674,30 @@ function descargarLogo(size,modo){
 // ═══════════════════════════════════════════════════════════════
 (function(){
   function instalarPWA(){
-    try{
-      const c1=document.createElement('canvas'); dibujarLogo(c1,192,'completo');
-      const c2=document.createElement('canvas'); dibujarLogo(c2,512,'completo');
-      // El icono "recortable" lo recorta el celular en circulo o cuadrado:
-      // por eso va la version compacta, que aguanta el recorte sin perder el nombre.
-      const c3=document.createElement('canvas'); dibujarLogo(c3,512,'compacto');
-      const i192=c1.toDataURL('image/png'), i512=c2.toDataURL('image/png'), iMask=c3.toDataURL('image/png');
-      document.getElementById('apple-touch-icon').href=i512;
-      const manifest={ name:'Giovannetti Refrigeración', short_name:'Giovannetti',
-        description:'Calibración e inyección de poliuretano', start_url:'.', display:'standalone',
-        background_color:'#0f2a5e', theme_color:'#0f2a5e', orientation:'portrait',
-        icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any'},
-               {src:i512,sizes:'512x512',type:'image/png',purpose:'any'},
-               {src:iMask,sizes:'512x512',type:'image/png',purpose:'maskable'}] };
-      const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
-      document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
-    }catch(e){}
+    // Si el manifiesto y los iconos están como archivos en el servidor, se usan esos:
+    // es la única forma de que Windows y Android tomen bien el ícono al instalar.
+    fetch('manifest.webmanifest',{method:'HEAD'}).then(r=>{
+      if(!r.ok) throw new Error('sin manifiesto');
+    }).catch(()=>{
+      // Respaldo para cuando la app corre como archivo suelto: se dibuja el ícono al vuelo.
+      try{
+        const c1=document.createElement('canvas'); dibujarLogo(c1,512,'completo');
+        const c2=document.createElement('canvas'); dibujarLogo(c2,512,'compacto');
+        const i512=c1.toDataURL('image/png'), iMask=c2.toDataURL('image/png');
+        document.getElementById('apple-touch-icon').href=i512;
+        const manifest={ name:'Giovannetti Refrigeración', short_name:'Giovannetti',
+          description:'Calibración e inyección de poliuretano', start_url:'.', display:'standalone',
+          background_color:'#0f2a5e', theme_color:'#0f2a5e', orientation:'portrait',
+          icons:[{src:i512,sizes:'512x512',type:'image/png',purpose:'any'},
+                 {src:iMask,sizes:'512x512',type:'image/png',purpose:'maskable'}] };
+        const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+        document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
+      }catch(e){}
+    });
+
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v9';"
+      const sw="const CACHE='giovannetti-v10';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
