@@ -54,9 +54,8 @@
   .aviso button{margin-top:10px;background:var(--naranja);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 
   /* TABS */
-  .tabs-nav{display:flex;gap:6px;background:var(--gris-2);border-radius:12px;padding:5px;margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .tabs-nav::-webkit-scrollbar{display:none}
-  .tab-btn{flex:0 0 auto;border:none;background:transparent;padding:12px 15px;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;color:var(--gris-4);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .tabs-nav{display:flex;flex-wrap:wrap;gap:6px;background:var(--gris-2);border-radius:14px;padding:6px;margin-bottom:20px}
+  .tab-btn{flex:1 1 auto;min-width:92px;border:none;background:transparent;padding:12px 12px;border-radius:10px;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--gris-4);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
   .tab-btn.activo{background:var(--blanco);color:var(--azul);box-shadow:var(--sombra-sm)}
   .panel{display:none}.panel.activo{display:block}
 
@@ -323,7 +322,7 @@
   <div class="tabs-nav">
     <button class="tab-btn activo" onclick="setTab('calibrador',this)">⚗️ Calibrador</button>
     <button class="tab-btn" onclick="setTab('anotador',this)">📋 Anotador</button>
-    <button class="tab-btn" onclick="setTab('densidad',this)">🥤 Densidad libre</button>
+    <button class="tab-btn" onclick="setTab('densidad',this)">🥤 Densidad</button>
     <button class="tab-btn" onclick="setTab('inyeccion',this)">🎯 Inyección</button>
     <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
     <button class="tab-btn" onclick="setTab('historial',this)">🖨 Registros</button>
@@ -948,8 +947,9 @@
 
     <div class="logo-panel">
       <div class="form-titulo">🎨 Logo para acceso directo</div>
-      <div class="logo-preview">
-        <canvas id="logo-grande" width="512" height="512" style="width:230px;height:230px;border-radius:22%;box-shadow:0 8px 32px rgba(15,42,94,.3)"></canvas>
+      <div class="logo-preview" style="gap:18px">
+        <canvas id="logo-grande" width="512" height="512" style="width:170px;height:170px;border-radius:22%;box-shadow:0 8px 32px rgba(15,42,94,.3)"></canvas>
+        <canvas id="logo-chico" width="512" height="512" style="width:110px;height:110px;border-radius:22%;box-shadow:0 6px 20px rgba(15,42,94,.25);align-self:center"></canvas>
       </div>
       <div class="platform-chips">
         <span class="chip">📱 iPhone / iPad</span>
@@ -957,8 +957,9 @@
         <span class="chip">🪟 Windows</span>
         <span class="chip">🍎 Mac</span>
       </div>
-      <button class="btn-dl btn-dl-512" onclick="descargarLogo(512)">⬇ Descargar logo 512×512 px</button>
-      <button class="btn-dl btn-dl-192" onclick="descargarLogo(192)">⬇ Descargar logo 192×192 px</button>
+      <button class="btn-dl btn-dl-512" onclick="descargarLogo(512,'completo')">Descargar logo con nombre · 512 px</button>
+      <button class="btn-dl btn-dl-192" onclick="descargarLogo(512,'compacto')">Descargar solo el copo · 512 px</button>
+      <div class="hint" style="margin-top:8px">El de nombre sirve para el acceso directo. El del copo solo, para donde el logo se ve chico.</div>
       <div class="logo-instrucciones">
         <div class="logo-instr-titulo">📲 Cómo agregar al teléfono</div>
         <div class="logo-instr-item"><div class="logo-instr-num">1</div><span><strong>iPhone:</strong> Abrí en Safari → compartir → "Añadir a pantalla de inicio"</span></div>
@@ -990,7 +991,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v8 · 27-07-2026';
+const VERSION='v9 · 27-07-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -2582,7 +2583,7 @@ function setTab(nombre,btn){
   if(nombre==='inyeccion'){ pintarMarchasSel(); renderModelos(); calcularInyeccion(); renderTanda(); renderUltimasTandas(); }
   if(nombre==='anotador'){ setFechaHoraAhora(); renderChequeos(); pintarMarchasCal(); renderUltimasCal(); }
   if(nombre==='densidad'){ calcularDensidad(); renderDensidades(); }
-  if(nombre==='ajustes'){ pintarEstadoDatos(); pintarProducto(); pintarMarchasConfig(); setTimeout(()=>dibujarLogo(document.getElementById('logo-grande'),512,'completo'),50); }
+  if(nombre==='ajustes'){ pintarEstadoDatos(); pintarProducto(); pintarMarchasConfig(); setTimeout(()=>{dibujarLogo(document.getElementById('logo-grande'),512,'completo');dibujarLogo(document.getElementById('logo-chico'),512,'compacto');},50); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -2660,11 +2661,11 @@ function dibujarLogo(canvas,size,modo){
   }
 }
 
-function descargarLogo(size){
+function descargarLogo(size,modo){
   const c=document.createElement('canvas');
-  dibujarLogo(c,size,'completo');
+  dibujarLogo(c,size,modo||'completo');
   const a=document.createElement('a');
-  a.download='giovannetti-logo-'+size+'.png';
+  a.download='giovannetti-logo-'+(modo||'completo')+'-'+size+'.png';
   a.href=c.toDataURL('image/png'); a.click();
 }
 
@@ -2676,19 +2677,23 @@ function descargarLogo(size){
     try{
       const c1=document.createElement('canvas'); dibujarLogo(c1,192,'completo');
       const c2=document.createElement('canvas'); dibujarLogo(c2,512,'completo');
-      const i192=c1.toDataURL('image/png'), i512=c2.toDataURL('image/png');
+      // El icono "recortable" lo recorta el celular en circulo o cuadrado:
+      // por eso va la version compacta, que aguanta el recorte sin perder el nombre.
+      const c3=document.createElement('canvas'); dibujarLogo(c3,512,'compacto');
+      const i192=c1.toDataURL('image/png'), i512=c2.toDataURL('image/png'), iMask=c3.toDataURL('image/png');
       document.getElementById('apple-touch-icon').href=i512;
       const manifest={ name:'Giovannetti Refrigeración', short_name:'Giovannetti',
         description:'Calibración e inyección de poliuretano', start_url:'.', display:'standalone',
         background_color:'#0f2a5e', theme_color:'#0f2a5e', orientation:'portrait',
-        icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
-               {src:i512,sizes:'512x512',type:'image/png',purpose:'any maskable'}] };
+        icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any'},
+               {src:i512,sizes:'512x512',type:'image/png',purpose:'any'},
+               {src:iMask,sizes:'512x512',type:'image/png',purpose:'maskable'}] };
       const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
       document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
     }catch(e){}
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v8';"
+      const sw="const CACHE='giovannetti-v9';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
