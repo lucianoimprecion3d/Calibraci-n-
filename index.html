@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Giovannetti">
+<meta name="theme-color" content="#0f2a5e">
+<title>Giovannetti Refrigeración</title>
+<link rel="manifest" id="pwa-manifest">
+<link rel="apple-touch-icon" id="apple-touch-icon">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:#1B5EA6;--azul-dark:#0f2a5e;--azul-light:#E8F1FB;--azul-mid:#4A90D9;
+    --verde:#1A9E6E;--verde-light:#E6F7F1;
+    --naranja:#E07B2A;--naranja-light:#FEF3E8;
+    --rojo:#DC2626;--rojo-light:#FEE9E9;--cyan:#0891b2;--cyan-light:#e0f2fe;
+    --gris-1:#F5F7FA;--gris-2:#EDF0F4;--gris-3:#C8D0DC;--gris-4:#7A869A;--gris-5:#3E4A5C;
+    --texto:#141C2B;--blanco:#FFFFFF;
+    --sombra-sm:0 1px 4px rgba(0,0,0,.06),0 2px 12px rgba(0,0,0,.05);
+    --radio:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--gris-1);color:var(--texto);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:40px;font-size:16px}
+
+  /* HEADER */
+  header{background:linear-gradient(135deg,var(--azul-dark) 0%,var(--azul) 100%);padding:16px 20px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(15,42,94,.4);position:sticky;top:0;z-index:100}
+  .logo-img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);box-shadow:0 2px 12px rgba(0,0,0,.3);flex-shrink:0}
+  .logo-textos{flex:1;min-width:0}
+  .logo-nombre{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1}
+  .logo-sub{font-size:13px;color:rgba(255,255,255,.75);font-weight:600;margin-top:4px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .badge-live{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px}
+  .badge-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulso 2s ease-in-out infinite}
+  @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .badge-text{font-size:12px;font-weight:700;color:rgba(255,255,255,.9)}
+
+  /* ALARMA DE NIVEL */
+  .alarma-nivel{display:none;background:var(--rojo);color:#fff;padding:14px 18px;text-align:center;font-size:17px;font-weight:800;letter-spacing:.4px;position:sticky;top:90px;z-index:99;box-shadow:0 4px 16px rgba(220,38,38,.4);animation:parpadeo 1.6s ease-in-out infinite}
+  .alarma-nivel.visible{display:block}
+  .alarma-nivel small{display:block;font-size:13px;font-weight:600;opacity:.95;margin-top:4px;letter-spacing:0}
+  @keyframes parpadeo{0%,100%{background:var(--rojo)}50%{background:#B01B1B}}
+
+  main{padding:20px 16px;max-width:720px;margin:0 auto}
+  .section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gris-4);margin:22px 0 10px}
+  .section-title:first-child{margin-top:0}
+
+  /* AVISO RESPALDO */
+  .aviso{display:none;background:var(--naranja-light);border:1px solid #F5C9A0;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:14px;color:#8A4B12;line-height:1.55}
+  .aviso.visible{display:block}
+  .aviso strong{color:#6B3A0E}
+  .aviso button{margin-top:10px;background:var(--naranja);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+
+  /* TABS */
+  .tabs-nav{display:flex;gap:6px;background:var(--gris-2);border-radius:12px;padding:5px;margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs-nav::-webkit-scrollbar{display:none}
+  .tab-btn{flex:0 0 auto;border:none;background:transparent;padding:12px 15px;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;color:var(--gris-4);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .tab-btn.activo{background:var(--blanco);color:var(--azul);box-shadow:var(--sombra-sm)}
+  .panel{display:none}.panel.activo{display:block}
+
+  /* CARDS */
+  .card{background:var(--blanco);border-radius:var(--radio);padding:16px 18px;box-shadow:var(--sombra-sm);margin-bottom:10px}
+  .card-label{font-size:14px;font-weight:800;color:var(--gris-5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+  .input-fila{display:flex;align-items:center;background:var(--gris-1);border:2px solid var(--gris-2);border-radius:10px;padding:0 14px;transition:border-color .2s}
+  .input-fila:focus-within{border-color:var(--azul-mid)}
+  .input-fila input{flex:1;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--texto);padding:13px 0;outline:none;width:100%}
+  .input-unidad{font-size:15px;font-weight:700;color:var(--gris-4);margin-left:8px}
+  .unidad-tabs{display:flex;gap:6px;margin-top:10px}
+  .utab{flex:1;border:none;cursor:pointer;background:var(--gris-2);border-radius:8px;padding:9px 0;font-family:inherit;font-size:14px;font-weight:700;color:var(--gris-5);transition:all .15s}
+  .utab.activo{background:var(--azul);color:var(--blanco)}
+  .inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* RESULTADOS */
+  .resultados{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+  .resultados.dos{grid-template-columns:repeat(2,1fr)}
+  .res-card{background:var(--blanco);border-radius:var(--radio);padding:15px;box-shadow:var(--sombra-sm);border-top:4px solid var(--gris-2);opacity:0;transition:opacity .3s}
+  .res-card.visible{opacity:1}
+  .tipo-pol{border-top-color:var(--azul-mid)}.tipo-iso{border-top-color:var(--verde)}.tipo-tot{border-top-color:var(--naranja)}
+  .res-etiqueta{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-4);margin-bottom:7px}
+  .res-principal{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:var(--texto);line-height:1.2}
+  .res-detalles{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gris-4);margin-top:5px;line-height:1.5}
+
+  /* TABLA */
+  .tabla-card{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);overflow:hidden}
+  .tabla-top{padding:16px 20px;border-bottom:1px solid var(--gris-2)}
+  .tabla-top-titulo{font-size:16px;font-weight:800;color:var(--texto)}
+  .tabla-top-desc{font-size:13px;color:var(--gris-4);margin-top:4px}
+  .tabla-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:var(--gris-1);padding:12px 14px;text-align:right;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gris-4);white-space:nowrap;border-bottom:2px solid var(--gris-2)}
+  thead th:first-child{text-align:left}
+  tbody td{padding:12px 14px;text-align:right;font-size:14px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--gris-2)}
+  tbody td:first-child{text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+  tbody tr:last-child td{border-bottom:none}
+  .fila-nom{background:linear-gradient(90deg,rgba(26,158,110,.09),rgba(26,158,110,.03))}
+  .td-ratio{font-weight:800;color:var(--azul);font-size:15px}
+  .td-iso-g{color:var(--verde);font-weight:700}.td-iso-kg{color:var(--verde)}.td-iso-l{color:var(--azul-mid)}
+  .td-tot-g{color:var(--naranja);font-weight:700}.td-tot-kg{color:var(--naranja)}.td-tot-l{color:var(--naranja)}
+  .pill-nom{display:inline-block;background:var(--verde);color:#fff;font-size:10px;font-family:'Plus Jakarta Sans';font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:20px;padding:3px 8px;margin-left:7px;vertical-align:middle}
+  .vacio{padding:40px 24px;text-align:center;color:var(--gris-4)}
+  .vacio-icono{font-size:38px;margin-bottom:12px}
+  .vacio-texto{font-size:15px;line-height:1.6}
+  .vacio-texto strong{color:var(--azul)}
+  .leyenda{padding:13px 20px;border-top:1px solid var(--gris-2);background:var(--gris-1);display:flex;gap:16px;flex-wrap:wrap}
+  .ley{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gris-5);font-weight:600}
+  .ley-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+  /* FORMULARIOS */
+  .anotador-form{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);padding:18px;margin-bottom:14px}
+  .form-titulo{font-size:18px;font-weight:800;color:var(--azul-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-field{display:flex;flex-direction:column;gap:6px}
+  .form-field.full{grid-column:1/-1}
+  .form-field label{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-5)}
+  .form-field input,.form-field textarea,.form-field select{border:2px solid var(--gris-2);border-radius:9px;padding:12px 13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;color:var(--texto);background:var(--gris-1);outline:none;transition:border-color .2s;width:100%}
+  .form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--azul-mid);background:var(--blanco)}
+  .form-field input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700}
+  .form-field textarea{resize:vertical;min-height:70px;font-size:15px}
+  .hint{font-size:12.5px;color:var(--gris-4);line-height:1.5;margin-top:2px;font-weight:500}
+
+  /* SELECTOR DE MARCHA */
+  .marchas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+  .marcha-btn{border:2px solid var(--gris-2);background:var(--gris-1);border-radius:11px;padding:12px 6px;cursor:pointer;font-family:inherit;text-align:center;transition:all .15s}
+  .marcha-btn.activo{border-color:var(--azul);background:var(--azul-light)}
+  .marcha-btn .mn{font-size:14px;font-weight:800;color:var(--gris-5);text-transform:uppercase;letter-spacing:.4px}
+  .marcha-btn.activo .mn{color:var(--azul)}
+  .marcha-btn .mv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--texto);margin-top:4px}
+  .marcha-btn .mu{font-size:11px;color:var(--gris-4);font-weight:600}
+
+  /* Temperatura */
+  .temp-fila{display:flex;align-items:stretch;border:2px solid var(--gris-2);border-radius:9px;background:var(--gris-1);overflow:hidden;transition:border-color .2s}
+  .temp-fila:focus-within{border-color:var(--cyan)}
+  .temp-fila input{flex:1;min-width:0;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--texto);padding:11px 13px;outline:none}
+  .temp-toggle{display:flex;border-left:2px solid var(--gris-2)}
+  .temp-btn{border:none;background:transparent;padding:0 14px;font-size:14px;font-weight:800;color:var(--gris-4);cursor:pointer;transition:all .15s}
+  .temp-btn.activo{background:var(--cyan);color:#fff}
+
+  .btn-guardar{width:100%;margin-top:16px;background:linear-gradient(135deg,var(--azul),var(--azul-mid));color:#fff;border:none;border-radius:10px;padding:16px;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:.3px;box-shadow:0 4px 14px rgba(27,94,166,.35);transition:transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-guardar:active{transform:scale(.98)}
+  .btn-guardar.verde{background:linear-gradient(135deg,#158257,var(--verde));box-shadow:0 4px 14px rgba(26,158,110,.35)}
+  .btn-sec{width:100%;margin-top:9px;background:var(--gris-2);color:var(--azul-dark);border:none;border-radius:10px;padding:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer}
+  .btn-sec:active{transform:scale(.99)}
+
+  /* CHEQUEOS */
+  .chk{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--gris-2);font-size:15px}
+  .chk:last-child{border-bottom:none}
+  .chk-n{flex:1;font-weight:700;color:var(--gris-5)}
+  .chk-r{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gris-4);white-space:nowrap}
+  .chk-v{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;min-width:60px;text-align:right}
+  .chk-e{font-size:17px;width:22px;text-align:center}
+  .chk.ok .chk-v{color:var(--verde)}.chk.mal .chk-v{color:var(--rojo)}.chk.na .chk-v{color:var(--gris-3)}
+
+  /* ALERTAS */
+  .alerta{border-radius:10px;padding:13px 15px;font-size:14.5px;line-height:1.55;margin-top:10px;font-weight:600}
+  .alerta.roja{background:var(--rojo-light);color:#8F1717;border:1px solid #FBC5C5}
+  .alerta.naranja{background:var(--naranja-light);color:#7A420F;border:1px solid #F5C9A0}
+  .alerta.verde{background:var(--verde-light);color:#0D5C40;border:1px solid #A8E0C9}
+  .alerta.azul{background:var(--azul-light);color:#134A85;border:1px solid #C2D8F0}
+
+  /* TANQUES */
+  .tanque-card{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);padding:16px;margin-bottom:10px;display:flex;gap:16px;align-items:center}
+  .tanque-card.alarma{border:2px solid var(--rojo);background:#FFF7F7}
+  .tambor{width:66px;height:126px;flex-shrink:0;border:3px solid var(--gris-3);border-radius:10px;background:var(--gris-1);position:relative;overflow:hidden;display:flex;flex-direction:column-reverse}
+  .tambor-fill{width:100%;transition:height .4s ease}
+  .tambor-aro{position:absolute;left:0;right:0;height:3px;background:rgba(0,0,0,.08)}
+  .tanque-info{flex:1;min-width:0}
+  .tanque-nom{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-5)}
+  .tanque-kg{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:var(--texto);line-height:1.2;margin-top:5px}
+  .tanque-kg span{font-size:14px;color:var(--gris-4);font-weight:600}
+  .tanque-barra{height:10px;border-radius:5px;background:var(--gris-2);margin-top:10px;overflow:hidden}
+  .tanque-barra div{height:100%;border-radius:5px;transition:width .4s ease}
+  .tanque-meta{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--gris-5);margin-top:9px;line-height:1.65}
+  .tanque-meta .venc-mal{color:var(--rojo);font-weight:700}
+  .tanque-meta .rojo{color:var(--rojo);font-weight:700}
+
+  /* HISTORIAL */
+  .pruebas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+  .pruebas-count{background:var(--azul);color:#fff;border-radius:20px;padding:4px 12px;font-size:14px;font-weight:800}
+  .btn-exportar{border:2px solid var(--azul);background:transparent;color:var(--azul);border-radius:8px;padding:9px 15px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer}
+  .filtros{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+  .filtros::-webkit-scrollbar{display:none}
+  .filtro{flex:0 0 auto;border:2px solid var(--gris-2);background:var(--blanco);color:var(--gris-5);border-radius:20px;padding:8px 15px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .filtro.activo{background:var(--azul);border-color:var(--azul);color:#fff}
+  .prueba-card{background:var(--blanco);border-radius:12px;box-shadow:var(--sombra-sm);padding:15px 16px;margin-bottom:10px;border-left:5px solid var(--azul);position:relative}
+  .prueba-card.tipo-iny{border-left-color:var(--naranja)}
+  .prueba-card.tipo-tq{border-left-color:var(--verde)}
+  .prueba-num{font-size:13px;font-weight:800;color:var(--gris-5);margin-bottom:10px;padding-right:30px}
+  .prueba-fila{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .prueba-dato{display:flex;flex-direction:column;gap:3px;background:var(--gris-1);border-radius:8px;padding:8px 11px;min-width:78px}
+  .prueba-dato-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gris-4)}
+  .prueba-dato-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--texto)}
+  .prueba-dato-val.iso{color:var(--verde)}.prueba-dato-val.hz{color:var(--naranja)}.prueba-dato-val.ratio{color:var(--azul)}.prueba-dato-val.temp{color:var(--cyan)}
+  .prueba-dato-val.mal{color:var(--rojo)}
+  .prueba-nota{font-size:14px;color:var(--gris-5);margin-top:8px;font-style:italic;line-height:1.45}
+  .btn-del{position:absolute;top:10px;right:12px;background:transparent;border:none;cursor:pointer;font-size:18px;color:var(--gris-3);padding:5px}
+  .btn-del:hover{color:var(--rojo)}
+  .lista-vacia{padding:40px 20px;text-align:center;color:var(--gris-4)}
+  .lista-vacia-ico{font-size:38px;margin-bottom:12px}
+  .lista-vacia-txt{font-size:15px;line-height:1.6}
+
+  /* AJUSTES */
+  .logo-panel{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra-sm);padding:20px;margin-bottom:12px}
+  .logo-preview{display:flex;justify-content:center;margin:20px 0}
+  .logo-instrucciones{background:var(--gris-1);border-radius:10px;padding:15px 17px;margin-top:15px}
+  .logo-instr-titulo{font-size:14px;font-weight:800;color:var(--azul-dark);margin-bottom:11px}
+  .logo-instr-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px;font-size:14px;color:var(--gris-5);line-height:1.55}
+  .logo-instr-num{background:var(--azul);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+  .btn-dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:14px;border:none;border-radius:10px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer}
+  .btn-dl-512{background:linear-gradient(135deg,var(--azul),var(--azul-mid));color:#fff;box-shadow:0 4px 14px rgba(27,94,166,.3);margin-bottom:8px}
+  .btn-dl-192{background:var(--gris-2);color:var(--azul-dark)}
+  .platform-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .chip{background:var(--azul-light);color:var(--azul);border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:700;border:1px solid #c2d8f0}
+
+  /* MODELOS Y TANDA */
+  .modelos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+  .modelo-chip{position:relative;border:2px solid var(--gris-2);background:var(--gris-1);border-radius:11px;
+    padding:12px 12px 11px;cursor:pointer;font-family:inherit;text-align:left;transition:all .15s}
+  .modelo-chip:hover{border-color:var(--azul-mid);background:var(--azul-light)}
+  .modelo-chip .mch-n{display:block;font-size:15px;font-weight:800;color:var(--azul-dark);padding-right:18px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .modelo-chip .mch-m{display:block;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--gris-4);margin-top:4px}
+  .modelo-chip .mch-x{position:absolute;top:6px;right:8px;font-size:13px;color:var(--gris-3);padding:2px 4px;line-height:1}
+  .modelo-chip .mch-x:hover{color:var(--rojo)}
+  .prueba-card.fallo{border-left-color:var(--rojo);background:#FFFAFA}
+  .btn-estado{margin-top:10px;border:2px solid var(--gris-2);background:var(--blanco);border-radius:9px;
+    padding:9px 14px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer}
+  .btn-estado.ok{border-color:#A8E0C9;background:var(--verde-light);color:#0D5C40}
+  .btn-estado.mal{border-color:#FBC5C5;background:var(--rojo-light);color:#8F1717}
+  .panel-mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--gris-2)}
+  .panel-mini .pm{background:var(--gris-1);border-radius:7px;padding:6px 10px;font-size:12.5px;font-weight:600;color:var(--gris-5)}
+  .panel-mini .pm.mal{background:var(--rojo-light);color:#8F1717}
+  .panel-mini .pm b{font-family:'JetBrains Mono',monospace}
+
+  footer{text-align:center;padding:22px 16px;font-size:12.5px;color:var(--gris-4);letter-spacing:.3px;line-height:1.9}
+
+  @media(max-width:480px){
+    .inputs-grid,.form-grid{grid-template-columns:1fr}
+    .form-field.full{grid-column:1}
+    .resultados,.resultados.dos{grid-template-columns:1fr 1fr}
+    thead th,tbody td{padding:10px 9px;font-size:12.5px}
+    .badge-live{display:none}
+    .alarma-nivel{top:88px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <canvas id="logo-header" width="56" height="56" class="logo-img"></canvas>
+  <div class="logo-textos">
+    <div class="logo-nombre">Giovannetti</div>
+    <div class="logo-sub" id="header-producto">—</div>
+  </div>
+  <div class="badge-live">
+    <div class="badge-dot"></div>
+    <div class="badge-text">Activo</div>
+  </div>
+</header>
+
+<div class="alarma-nivel" id="alarma-nivel">
+  ⚠️ REVISAR NIVELES
+  <small id="alarma-detalle"></small>
+</div>
+
+<main>
+  <div id="aviso-respaldo" class="aviso">
+    <strong>Hacé un respaldo.</strong> <span id="aviso-texto"></span>
+    Con ese archivo recuperás todo —calibraciones, inyecciones y el nivel de los tanques— en cualquier teléfono.
+    <button onclick="exportarRespaldo()">💾 Descargar respaldo ahora</button>
+  </div>
+
+  <div class="tabs-nav">
+    <button class="tab-btn activo" onclick="setTab('calibrador',this)">⚗️ Calibrador</button>
+    <button class="tab-btn" onclick="setTab('inyeccion',this)">🎯 Inyección</button>
+    <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
+    <button class="tab-btn" onclick="setTab('anotador',this)">📋 Anotador</button>
+    <button class="tab-btn" onclick="setTab('densidad',this)">🥤 Densidad libre</button>
+    <button class="tab-btn" onclick="setTab('historial',this)">📊 Historial</button>
+    <button class="tab-btn" onclick="setTab('ajustes',this)">⚙️ Ajustes</button>
+  </div>
+
+  <!-- ========== CALIBRADOR ========== -->
+  <div id="panel-calibrador" class="panel activo">
+    <div class="section-title">Datos de la prueba</div>
+    <div class="inputs-grid">
+      <div class="card">
+        <div class="card-label">⏱ Segundos de disparo</div>
+        <div class="input-fila">
+          <input type="number" id="segundos" placeholder="0" min="1" max="300" step="any">
+          <span class="input-unidad">seg</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">💧 Poliol recolectado</div>
+        <div class="input-fila">
+          <input type="number" id="poliol-val" placeholder="0" min="0" step="any">
+          <span class="input-unidad" id="unidad-display">g</span>
+        </div>
+        <div class="unidad-tabs">
+          <button class="utab activo" onclick="setUnidad('g',this)">gramos</button>
+          <button class="utab" onclick="setUnidad('kg',this)">kilos</button>
+          <button class="utab" onclick="setUnidad('l',this)">litros</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" id="titulo-resultado">Resultado</div>
+    <div class="resultados" id="resultados">
+      <div class="res-card tipo-pol" id="rc-pol">
+        <div class="res-etiqueta">Poliol medido</div>
+        <div class="res-principal" id="rp-pol">—</div>
+        <div class="res-detalles" id="rd-pol">—</div>
+      </div>
+      <div class="res-card tipo-iso" id="rc-iso">
+        <div class="res-etiqueta" id="et-iso">ISO requerido</div>
+        <div class="res-principal" id="rp-iso">—</div>
+        <div class="res-detalles" id="rd-iso">—</div>
+      </div>
+      <div class="res-card tipo-tot" id="rc-tot">
+        <div class="res-etiqueta">Mezcla total</div>
+        <div class="res-principal" id="rp-tot">—</div>
+        <div class="res-detalles" id="rd-tot">—</div>
+      </div>
+    </div>
+
+    <div class="card" id="card-caudal" style="display:none">
+      <div class="card-label">🚿 Caudal teórico de bombas</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--azul-dark)" id="caudal-txt">—</div>
+      <div class="hint" id="caudal-hint"></div>
+      <div class="alerta azul">Este es el caudal calculado de las bombas. Para inyectar usá las marchas, que se miden a la salida del mezclador.</div>
+    </div>
+
+    <div class="section-title" id="titulo-tabla">Tabla de ajuste</div>
+    <div class="tabla-card">
+      <div class="tabla-top">
+        <div class="tabla-top-titulo">Isocianato requerido según ratio</div>
+        <div class="tabla-top-desc" id="tabla-desc">Ingresá los datos para ver la tabla</div>
+      </div>
+      <div class="tabla-scroll">
+        <div id="tabla-cuerpo">
+          <div class="vacio"><div class="vacio-icono">⚗️</div><div class="vacio-texto">Ingresá los <strong>segundos</strong> de disparo<br>y el <strong>poliol recolectado</strong>.</div></div>
+        </div>
+      </div>
+      <div class="leyenda" id="leyenda" style="display:none">
+        <div class="ley"><div class="ley-dot" style="background:var(--azul)"></div>Ratio ISO (PBW)</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--verde)"></div>ISO requerido</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--naranja)"></div>Mezcla total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== INYECCIÓN ========== -->
+  <div id="panel-inyeccion" class="panel">
+
+    <div class="anotador-form" id="card-modelos">
+      <div class="form-titulo">⭐ Modelos guardados</div>
+      <div id="modelos-lista"></div>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">📐 Panel a inyectar</div>
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Nombre del panel</label>
+          <input type="text" id="p-pieza" placeholder="Ej: puerta 300, lateral heladera">
+        </div>
+        <div class="form-field">
+          <label>Largo</label>
+          <input type="number" id="p-largo" placeholder="0" min="0" step="any">
+          <div class="hint">centímetros</div>
+        </div>
+        <div class="form-field">
+          <label>Ancho</label>
+          <input type="number" id="p-ancho" placeholder="0" min="0" step="any">
+          <div class="hint">centímetros</div>
+        </div>
+        <div class="form-field">
+          <label>Espesor</label>
+          <input type="number" id="p-espesor" placeholder="0" min="0" step="any">
+          <div class="hint">centímetros</div>
+        </div>
+        <div class="form-field">
+          <label>Densidad aplicada</label>
+          <input type="number" id="p-densidad" placeholder="40" min="0" step="any">
+          <div class="hint">kg/m³ — 40, 42, la que uses</div>
+        </div>
+        <div class="form-field">
+          <label>Sobreempaque</label>
+          <input type="number" id="p-sobre" placeholder="15" min="0" step="any">
+          <div class="hint">% — 10, 15, 20, 30…</div>
+        </div>
+        <div class="form-field">
+          <label>Temp. molde / prensa</label>
+          <input type="number" id="p-tmolde" placeholder="43" step="0.1">
+          <div class="hint" id="hint-tmolde">°C — ficha: 39 a 47</div>
+        </div>
+        <div class="form-field">
+          <label>Repetir este panel</label>
+          <input type="number" id="p-n" placeholder="1" min="1" step="1" value="1">
+          <div class="hint">si van varios iguales</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-bottom:8px">Potencia de este panel</div>
+      <div class="marchas" id="marchas-sel"></div>
+      <div class="hint" style="margin-top:8px">Cada panel de la tanda puede ir con una potencia distinta.</div>
+    </div>
+
+    <div class="resultados dos">
+      <div class="res-card tipo-tot visible">
+        <div class="res-etiqueta">Mezcla de este panel</div>
+        <div class="res-principal" id="r-mezcla">—</div>
+        <div class="res-detalles" id="r-mezcla-det">—</div>
+      </div>
+      <div class="res-card tipo-pol visible">
+        <div class="res-etiqueta">Segundos</div>
+        <div class="res-principal" id="r-segundos">—</div>
+        <div class="res-detalles" id="r-segundos-det">—</div>
+      </div>
+      <div class="res-card tipo-pol visible">
+        <div class="res-etiqueta">Poliol</div>
+        <div class="res-principal" id="r-pol">—</div>
+        <div class="res-detalles" id="r-pol-det">—</div>
+      </div>
+      <div class="res-card tipo-iso visible">
+        <div class="res-etiqueta">ISO</div>
+        <div class="res-principal" id="r-iso">—</div>
+        <div class="res-detalles" id="r-iso-det">—</div>
+      </div>
+    </div>
+
+    <div id="iny-alertas"></div>
+
+    <button class="btn-guardar" onclick="agregarATanda()">➕ Agregar a la tanda</button>
+    <button class="btn-sec" onclick="guardarModelo()">⭐ Guardar esta medida como modelo</button>
+
+    <div class="section-title">Tanda a inyectar</div>
+    <div id="tanda-lista"></div>
+
+    <div class="card" id="card-tanda-total" style="display:none">
+      <div class="card-label">📊 Total de la tanda</div>
+      <div class="prueba-fila">
+        <div class="prueba-dato"><span class="prueba-dato-label">Paneles</span><span class="prueba-dato-val" id="tt-n">—</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Poliol</span><span class="prueba-dato-val" id="tot-pol">—</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">ISO</span><span class="prueba-dato-val iso" id="tot-iso">—</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Tiempo sumado</span><span class="prueba-dato-val" id="tt-seg">—</span></div>
+        <div class="prueba-dato"><span class="prueba-dato-label">Paneles que quedan</span><span class="prueba-dato-val ratio" id="tot-rest">—</span></div>
+      </div>
+      <div class="hint" id="tot-limita">—</div>
+      <div id="tanda-alertas"></div>
+      <div class="form-field full" style="margin-top:14px">
+        <label>Observaciones de la tanda</label>
+        <textarea id="p-nota" placeholder="Turno, molde, defectos observados..."></textarea>
+      </div>
+      <button class="btn-guardar verde" onclick="registrarTanda()">✅ Registrar tanda y descontar de tanques</button>
+      <button class="btn-sec" onclick="vaciarTanda()">🗑 Vaciar la tanda sin registrar</button>
+    </div>
+  </div>
+
+  <!-- ========== TANQUES ========== -->
+  <div id="panel-tanques" class="panel">
+    <div class="section-title">Existencia actual</div>
+    <div id="tanques-vista"></div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">🛢️ Cargar o corregir</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Componente</label>
+          <select id="tq-comp">
+            <option value="pol">💧 Poliol</option>
+            <option value="iso">🧪 Isocianato</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Kilos</label>
+          <input type="number" id="tq-kg" placeholder="0" min="0" step="any">
+        </div>
+        <div class="form-field">
+          <label>Lote</label>
+          <input type="text" id="tq-lote" placeholder="Ej: 25-0942">
+        </div>
+        <div class="form-field">
+          <label>Fecha de elaboración</label>
+          <input type="date" id="tq-elab">
+        </div>
+        <div class="form-field full">
+          <label>Nota</label>
+          <input type="text" id="tq-nota" placeholder="Remito, proveedor, operador...">
+        </div>
+      </div>
+      <div class="hint" id="tq-venc-hint" style="margin-top:10px"></div>
+      <button class="btn-guardar" onclick="cargarTanque(false)">➕ Sumar kilos</button>
+      <button class="btn-sec" onclick="cargarTanque(true)">🛢️ Cargar tambor completo</button>
+      <button class="btn-sec" onclick="fijarNivel()">📏 Fijar nivel medido</button>
+      <button class="btn-sec" onclick="registrarPurga()">🚿 Purga o limpieza (sale sin panel)</button>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">⚙️ Capacidad y alarma</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Tambor de poliol</label>
+          <input type="number" id="tq-cap-pol" min="1" step="any">
+          <div class="hint">kg</div>
+        </div>
+        <div class="form-field">
+          <label>Tambor de ISO</label>
+          <input type="number" id="tq-cap-iso" min="1" step="any">
+          <div class="hint">kg</div>
+        </div>
+        <div class="form-field">
+          <label>Alarma poliol</label>
+          <input type="number" id="tq-alarma-pol" min="0" step="any">
+          <div class="hint" id="hint-alarma-pol">kg</div>
+        </div>
+        <div class="form-field">
+          <label>Alarma ISO</label>
+          <input type="number" id="tq-alarma-iso" min="0" step="any">
+          <div class="hint" id="hint-alarma-iso">kg</div>
+        </div>
+      </div>
+      <button class="btn-sec" onclick="guardarCapacidades()">Guardar</button>
+      <button class="btn-sec" onclick="reconciliarTanques()">🔄 Reconstruir nivel desde el historial</button>
+      <div class="hint" style="margin-top:8px">La reconstrucción toma la última corrección manual y le aplica todas las cargas e inyecciones posteriores.</div>
+    </div>
+  </div>
+
+  <!-- ========== ANOTADOR ========== -->
+  <div id="panel-anotador" class="panel">
+    <div class="anotador-form">
+      <div class="form-titulo">📋 Nueva prueba de calibración</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>🧪 Isocianato (g)</label>
+          <input type="number" id="an-iso" placeholder="0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>💧 Poliol (g)</label>
+          <input type="number" id="an-pol" placeholder="0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>⏱ Segundos</label>
+          <input type="number" id="an-seg" placeholder="0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>⚡ Hz Bomba ISO</label>
+          <input type="number" id="an-hz-iso" placeholder="0.0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>⚡ Hz Bomba Poliol</label>
+          <input type="number" id="an-hz-pol" placeholder="0.0" min="0" step="0.1">
+        </div>
+        <div class="form-field">
+          <label>⏳ Tiempo de crema (seg)</label>
+          <input type="number" id="an-crema" placeholder="0" min="0" step="1">
+        </div>
+        <div class="form-field">
+          <label>🧵 Tiempo de hilos (seg)</label>
+          <input type="number" id="an-hilos" placeholder="0" min="0" step="1">
+        </div>
+
+        <div class="form-field">
+          <label>🌡️ Temp. Isocianato</label>
+          <div class="temp-fila">
+            <input type="number" id="an-temp-iso" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('iso','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('iso','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>🌡️ Temp. Poliol</label>
+          <div class="temp-fila">
+            <input type="number" id="an-temp-pol" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('pol','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('pol','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>🏭 Temp. Ambiente</label>
+          <div class="temp-fila">
+            <input type="number" id="an-temp-amb" placeholder="—" step="0.1">
+            <div class="temp-toggle">
+              <button class="temp-btn activo" onclick="setTempUnit('amb','C',this)">°C</button>
+              <button class="temp-btn" onclick="setTempUnit('amb','F',this)">°F</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>📅 Fecha</label>
+          <input type="date" id="an-fecha">
+        </div>
+        <div class="form-field">
+          <label>🕐 Hora</label>
+          <input type="time" id="an-hora">
+        </div>
+        <div class="form-field full">
+          <label>📝 Notas</label>
+          <textarea id="an-nota" placeholder="Ej: ajuste de bomba, resultado visual..."></textarea>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-bottom:8px">¿A qué potencia calibraste?</div>
+      <div class="marchas" id="marchas-cal"></div>
+      <div id="cal-marcha-caja"></div>
+
+      <div id="ratio-preview" style="display:none;margin-top:14px;padding:14px 16px;background:var(--azul-light);border-radius:10px;border:1px solid #C2D8F0">
+        <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--azul);margin-bottom:5px">Ratio calculado</div>
+        <div id="ratio-val" style="font-family:'JetBrains Mono',monospace;font-size:25px;font-weight:700;color:var(--azul)">—</div>
+        <div id="ratio-status" style="font-size:14px;color:var(--gris-5);margin-top:4px;font-weight:600">—</div>
+        <div id="ratio-correccion" style="font-size:14px;color:var(--gris-5);margin-top:10px;line-height:1.65;display:none"></div>
+      </div>
+
+      <button class="btn-guardar" onclick="guardarPrueba()">💾 Guardar prueba</button>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">✅ Control contra ficha técnica</div>
+      <div id="chequeos"></div>
+    </div>
+  </div>
+
+  <!-- ========== DENSIDAD LIBRE ========== -->
+  <div id="panel-densidad" class="panel">
+    <div class="anotador-form">
+      <div class="form-titulo">🥤 Prueba de densidad libre</div>
+      <div class="hint" style="margin-bottom:14px">
+        Disparás espuma en un recipiente, la dejás levantar libre, la dejás curar y la pesás.
+        Los gramos por litro son directamente la densidad en kg/m³.
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Volumen del recipiente</label>
+          <input type="number" id="d-vol" placeholder="1" min="0" step="any" value="1">
+          <div class="hint">litros</div>
+        </div>
+        <div class="form-field">
+          <label>Peso del recipiente vacío</label>
+          <input type="number" id="d-tara" placeholder="0" min="0" step="any">
+          <div class="hint">gramos — opcional</div>
+        </div>
+        <div class="form-field">
+          <label>Peso con la espuma</label>
+          <input type="number" id="d-bruto" placeholder="0" min="0" step="any">
+          <div class="hint">gramos</div>
+        </div>
+        <div class="form-field">
+          <label>Marcha usada</label>
+          <select id="d-marcha">
+            <option value="">—</option>
+            <option value="baja">Baja</option>
+            <option value="media" selected>Media</option>
+            <option value="alta">Alta</option>
+          </select>
+        </div>
+        <div class="form-field full">
+          <label>Notas</label>
+          <input type="text" id="d-nota" placeholder="Lote, temperatura, observaciones...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">🎯 Tiene que pesar</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--azul-dark)" id="d-objetivo">—</div>
+      <div class="hint" id="d-objetivo-det">Rango de la ficha: 38 a 42 kg/m³</div>
+    </div>
+
+    <div class="resultados dos">
+      <div class="res-card tipo-tot visible">
+        <div class="res-etiqueta">Espuma neta</div>
+        <div class="res-principal" id="d-neto">—</div>
+        <div class="res-detalles" id="d-neto-det">—</div>
+      </div>
+      <div class="res-card tipo-iso visible">
+        <div class="res-etiqueta">Densidad libre</div>
+        <div class="res-principal" id="d-result">—</div>
+        <div class="res-detalles" id="d-result-det">—</div>
+      </div>
+    </div>
+
+    <div id="d-alertas"></div>
+    <button class="btn-guardar" onclick="guardarDensidad()">💾 Guardar prueba de densidad</button>
+
+    <div class="section-title">Últimas pruebas</div>
+    <div id="d-lista"></div>
+  </div>
+
+  <!-- ========== HISTORIAL ========== -->
+  <div id="panel-historial" class="panel">
+    <div class="pruebas-header">
+      <div class="section-title" style="margin:0">Registro</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pruebas-count" id="pruebas-count">0</span>
+        <button class="btn-exportar" onclick="exportarCSV()">⬇ CSV</button>
+      </div>
+    </div>
+    <div class="filtros">
+      <button class="filtro activo" onclick="setFiltro('todo',this)">Todo</button>
+      <button class="filtro" onclick="setFiltro('cal',this)">⚗️ Calibraciones</button>
+      <button class="filtro" onclick="setFiltro('iny',this)">🎯 Inyecciones</button>
+      <button class="filtro" onclick="setFiltro('den',this)">🥤 Densidad</button>
+      <button class="filtro" onclick="setFiltro('tq',this)">🛢️ Tanques</button>
+    </div>
+    <div id="lista-pruebas"></div>
+  </div>
+
+  <!-- ========== AJUSTES ========== -->
+  <div id="panel-ajustes" class="panel">
+
+    <div class="anotador-form">
+      <div class="form-titulo">🧪 Producto con el que trabajamos</div>
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Nombre del producto</label>
+          <input type="text" id="pr-nombre" placeholder="Ej: ALKURAN RF-30 H4 / ISO-200">
+        </div>
+        <div class="form-field">
+          <label>Ratio ISO (PBW)</label>
+          <input type="number" id="pr-ratio" min="1" step="any">
+          <div class="hint">partes de ISO por 100 de poliol</div>
+        </div>
+        <div class="form-field">
+          <label>Tolerancia ratio (±%)</label>
+          <input type="number" id="pr-tol" min="0" step="any">
+        </div>
+        <div class="form-field">
+          <label>Peso específico poliol</label>
+          <input type="number" id="pr-pe-pol" min="0" step="0.001">
+          <div class="hint">g/ml</div>
+        </div>
+        <div class="form-field">
+          <label>Peso específico ISO</label>
+          <input type="number" id="pr-pe-iso" min="0" step="0.001">
+          <div class="hint">g/ml</div>
+        </div>
+      </div>
+      <button class="btn-guardar" onclick="guardarProducto()">💾 Guardar producto</button>
+      <div class="alerta azul" style="margin-top:12px">
+        Al cambiar de producto, cargá acá el ratio y los pesos específicos nuevos. Todo lo demás se recalcula solo.
+        Los rangos de temperatura, crema e hilos son los del ALKURAN: si cambiás de material, pedime que los actualice.
+      </div>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">⚙️ Marchas de la máquina</div>
+      <div class="hint" style="margin-bottom:14px">
+        Medí lo que realmente sale del mezclador: disparás unos segundos contra un recipiente, lo pesás,
+        y la app saca los gramos por segundo de esa marcha.
+      </div>
+      <div id="marchas-config"></div>
+      <button class="btn-guardar" onclick="guardarMarchas()">💾 Guardar marchas</button>
+    </div>
+
+    <div class="logo-panel">
+      <div class="form-titulo">💾 Respaldo de datos</div>
+      <div id="estado-datos" class="alerta verde"></div>
+      <button class="btn-guardar verde" onclick="exportarRespaldo()">💾 Descargar respaldo (.json)</button>
+      <button class="btn-guardar" style="margin-top:9px" onclick="enviarRespaldo()">📲 Enviar respaldo por WhatsApp o mail</button>
+      <button class="btn-sec" onclick="document.getElementById('file-restore').click()">📂 Restaurar desde un respaldo</button>
+      <input type="file" id="file-restore" accept=".json,application/json" style="display:none" onchange="importarRespaldo(event)">
+      <div class="logo-instrucciones">
+        <div class="logo-instr-titulo">📌 Cómo no perder nada</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">1</div>Los datos se guardan por duplicado adentro del teléfono, en dos lugares distintos. Si uno se limpia, el otro los recupera.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">2</div>El nivel de los tanques se guarda como número propio: no depende de que el historial esté completo.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">3</div>Descargá el respaldo al terminar el turno y mandátelo por mail o WhatsApp. Es lo único que sobrevive a un cambio de teléfono.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">4</div>Cuando te pase una versión nueva, abrila y usá "Restaurar desde un respaldo" antes de cargar nada.</div>
+      </div>
+    </div>
+
+    <div class="logo-panel">
+      <div class="form-titulo">📄 Ficha técnica cargada</div>
+      <div class="tabla-scroll">
+        <table>
+          <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+          <tbody id="tabla-ficha"></tbody>
+        </table>
+      </div>
+      <div class="alerta naranja" style="margin-top:14px">
+        ⚠️ El poliol lleva HFO-1233zd: arriba de 25 °C el tambor se sobrepresiona. Abrí despacio el tapón de 3/4"
+        antes de conectar. El ISO cristaliza bajo 5 °C sostenidos; se recupera calentando a 70–80 °C y agitando.
+      </div>
+    </div>
+
+    <div class="logo-panel">
+      <div class="form-titulo">🎨 Logo para acceso directo</div>
+      <div class="logo-preview">
+        <canvas id="logo-grande" width="256" height="256" style="border-radius:28%;box-shadow:0 8px 32px rgba(15,42,94,.3)"></canvas>
+      </div>
+      <div class="platform-chips">
+        <span class="chip">📱 iPhone / iPad</span>
+        <span class="chip">🤖 Android</span>
+        <span class="chip">🪟 Windows</span>
+        <span class="chip">🍎 Mac</span>
+      </div>
+      <button class="btn-dl btn-dl-512" onclick="descargarLogo(512)">⬇ Descargar logo 512×512 px</button>
+      <button class="btn-dl btn-dl-192" onclick="descargarLogo(192)">⬇ Descargar logo 192×192 px</button>
+      <div class="logo-instrucciones">
+        <div class="logo-instr-titulo">📲 Cómo agregar al teléfono</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">1</div><span><strong>iPhone:</strong> Abrí en Safari → compartir → "Añadir a pantalla de inicio"</span></div>
+        <div class="logo-instr-item"><div class="logo-instr-num">2</div><span><strong>Android:</strong> Abrí en Chrome → menú (⋮) → "Agregar a pantalla de inicio"</span></div>
+        <div class="logo-instr-item"><div class="logo-instr-num">3</div><span><strong>PC / Mac:</strong> En Chrome, ícono de instalar (⊕) en la barra de direcciones</span></div>
+      </div>
+    </div>
+
+    <div class="logo-panel">
+      <div class="form-titulo">🗑 Borrar datos</div>
+      <button class="btn-sec" style="background:var(--rojo-light);color:#8F1717" onclick="borrarTodo()">Borrar todo el historial</button>
+    </div>
+
+  </div>
+
+</main>
+
+<footer id="pie">—</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
+// ═══════════════════════════════════════════════════════════════
+const R_TEMP=[20,23], R_CREMA=[27,33], R_HILOS=[120,160];
+const R_LIBRE=[38,42], R_MOLDE_T=[39,47], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
+const VIDA_POL=4, VIDA_ISO=6;
+
+const FICHA_FILAS=[
+  ['Relación A/B en peso','100 : 156'],
+  ['Temperatura A / B','20 – 23 °C'],
+  ['Tiempo de crema','27 – 33 seg'],
+  ['Tiempo de hilos','120 – 160 seg'],
+  ['Densidad libre (vaso 1 lt)','38 – 42 kg/m³'],
+  ['Temperatura de molde','43 ± 4 °C'],
+  ['Densidad de molde','38 – 42 kg/m³'],
+  ['Densidad de núcleo','36 – 38 kg/m³'],
+  ['Densidad 20 °C A / B','1,09 / 1,22–1,25 g/cm³'],
+  ['Viscosidad 20 °C A / B','250 / 150–250 cps'],
+  ['NCO libre (B)','30,2 – 32,0 %'],
+  ['Almacenamiento poliol / ISO','15–25 / 15–35 °C'],
+  ['Vida útil poliol / ISO','4 / 6 meses'],
+  ['Envase poliol / ISO','220 / 250 kg']
+];
+
+// ═══════════════════════════════════════════════════════════════
+// BASE DE DATOS
+// ═══════════════════════════════════════════════════════════════
+const LS_KEY='giovannetti_v3';
+const IDB_NAME='giovannetti', IDB_STORE='datos', IDB_KEY='db';
+const OLD_KEYS=['giovannetti_v2','pruebas_giovannetti'];
+
+function dbVacia(){
+  return {
+    producto:{ nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, pePol:1.09, peIso:1.235 },
+    marchas:{
+      baja:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
+      media:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
+      alta:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' }
+    },
+    densidades:[],
+    tanques:{
+      pol:{ cap:220, kg:0, lote:'', elab:'', venc:'', alarma:130 },
+      iso:{ cap:250, kg:0, lote:'', elab:'', venc:'', alarma:150 }
+    },
+    pruebas:[], inyecciones:[], movimientos:[],
+    modelos:[], tanda:[],
+    cfg:{ largo:'', ancho:'', espesor:'', densidad:40, sobre:15, marcha:'media', pieza:'', tmolde:'' },
+    meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now() }
+  };
+}
+let DB = dbVacia();
+let LISTO = false;   // no se guarda nada hasta terminar de leer las dos fuentes
+
+// ---------- IndexedDB ----------
+function idbAbrir(){
+  return new Promise((res,rej)=>{
+    if(!window.indexedDB) return rej('sin idb');
+    const req=indexedDB.open(IDB_NAME,1);
+    req.onupgradeneeded=()=>{ req.result.createObjectStore(IDB_STORE); };
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  });
+}
+function idbLeer(){
+  return idbAbrir().then(db=>new Promise((res,rej)=>{
+    const t=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get(IDB_KEY);
+    t.onsuccess=()=>res(t.result||null); t.onerror=()=>rej(t.error);
+  })).catch(()=>null);
+}
+function idbEscribir(obj){
+  return idbAbrir().then(db=>new Promise((res,rej)=>{
+    const t=db.transaction(IDB_STORE,'readwrite').objectStore(IDB_STORE).put(obj,IDB_KEY);
+    t.onsuccess=()=>res(true); t.onerror=()=>rej(t.error);
+  })).catch(()=>false);
+}
+
+// ---------- normalizar / fusionar ----------
+function normalizar(d){
+  const base=dbVacia();
+  if(!d||typeof d!=='object') return base;
+  base.producto=Object.assign(base.producto,d.producto||{});
+  base.marchas=Object.assign(base.marchas,d.marchas||{});
+  ['baja','media','alta'].forEach(m=>{ base.marchas[m]=Object.assign({g:'',seg:'',gs:0,rg:'',rseg:'',rgs:0,caida:''},(d.marchas||{})[m]||{}); });
+  base.tanques.pol=Object.assign(base.tanques.pol,(d.tanques||{}).pol||{});
+  base.tanques.iso=Object.assign(base.tanques.iso,(d.tanques||{}).iso||{});
+  base.cfg=Object.assign(base.cfg,d.cfg||{});
+  base.meta=Object.assign(base.meta,d.meta||{});
+  base.modelos=Array.isArray(d.modelos)?d.modelos:[];
+  base.densidades=Array.isArray(d.densidades)?d.densidades:[];
+  base.tanda=Array.isArray(d.tanda)?d.tanda:[];
+  base.pruebas=Array.isArray(d.pruebas)?d.pruebas:[];
+  base.inyecciones=Array.isArray(d.inyecciones)?d.inyecciones:[];
+  base.movimientos=Array.isArray(d.movimientos)?d.movimientos:[];
+  return base;
+}
+function unir(listaA,listaB){
+  const vistos=new Set(); const out=[];
+  listaA.concat(listaB).forEach(x=>{
+    if(!x||x.id===undefined) return;
+    if(vistos.has(x.id)) return;
+    vistos.add(x.id); out.push(x);
+  });
+  return out.sort((a,b)=>b.id-a.id);
+}
+function fusionar(a,b){
+  if(!a) return b; if(!b) return a;
+  const nueva = (a.meta.guardadoEn||0) >= (b.meta.guardadoEn||0) ? a : b;
+  const otra  = nueva===a ? b : a;
+  const r=normalizar(nueva);
+  r.pruebas=unir(a.pruebas,b.pruebas);
+  r.inyecciones=unir(a.inyecciones,b.inyecciones);
+  r.movimientos=unir(a.movimientos,b.movimientos);
+  r.modelos=unir(a.modelos,b.modelos);
+  r.densidades=unir(a.densidades||[],b.densidades||[]);
+  r.tanda=(a.tanda&&a.tanda.length>=((b.tanda||[]).length))?a.tanda:b.tanda;
+  if(!r.meta.ultimoRespaldo && otra.meta.ultimoRespaldo) r.meta.ultimoRespaldo=otra.meta.ultimoRespaldo;
+  return r;
+}
+
+// ---------- cargar ----------
+function leerLS(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw) return normalizar(JSON.parse(raw));
+    for(const k of OLD_KEYS){
+      const v=localStorage.getItem(k);
+      if(!v) continue;
+      const d=JSON.parse(v);
+      if(Array.isArray(d)){ const b=dbVacia(); b.pruebas=d.map(p=>Object.assign({},p)); return b; }
+      return normalizar(d);
+    }
+  }catch(e){}
+  return null;
+}
+function cargarTodo(){
+  const desdeLS=leerLS();
+  if(desdeLS) DB=desdeLS;
+  pintarTodo();
+  idbLeer().then(desdeIDB=>{
+    if(desdeIDB){
+      const antes=totalRegistros();
+      DB=fusionar(DB, normalizar(desdeIDB));
+      if(totalRegistros()>antes) console.log('Recuperados registros del respaldo interno');
+    }
+    LISTO=true;
+    guardarDB();
+    pintarTodo();
+  }).catch(()=>{ LISTO=true; pintarTodo(); });
+}
+
+// ---------- guardar ----------
+function guardarDB(){
+  if(!LISTO) return;
+  DB.meta.guardadoEn=Date.now();
+  const txt=JSON.stringify(DB);
+  try{ localStorage.setItem(LS_KEY,txt); }
+  catch(e){ alert('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Ajustes ya mismo.'); }
+  idbEscribir(JSON.parse(txt));
+  actualizarContadores();
+}
+if(navigator.storage && navigator.storage.persist){ navigator.storage.persist().catch(()=>{}); }
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function f(n,d=1){ return Number.isFinite(n)?n.toFixed(d).replace('.',','):'—'; }
+function gv(id){ const v=parseFloat(document.getElementById(id).value); return Number.isFinite(v)?v:NaN; }
+function sv(id){ return document.getElementById(id).value; }
+function ratio(){ return DB.producto.ratio||156; }
+function factorIso(){ return ratio()/100; }
+function partes(){ return 1+factorIso(); }
+function totalRegistros(){ return DB.pruebas.length+DB.inyecciones.length+DB.movimientos.length+(DB.densidades||[]).length; }
+function sumarMeses(iso,m){
+  if(!iso) return '';
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d.getTime())) return '';
+  d.setMonth(d.getMonth()+m);
+  return d.toISOString().slice(0,10);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PINTAR GENERAL
+// ═══════════════════════════════════════════════════════════════
+function pintarTodo(){
+  document.getElementById('header-producto').textContent=DB.producto.nombre||'Sin producto cargado';
+  document.getElementById('pie').innerHTML='Giovannetti Refrigeración · '+(DB.producto.nombre||'')+'<br>'
+    +'Ratio '+ratio()+' PBW · Poliol '+f(DB.producto.pePol,3)+' g/ml · ISO '+f(DB.producto.peIso,3)+' g/ml';
+  document.getElementById('titulo-resultado').textContent='Resultado — ratio nominal '+ratio()+' PBW';
+  document.getElementById('et-iso').textContent='ISO requerido ('+ratio()+' PBW)';
+  const r=ratio();
+  document.getElementById('titulo-tabla').textContent='Tabla de ajuste — '+(r-5)+' → '+(r+5)+' PBW';
+  document.getElementById('tabla-ficha').innerHTML=FICHA_FILAS.map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('');
+  pintarProducto(); pintarMarchasConfig(); pintarMarchasSel();
+  precargarInyeccion();
+  renderModelos(); renderTanques(); renderChequeos(); pintarMarchasCal(); calcularDensidad(); renderDensidades(); calcularInyeccion(); renderTanda(); calcular();
+  actualizarContadores(); revisarAlarma();
+}
+
+function actualizarContadores(){
+  const el=document.getElementById('pruebas-count');
+  if(el) el.textContent=totalRegistros();
+  revisarRespaldo(); pintarEstadoDatos(); revisarAlarma();
+}
+
+// La alarma recién tiene sentido cuando los tanques se cargaron alguna vez.
+function tanquesEnUso(){
+  return DB.movimientos.length>0 || DB.tanques.pol.kg>0 || DB.tanques.iso.kg>0;
+}
+
+function revisarAlarma(){
+  const barra=document.getElementById('alarma-nivel');
+  if(!barra) return;
+  if(!tanquesEnUso()){ barra.classList.remove('visible'); return; }
+  const bajos=[];
+  [['pol','POLIOL'],['iso','ISO']].forEach(([k,nom])=>{
+    const t=DB.tanques[k];
+    if(t.kg<=(t.alarma||0)) bajos.push(nom+': '+f(t.kg,1)+' kg');
+  });
+  if(bajos.length){
+    document.getElementById('alarma-detalle').textContent=bajos.join('   ·   ');
+    barra.classList.add('visible');
+  } else barra.classList.remove('visible');
+}
+
+function revisarRespaldo(){
+  const aviso=document.getElementById('aviso-respaldo');
+  if(!aviso) return;
+  const n=totalRegistros();
+  if(n===0){ aviso.classList.remove('visible'); return; }
+  const ult=DB.meta.ultimoRespaldo;
+  const dias=ult?(Date.now()-ult)/86400000:999;
+  if(dias>=7){
+    document.getElementById('aviso-texto').textContent=ult
+      ? 'Tenés '+n+' registros y el último respaldo fue hace '+Math.floor(dias)+' días.'
+      : 'Tenés '+n+' registros y todavía no hiciste ningún respaldo.';
+    aviso.classList.add('visible');
+  } else aviso.classList.remove('visible');
+}
+
+function pintarEstadoDatos(){
+  const el=document.getElementById('estado-datos');
+  if(!el) return;
+  const ult=DB.meta.ultimoRespaldo;
+  el.className='alerta '+(ult&&(Date.now()-ult)/86400000<7?'verde':'naranja');
+  el.innerHTML='📊 '+DB.pruebas.length+' calibraciones · '+DB.inyecciones.length+' inyecciones · '+DB.movimientos.length+' movimientos<br>'
+    +(ult?'💾 Último respaldo: '+new Date(ult).toLocaleString('es-AR'):'⚠️ Todavía no hiciste ningún respaldo');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PRODUCTO
+// ═══════════════════════════════════════════════════════════════
+function pintarProducto(){
+  document.getElementById('pr-nombre').value=DB.producto.nombre||'';
+  document.getElementById('pr-ratio').value=DB.producto.ratio;
+  document.getElementById('pr-tol').value=DB.producto.tol;
+  document.getElementById('pr-pe-pol').value=DB.producto.pePol;
+  document.getElementById('pr-pe-iso').value=DB.producto.peIso;
+}
+function guardarProducto(){
+  const nom=sv('pr-nombre').trim();
+  const r=gv('pr-ratio'), tol=gv('pr-tol'), pp=gv('pr-pe-pol'), pi=gv('pr-pe-iso');
+  if(!nom){ alert('Ponele un nombre al producto.'); return; }
+  if(!(r>0)){ alert('El ratio tiene que ser un número mayor que cero.'); return; }
+  if(!(pp>0)||!(pi>0)){ alert('Los pesos específicos tienen que ser mayores que cero.'); return; }
+  DB.producto={ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, pePol:pp, peIso:pi };
+  guardarDB(); pintarTodo();
+  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir las tres marchas por cabezal antes de inyectar.');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MARCHAS
+// ═══════════════════════════════════════════════════════════════
+const MARCHAS=[['baja','Baja'],['media','Media'],['alta','Alta']];
+
+function pintarMarchasConfig(){
+  const cont=document.getElementById('marchas-config');
+  if(!cont) return;
+  cont.innerHTML=MARCHAS.map(([k,nom])=>{
+    const m=DB.marchas[k];
+    const rend=rendimiento(k);
+    let estado;
+    if(m.rgs>0){
+      estado='<div class="alerta verde">✅ Caudal real cargado: <b>'+f(m.rgs,2)+' g/s</b>'
+        +(Number.isFinite(rend)?' · rendimiento del cabezal <b>'+f(rend,1)+' %</b> (cae '+f(100-rend,1)+' %)':'')+'</div>';
+    } else if(m.gs>0){
+      const ef=gsEfectivo(k);
+      estado='<div class="alerta naranja">⚠️ Sin medir el cabezal. Se está usando <b>'+f(ef,2)+' g/s</b>'
+        +(parseFloat(m.caida)>0?' (mangueras menos '+f(parseFloat(m.caida),1)+' % a mano)':' sin ninguna corrección')+'.</div>';
+    } else {
+      estado='<div class="hint">Marcha sin medir.</div>';
+    }
+    return '<div style="border:2px solid var(--gris-2);border-radius:11px;padding:14px;margin-bottom:14px">'
+      +'<div style="font-size:16px;font-weight:800;color:var(--azul-dark);margin-bottom:12px">Marcha '+nom+'</div>'
+
+      +'<div class="card-label" style="font-size:12.5px">1 · Mangueras libres (referencia)</div>'
+      +'<div class="form-grid">'
+      +'<div class="form-field"><label>Segundos</label><input type="number" id="mc-seg-'+k+'" min="0" step="any" value="'+(m.seg||'')+'"></div>'
+      +'<div class="form-field"><label>Gramos pesados</label><input type="number" id="mc-g-'+k+'" min="0" step="any" value="'+(m.g||'')+'"></div>'
+      +'</div><div class="hint" id="mc-res-'+k+'">'+(m.gs>0?'= '+f(m.gs,2)+' g/s':'Sin medir')+'</div>'
+
+      +'<div class="card-label" style="font-size:12.5px;margin-top:16px">2 · Por cabezal — el que manda</div>'
+      +'<div class="form-grid">'
+      +'<div class="form-field"><label>Segundos</label><input type="number" id="mc-rseg-'+k+'" min="0" step="any" value="'+(m.rseg||'')+'"></div>'
+      +'<div class="form-field"><label>Gramos pesados</label><input type="number" id="mc-rg-'+k+'" min="0" step="any" value="'+(m.rg||'')+'"></div>'
+      +'</div><div class="hint" id="mc-rres-'+k+'">'+(m.rgs>0?'= '+f(m.rgs,2)+' g/s':'Sin medir')+'</div>'
+
+      +'<div class="form-field" style="margin-top:14px"><label>Caída a mano (solo si no medís el cabezal)</label>'
+      +'<input type="number" id="mc-caida-'+k+'" min="0" max="99" step="0.1" value="'+(m.caida||'')+'"><div class="hint">%</div></div>'
+      +estado
+      +'</div>';
+  }).join('');
+
+  MARCHAS.forEach(([k])=>{
+    const recalc=()=>{
+      const s=gv('mc-seg-'+k), g=gv('mc-g-'+k);
+      const rs=gv('mc-rseg-'+k), rg=gv('mc-rg-'+k);
+      const gs=(s>0&&g>0)?g/s:0, rgs=(rs>0&&rg>0)?rg/rs:0;
+      document.getElementById('mc-res-'+k).textContent=gs>0?'= '+f(gs,2)+' g/s':'Sin medir';
+      const e=document.getElementById('mc-rres-'+k);
+      e.textContent=rgs>0?'= '+f(rgs,2)+' g/s'+(gs>0?'  ·  rendimiento '+f(rgs/gs*100,1)+' %':''):'Sin medir';
+    };
+    ['mc-seg-','mc-g-','mc-rseg-','mc-rg-'].forEach(pre=>{
+      const el=document.getElementById(pre+k);
+      if(el) el.addEventListener('input',recalc);
+    });
+  });
+}
+
+function guardarMarchas(){
+  MARCHAS.forEach(([k])=>{
+    const s=gv('mc-seg-'+k), g=gv('mc-g-'+k);
+    const rs=gv('mc-rseg-'+k), rg=gv('mc-rg-'+k);
+    const c=gv('mc-caida-'+k);
+    DB.marchas[k]={
+      seg:Number.isFinite(s)?s:'', g:Number.isFinite(g)?g:'', gs:(s>0&&g>0)?g/s:0,
+      rseg:Number.isFinite(rs)?rs:'', rg:Number.isFinite(rg)?rg:'', rgs:(rs>0&&rg>0)?rg/rs:0,
+      caida:Number.isFinite(c)?c:''
+    };
+  });
+  guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
+  const sinCabezal=MARCHAS.filter(([k])=>esEstimado(k)).map(([,n])=>n);
+  alert('Marchas guardadas.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
+}
+
+function pintarMarchasSel(){
+  const cont=document.getElementById('marchas-sel');
+  if(!cont) return;
+  cont.innerHTML=MARCHAS.map(([k,nom])=>{
+    const ef=gsEfectivo(k);
+    const est=esEstimado(k);
+    return '<button class="marcha-btn'+((DB.cfg.marcha===k)?' activo':'')+'" onclick="elegirMarcha(\''+k+'\')">'
+      +'<div class="mn">'+nom+'</div>'
+      +'<div class="mv">'+(ef>0?f(ef,1):'—')+'</div>'
+      +'<div class="mu">'+(ef>0?(est?'g/s estimado':'g/s real'):'g/s')+'</div></button>';
+  }).join('');
+}
+
+function elegirMarcha(k){
+  DB.cfg.marcha=k;
+  pintarMarchasSel(); calcularInyeccion(); guardarDB();
+}
+// El caudal que vale es el medido POR CABEZAL. El de mangueras libres es de referencia.
+function gsEfectivo(k){
+  const m=DB.marchas[k];
+  if(!m) return NaN;
+  if(m.rgs>0) return m.rgs;                                   // medido en el cabezal: la verdad
+  const caida=parseFloat(m.caida);
+  if(m.gs>0 && Number.isFinite(caida) && caida>0) return m.gs*(1-caida/100);   // estimado
+  return m.gs>0?m.gs:NaN;                                     // sin corregir
+}
+function esEstimado(k){ const m=DB.marchas[k]; return !!(m && !(m.rgs>0) && m.gs>0); }
+function rendimiento(k){ const m=DB.marchas[k]; return (m&&m.gs>0&&m.rgs>0)?(m.rgs/m.gs*100):NaN; }
+function gsActual(){ const g=gsEfectivo(DB.cfg.marcha||'media'); return g>0?g:NaN; }
+
+// ═══════════════════════════════════════════════════════════════
+// CALIBRADOR
+// ═══════════════════════════════════════════════════════════════
+let unidad='g';
+function setUnidad(u,btn){
+  unidad=u;
+  document.querySelectorAll('.utab').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  document.getElementById('unidad-display').textContent=u==='l'?'L':u;
+  calcular();
+}
+function aGramos(v,u){ if(u==='g')return v; if(u==='kg')return v*1000; return v*1000*DB.producto.pePol; }
+
+function calcular(){
+  const seg=gv('segundos'), pv=gv('poliol-val');
+  const ok=seg>0&&pv>0;
+  ['rc-pol','rc-iso','rc-tot'].forEach(id=>document.getElementById(id).classList.toggle('visible',ok));
+  document.getElementById('card-caudal').style.display=ok?'block':'none';
+  if(!ok){
+    document.getElementById('tabla-cuerpo').innerHTML='<div class="vacio"><div class="vacio-icono">⚗️</div><div class="vacio-texto">Ingresá los <strong>segundos</strong> de disparo<br>y el <strong>poliol recolectado</strong>.</div></div>';
+    document.getElementById('tabla-desc').textContent='Ingresá los datos para ver la tabla';
+    document.getElementById('leyenda').style.display='none';
+    return;
+  }
+  const pePol=DB.producto.pePol, peIso=DB.producto.peIso, fi=factorIso();
+  const polG=aGramos(pv,unidad);
+  const polKg=polG/1000, polL=polG/pePol/1000;
+  const isoG=polG*fi, isoKg=isoG/1000, isoL=isoG/peIso/1000;
+  const totG=polG+isoG, totKg=totG/1000, totL=(polG/pePol+isoG/peIso)/1000;
+  document.getElementById('rp-pol').textContent=f(polKg,3)+' kg';
+  document.getElementById('rd-pol').innerHTML=f(polG)+' g<br>'+f(polL,3)+' L';
+  document.getElementById('rp-iso').textContent=f(isoKg,3)+' kg';
+  document.getElementById('rd-iso').innerHTML=f(isoG)+' g<br>'+f(isoL,3)+' L';
+  document.getElementById('rp-tot').textContent=f(totKg,3)+' kg';
+  document.getElementById('rd-tot').innerHTML=f(totG)+' g<br>'+f(totL,3)+' L';
+
+  const caudal=totG/seg;
+  document.getElementById('caudal-txt').textContent=f(caudal,2)+' g/s  ·  '+f(caudal*60/1000,3)+' kg/min';
+  document.getElementById('caudal-hint').textContent='Poliol '+f(polG/seg,2)+' g/s + ISO '+f(isoG/seg,2)+' g/s, en '+f(seg,1)+' seg.';
+
+  document.getElementById('tabla-desc').textContent='Poliol: '+f(polG)+' g · '+f(seg,1)+' seg';
+  const r=Math.round(ratio());
+  let html='<table><thead><tr><th>Ratio ISO</th><th>ISO (g)</th><th>ISO (kg)</th><th>ISO (L)</th><th>Total (g)</th><th>Total (kg)</th><th>Total (L)</th></tr></thead><tbody>';
+  for(let x=r-5;x<=r+5;x++){
+    const ig=polG*(x/100), ikg=ig/1000, il=ig/peIso/1000;
+    const tg=polG+ig, tkg=tg/1000, tl=(polG/pePol+ig/peIso)/1000;
+    const nom=(x===r);
+    html+='<tr class="'+(nom?'fila-nom':'')+'"><td class="td-ratio">'+x+' PBW'+(nom?'<span class="pill-nom">nominal</span>':'')+'</td>'
+      +'<td class="td-iso-g">'+f(ig)+'</td><td class="td-iso-kg">'+f(ikg,3)+'</td><td class="td-iso-l">'+f(il,3)+'</td>'
+      +'<td class="td-tot-g">'+f(tg)+'</td><td class="td-tot-kg">'+f(tkg,3)+'</td><td class="td-tot-l">'+f(tl,3)+'</td></tr>';
+  }
+  html+='</tbody></table>';
+  document.getElementById('tabla-cuerpo').innerHTML=html;
+  document.getElementById('leyenda').style.display='flex';
+}
+document.getElementById('segundos').addEventListener('input',calcular);
+document.getElementById('poliol-val').addEventListener('input',calcular);
+
+// ═══════════════════════════════════════════════════════════════
+// INYECCIÓN
+// ═══════════════════════════════════════════════════════════════
+function precargarInyeccion(){
+  const c=DB.cfg;
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!==''&&v!==undefined&&v!==null) el.value=v; };
+  set('p-largo',c.largo); set('p-ancho',c.ancho); set('p-espesor',c.espesor);
+  document.getElementById('p-densidad').value=(c.densidad===''||c.densidad===undefined)?40:c.densidad;
+  document.getElementById('p-sobre').value=(c.sobre===''||c.sobre===undefined)?15:c.sobre;
+  set('p-pieza',c.pieza); set('p-tmolde',c.tmolde);
+}
+
+// ---------- cálculo de un panel ----------
+function calcPanel(o){
+  const volL=(o.largo*o.ancho*o.espesor)/1000;          // cm³ → litros
+  const teoricoKg=volL*o.densidad/1000;
+  const mezclaKg=teoricoKg*(1+(o.sobre||0)/100);
+  const segundos=o.gs>0?(mezclaKg*1000)/o.gs:NaN;
+  const polKg=mezclaKg/partes();
+  const isoKg=mezclaKg*factorIso()/partes();
+  const densReal=volL>0?(mezclaKg*1000)/volL:NaN;
+  return Object.assign({},o,{volL,teoricoKg,mezclaKg,segundos,polKg,isoKg,densReal});
+}
+
+function panelDelFormulario(){
+  const gs=gsActual();
+  let n=Math.floor(gv('p-n')); if(!Number.isFinite(n)||n<1) n=1;
+  return calcPanel({
+    nombre:sv('p-pieza').trim(),
+    largo:gv('p-largo'), ancho:gv('p-ancho'), espesor:gv('p-espesor'),
+    densidad:gv('p-densidad'), sobre:Number.isFinite(gv('p-sobre'))?gv('p-sobre'):0,
+    tmolde:gv('p-tmolde'),
+    marcha:DB.cfg.marcha||'media', gs:Number.isFinite(gs)?gs:0, n:n, ok:true
+  });
+}
+
+// ---------- vista previa del panel en edición ----------
+function calcularInyeccion(){
+  const d=panelDelFormulario();
+  const hay=Number.isFinite(d.mezclaKg)&&d.mezclaKg>0;
+  const pePol=DB.producto.pePol, peIso=DB.producto.peIso;
+
+  document.getElementById('r-mezcla').textContent=hay?f(d.mezclaKg,3)+' kg':'—';
+  document.getElementById('r-mezcla-det').innerHTML=hay?f(d.mezclaKg*1000,0)+' g<br>volumen '+f(d.volL,2)+' L':'—';
+  document.getElementById('r-segundos').textContent=Number.isFinite(d.segundos)?f(d.segundos,2)+' s':'—';
+  document.getElementById('r-segundos-det').textContent=d.gs>0?'marcha '+d.marcha+' · '+f(d.gs,1)+' g/s '+(esEstimado(d.marcha)?'(estimado)':'(real)'):'falta medir la marcha';
+  document.getElementById('r-pol').textContent=hay?f(d.polKg*1000,0)+' g':'—';
+  document.getElementById('r-pol-det').innerHTML=hay?f(d.polKg,3)+' kg<br>'+f(d.polKg/pePol,3)+' L':'—';
+  document.getElementById('r-iso').textContent=hay?f(d.isoKg*1000,0)+' g':'—';
+  document.getElementById('r-iso-det').innerHTML=hay?f(d.isoKg,3)+' kg<br>'+f(d.isoKg/peIso,3)+' L':'—';
+
+  let al='';
+  if(hay&&!(d.gs>0)) al+='<div class="alerta naranja">⚠️ Todavía no cargaste la marcha '+d.marcha+'. Andá a Ajustes → Marchas y medí lo que sale del cabezal.</div>';
+  else if(hay&&esEstimado(d.marcha)) al+='<div class="alerta naranja">⚠️ La marcha '+d.marcha+' no tiene medición de cabezal: estos segundos y el descuento de tanque son un estimado. Medila y cargala en Ajustes.</div>';
+  if(Number.isFinite(d.segundos)&&d.segundos>=R_CREMA[0])
+    al+='<div class="alerta roja">🔴 Este panel tarda '+f(d.segundos,1)+' s y la crema arranca a los '+R_CREMA[0]+' s. Pasá a una marcha más alta o dividí el disparo.</div>';
+  else if(Number.isFinite(d.segundos)&&d.segundos>R_CREMA[0]*0.7)
+    al+='<div class="alerta naranja">⚠️ Este panel tarda '+f(d.segundos,1)+' s, cerca de los '+R_CREMA[0]+' s de crema.</div>';
+  if(Number.isFinite(d.tmolde)&&(d.tmolde<R_MOLDE_T[0]||d.tmolde>R_MOLDE_T[1]))
+    al+='<div class="alerta naranja">⚠️ Molde a '+f(d.tmolde,1)+' °C. La ficha pide 43 ± 4 (entre '+R_MOLDE_T[0]+' y '+R_MOLDE_T[1]+').</div>';
+  if(Number.isFinite(d.densReal))
+    al+='<div class="alerta azul">📌 Densidad real con '+f(d.sobre,0)+' % de sobreempaque: <b>'+f(d.densReal,1)+' kg/m³</b> (teórica '+f(d.densidad,0)+').</div>';
+  document.getElementById('iny-alertas').innerHTML=al;
+
+  DB.cfg.largo=sv('p-largo'); DB.cfg.ancho=sv('p-ancho'); DB.cfg.espesor=sv('p-espesor');
+  DB.cfg.densidad=sv('p-densidad'); DB.cfg.sobre=sv('p-sobre'); DB.cfg.pieza=sv('p-pieza'); DB.cfg.tmolde=sv('p-tmolde');
+  renderTanda();
+}
+
+// ---------- la tanda ----------
+function agregarATanda(){
+  const d=panelDelFormulario();
+  if(!Number.isFinite(d.mezclaKg)||d.mezclaKg<=0){ alert('Completá largo, ancho, espesor y densidad.'); return; }
+  if(!(d.gs>0)){ alert('Elegí una marcha que tenga medición cargada.\n\nSe cargan en Ajustes → Marchas de la máquina.'); return; }
+  for(let i=0;i<d.n;i++){
+    DB.tanda.push(Object.assign({},d,{uid:Date.now()+'-'+Math.random().toString(36).slice(2,7),n:1}));
+  }
+  guardarDB(); renderTanda();
+  window.scrollTo({top:document.getElementById('tanda-lista').offsetTop-80,behavior:'smooth'});
+}
+
+function quitarDeTanda(uid){
+  DB.tanda=DB.tanda.filter(x=>x.uid!==uid);
+  guardarDB(); renderTanda();
+}
+
+function marcarPanel(uid){
+  const p=DB.tanda.find(x=>x.uid===uid);
+  if(p){ p.ok=!p.ok; guardarDB(); renderTanda(); }
+}
+
+function vaciarTanda(){
+  if(!DB.tanda.length) return;
+  if(!confirm('¿Vaciar la tanda sin registrarla?')) return;
+  DB.tanda=[]; guardarDB(); renderTanda();
+}
+
+function totalesTanda(){
+  let pol=0, iso=0, seg=0, mezcla=0;
+  DB.tanda.forEach(p=>{ pol+=p.polKg; iso+=p.isoKg; mezcla+=p.mezclaKg; if(Number.isFinite(p.segundos)) seg+=p.segundos; });
+  return { pol, iso, seg, mezcla, n:DB.tanda.length };
+}
+
+function renderTanda(){
+  const cont=document.getElementById('tanda-lista');
+  const card=document.getElementById('card-tanda-total');
+  if(!cont) return;
+  if(!DB.tanda.length){
+    cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">📋</div><div class="lista-vacia-txt">La tanda está vacía.<br>Cargá un panel arriba y tocá <strong>Agregar a la tanda</strong>.</div></div>';
+    card.style.display='none';
+    return;
+  }
+  cont.innerHTML=DB.tanda.map((p,i)=>
+    '<div class="prueba-card tipo-iny'+(p.ok?'':' fallo')+'">'
+    +'<button class="btn-del" onclick="quitarDeTanda(\''+p.uid+'\')" title="Sacar de la tanda">✕</button>'
+    +'<div class="prueba-num">'+(i+1)+' · '+(p.nombre||'Panel sin nombre')+'</div>'
+    +'<div class="prueba-fila">'
+    + dato('Medida',f(p.largo,0)+'×'+f(p.ancho,0)+'×'+f(p.espesor,0))
+    + dato('Marcha',p.marcha)
+    + dato('Mezcla',f(p.mezclaKg,3)+' kg')
+    + dato('Segundos',f(p.segundos,2)+' s')
+    + dato('Poliol',f(p.polKg,3)+' kg')
+    + dato('ISO',f(p.isoKg,3)+' kg','iso')
+    + dato('Densidad',f(p.densReal,1))
+    + (Number.isFinite(p.tmolde)?dato('Molde',f(p.tmolde,1)+' °C',(p.tmolde<R_MOLDE_T[0]||p.tmolde>R_MOLDE_T[1])?'mal':'temp'):'')
+    +'</div>'
+    +'<button class="btn-estado'+(p.ok?' ok':' mal')+'" onclick="marcarPanel(\''+p.uid+'\')">'
+    +(p.ok?'✅ Salió bien':'🔴 Falló')+'</button>'
+    +'</div>').join('');
+
+  const t=totalesTanda();
+  card.style.display='block';
+  document.getElementById('tt-n').textContent=t.n;
+  document.getElementById('tot-pol').textContent=f(t.pol,2)+' kg';
+  document.getElementById('tot-iso').textContent=f(t.iso,2)+' kg';
+  document.getElementById('tt-seg').textContent=f(t.seg,1)+' s';
+
+  let rest='—', limita='Cargá los tanques para ver cuánto material queda.';
+  if(t.n>0&&t.pol>0&&t.iso>0){
+    const tandasP=Math.floor(DB.tanques.pol.kg/t.pol), tandasI=Math.floor(DB.tanques.iso.kg/t.iso);
+    const veces=Math.min(tandasP,tandasI);
+    rest=veces*t.n;
+    limita = tandasP===tandasI ? 'Alcanza para '+veces+' tandas iguales a ésta.'
+      : tandasP<tandasI ? 'Se agota primero el POLIOL: alcanza para '+veces+' tandas iguales (el ISO daría para '+tandasI+').'
+                        : 'Se agota primero el ISO: alcanza para '+veces+' tandas iguales (el poliol daría para '+tandasP+').';
+  }
+  document.getElementById('tot-rest').textContent=rest;
+  document.getElementById('tot-limita').textContent=limita;
+
+  let al='';
+  if(t.pol>DB.tanques.pol.kg||t.iso>DB.tanques.iso.kg)
+    al+='<div class="alerta roja">🔴 No alcanza el material en tanque para esta tanda.</div>';
+  const fallados=DB.tanda.filter(p=>!p.ok).length;
+  if(fallados) al+='<div class="alerta naranja">⚠️ '+fallados+' panel'+(fallados>1?'es':'')+' marcado'+(fallados>1?'s':'')+' como fallado. Se descuenta igual del tanque: el material salió del tambor.</div>';
+  document.getElementById('tanda-alertas').innerHTML=al;
+}
+
+function registrarTanda(){
+  if(!DB.tanda.length){ alert('La tanda está vacía.'); return; }
+  const t=totalesTanda();
+  if(t.pol>DB.tanques.pol.kg||t.iso>DB.tanques.iso.kg){
+    if(!confirm('No alcanza el material en tanque. ¿Registrar igual?')) return;
+  }
+  const now=new Date();
+  DB.inyecciones.unshift({
+    id:Date.now(), tipo:'iny',
+    fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
+    nPaneles:t.n, segTotal:+t.seg.toFixed(2), mezclaKg:+t.mezcla.toFixed(4),
+    totPol:+t.pol.toFixed(4), totIso:+t.iso.toFixed(4),
+    fallados:DB.tanda.filter(p=>!p.ok).length,
+    paneles:DB.tanda.map(p=>({
+      nombre:p.nombre, largo:p.largo, ancho:p.ancho, espesor:p.espesor,
+      densidad:p.densidad, sobre:p.sobre, marcha:p.marcha, gs:+(p.gs||0).toFixed(2),
+      tmolde:Number.isFinite(p.tmolde)?p.tmolde:'', estimado:esEstimado(p.marcha),
+      volL:+p.volL.toFixed(3), densReal:+p.densReal.toFixed(1),
+      mezclaKg:+p.mezclaKg.toFixed(4), segundos:Number.isFinite(p.segundos)?+p.segundos.toFixed(2):'',
+      polKg:+p.polKg.toFixed(4), isoKg:+p.isoKg.toFixed(4), ok:p.ok
+    })),
+    nota:sv('p-nota').trim(), producto:DB.producto.nombre, ratio:ratio()
+  });
+  DB.tanques.pol.kg=Math.max(0,DB.tanques.pol.kg-t.pol);
+  DB.tanques.iso.kg=Math.max(0,DB.tanques.iso.kg-t.iso);
+  DB.tanda=[];
+  guardarDB();
+  document.getElementById('p-nota').value='';
+  renderTanda(); renderTanques(); revisarAlarma();
+  alert('Tanda registrada: '+t.n+' paneles.\n\nPoliol: −'+f(t.pol,2)+' kg  (quedan '+f(DB.tanques.pol.kg,1)+')\nISO: −'+f(t.iso,2)+' kg  (quedan '+f(DB.tanques.iso.kg,1)+')');
+}
+
+// ---------- modelos guardados ----------
+function guardarModelo(){
+  const nombre=sv('p-pieza').trim();
+  const largo=gv('p-largo'), ancho=gv('p-ancho'), espesor=gv('p-espesor');
+  if(!nombre){ alert('Ponele un nombre al panel para poder guardarlo.'); return; }
+  if(!(largo>0&&ancho>0&&espesor>0)){ alert('Completá largo, ancho y espesor.'); return; }
+  const existente=DB.modelos.find(m=>m.nombre.toLowerCase()===nombre.toLowerCase());
+  if(existente){
+    if(!confirm('Ya existe un modelo llamado "'+nombre+'". ¿Lo actualizo con estas medidas?')) return;
+    Object.assign(existente,{largo,ancho,espesor,densidad:gv('p-densidad'),sobre:gv('p-sobre')});
+  } else {
+    DB.modelos.push({ id:Date.now(), nombre, largo, ancho, espesor,
+      densidad:gv('p-densidad'), sobre:gv('p-sobre') });
+  }
+  DB.modelos.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  guardarDB(); renderModelos();
+  alert('Modelo guardado. Ahora lo cargás con un toque.');
+}
+
+function usarModelo(id){
+  const m=DB.modelos.find(x=>x.id===id);
+  if(!m) return;
+  document.getElementById('p-pieza').value=m.nombre;
+  document.getElementById('p-largo').value=m.largo;
+  document.getElementById('p-ancho').value=m.ancho;
+  document.getElementById('p-espesor').value=m.espesor;
+  if(m.densidad) document.getElementById('p-densidad').value=m.densidad;
+  if(m.sobre!==undefined&&m.sobre!=='') document.getElementById('p-sobre').value=m.sobre;
+  calcularInyeccion(); guardarDebounce();
+}
+
+function borrarModelo(id,ev){
+  if(ev) ev.stopPropagation();
+  const m=DB.modelos.find(x=>x.id===id);
+  if(!m) return;
+  if(!confirm('¿Borrar el modelo "'+m.nombre+'"?')) return;
+  DB.modelos=DB.modelos.filter(x=>x.id!==id);
+  guardarDB(); renderModelos();
+}
+
+function renderModelos(){
+  const cont=document.getElementById('modelos-lista');
+  if(!cont) return;
+  if(!DB.modelos.length){
+    cont.innerHTML='<div class="hint">Todavía no guardaste ningún modelo. Cargá una medida abajo y tocá "Guardar esta medida como modelo": después la ponés en la tanda con un toque.</div>';
+    return;
+  }
+  cont.innerHTML='<div class="modelos-grid">'+DB.modelos.map(m=>
+    '<button class="modelo-chip" onclick="usarModelo('+m.id+')">'
+    +'<span class="mch-x" onclick="borrarModelo('+m.id+',event)">✕</span>'
+    +'<span class="mch-n">'+m.nombre+'</span>'
+    +'<span class="mch-m">'+f(m.largo,0)+'×'+f(m.ancho,0)+'×'+f(m.espesor,0)+' cm</span>'
+    +'</button>').join('')+'</div>';
+}
+
+['p-largo','p-ancho','p-espesor','p-densidad','p-sobre','p-n','p-pieza','p-tmolde'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{ calcularInyeccion(); guardarDebounce(); });
+});
+let debTimer=null;
+function guardarDebounce(){ clearTimeout(debTimer); debTimer=setTimeout(guardarDB,700); }
+
+
+// ═══════════════════════════════════════════════════════════════
+// TANQUES
+// ═══════════════════════════════════════════════════════════════
+function renderTanques(){
+  const cont=document.getElementById('tanques-vista');
+  if(!cont) return;
+  const defs=[
+    {k:'pol', nom:'💧 Poliol', color:'var(--azul-mid)', pe:DB.producto.pePol},
+    {k:'iso', nom:'🧪 Isocianato', color:'var(--verde)', pe:DB.producto.peIso}
+  ];
+  cont.innerHTML=defs.map(def=>{
+    const t=DB.tanques[def.k];
+    const pct=t.cap>0?Math.max(0,Math.min(100,t.kg/t.cap*100)):0;
+    const enAlarma=tanquesEnUso() && t.kg<=(t.alarma||0);
+    const color=enAlarma?'var(--rojo)':(pct<=25?'var(--naranja)':def.color);
+    const litros=def.pe>0?t.kg/def.pe:0;
+    const vencido=t.venc&&new Date(t.venc+'T00:00:00')<new Date();
+    let meta=f(pct,0)+' % · '+f(litros,1)+' litros<br>';
+    if(enAlarma) meta+='<span class="rojo">⚠️ Bajo el mínimo de '+f(t.alarma,0)+' kg</span><br>';
+    if(t.lote) meta+='Lote '+t.lote+'<br>';
+    if(t.venc) meta+='<span class="'+(vencido?'venc-mal':'')+'">Vence '+t.venc+(vencido?' · VENCIDO':'')+'</span>';
+    return '<div class="tanque-card'+(enAlarma?' alarma':'')+'">'
+      +'<div class="tambor"><div class="tambor-aro" style="top:28%"></div><div class="tambor-aro" style="top:62%"></div>'
+      +'<div class="tambor-fill" style="height:'+pct+'%;background:'+color+'"></div></div>'
+      +'<div class="tanque-info"><div class="tanque-nom">'+def.nom+'</div>'
+      +'<div class="tanque-kg">'+f(t.kg,1)+' <span>/ '+f(t.cap,0)+' kg</span></div>'
+      +'<div class="tanque-barra"><div style="width:'+pct+'%;background:'+color+'"></div></div>'
+      +'<div class="tanque-meta">'+meta+'</div></div></div>';
+  }).join('');
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.value=v; };
+  set('tq-cap-pol',DB.tanques.pol.cap); set('tq-cap-iso',DB.tanques.iso.cap);
+  set('tq-alarma-pol',DB.tanques.pol.alarma); set('tq-alarma-iso',DB.tanques.iso.alarma);
+  const hp=document.getElementById('hint-alarma-pol'), hi=document.getElementById('hint-alarma-iso');
+  if(hp) hp.textContent='kg · equivale a '+f(DB.tanques.pol.alarma/DB.producto.pePol,0)+' litros';
+  if(hi) hi.textContent='kg · equivale a '+f(DB.tanques.iso.alarma/DB.producto.peIso,0)+' litros';
+  revisarAlarma();
+}
+
+function cargarTanque(completo){
+  const comp=sv('tq-comp');
+  const t=DB.tanques[comp];
+  const kg=completo?t.cap:gv('tq-kg');
+  if(!Number.isFinite(kg)||kg<=0){ alert('Poné cuántos kilos entraron.'); return; }
+  const lote=sv('tq-lote').trim(), elab=sv('tq-elab');
+  const venc=sumarMeses(elab,comp==='pol'?VIDA_POL:VIDA_ISO);
+  t.kg=Math.min(t.cap,t.kg+kg);
+  if(lote) t.lote=lote;
+  if(elab){ t.elab=elab; t.venc=venc; }
+  const now=new Date();
+  DB.movimientos.unshift({
+    id:Date.now(), tipo:'tq', mov:'carga', comp,
+    fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
+    kg:+kg.toFixed(2), lote, elab, venc, nota:sv('tq-nota').trim()
+  });
+  guardarDB(); renderTanques(); calcularInyeccion();
+  document.getElementById('tq-kg').value=''; document.getElementById('tq-nota').value='';
+  alert('Cargado: '+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg en tanque.');
+}
+
+function fijarNivel(){
+  const comp=sv('tq-comp');
+  const kg=gv('tq-kg');
+  if(!Number.isFinite(kg)||kg<0){ alert('Poné los kilos que medisté en el tanque.'); return; }
+  const t=DB.tanques[comp];
+  const antes=t.kg;
+  t.kg=Math.min(t.cap,kg);
+  const now=new Date();
+  DB.movimientos.unshift({
+    id:Date.now(), tipo:'tq', mov:'ajuste', comp,
+    fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
+    kg:+kg.toFixed(2), antes:+antes.toFixed(2), nota:sv('tq-nota').trim()
+  });
+  guardarDB(); renderTanques(); calcularInyeccion();
+  document.getElementById('tq-kg').value=''; document.getElementById('tq-nota').value='';
+}
+
+function registrarPurga(){
+  const comp=sv('tq-comp');
+  const kg=gv('tq-kg');
+  if(!Number.isFinite(kg)||kg<=0){ alert('Poné cuántos kilos se fueron en la purga.'); return; }
+  const t=DB.tanques[comp];
+  t.kg=Math.max(0,t.kg-kg);
+  const now=new Date();
+  DB.movimientos.unshift({
+    id:Date.now(), tipo:'tq', mov:'purga', comp,
+    fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
+    kg:+kg.toFixed(2), nota:sv('tq-nota').trim()
+  });
+  guardarDB(); renderTanques(); calcularInyeccion();
+  document.getElementById('tq-kg').value=''; document.getElementById('tq-nota').value='';
+  alert('Purga registrada: −'+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg.');
+}
+
+function guardarCapacidades(){
+  const cp=gv('tq-cap-pol'), ci=gv('tq-cap-iso');
+  const ap=gv('tq-alarma-pol'), ai=gv('tq-alarma-iso');
+  if(Number.isFinite(cp)&&cp>0) DB.tanques.pol.cap=cp;
+  if(Number.isFinite(ci)&&ci>0) DB.tanques.iso.cap=ci;
+  if(Number.isFinite(ap)&&ap>=0) DB.tanques.pol.alarma=ap;
+  if(Number.isFinite(ai)&&ai>=0) DB.tanques.iso.alarma=ai;
+  guardarDB(); renderTanques();
+  alert('Guardado.');
+}
+
+function reconciliarTanques(){
+  if(!confirm('Se va a recalcular el nivel de los dos tanques usando el historial. ¿Seguimos?')) return;
+  ['pol','iso'].forEach(comp=>{
+    const ajustes=DB.movimientos.filter(m=>m.comp===comp&&m.mov==='ajuste').sort((a,b)=>b.id-a.id);
+    const desde=ajustes.length?ajustes[0].id:0;
+    let kg=ajustes.length?ajustes[0].kg:0;
+    DB.movimientos.filter(m=>m.comp===comp&&m.mov==='carga'&&m.id>desde).forEach(m=>{ kg+=m.kg; });
+    DB.movimientos.filter(m=>m.comp===comp&&m.mov==='purga'&&m.id>desde).forEach(m=>{ kg-=m.kg; });
+    DB.inyecciones.filter(i=>i.id>desde).forEach(i=>{ kg-=(comp==='pol'?i.totPol:i.totIso); });
+    DB.tanques[comp].kg=Math.max(0,Math.min(DB.tanques[comp].cap,kg));
+  });
+  guardarDB(); renderTanques(); calcularInyeccion();
+  alert('Niveles reconstruidos.\n\nPoliol: '+f(DB.tanques.pol.kg,1)+' kg\nISO: '+f(DB.tanques.iso.kg,1)+' kg');
+}
+
+document.getElementById('tq-elab').addEventListener('change',function(){
+  const comp=sv('tq-comp');
+  const v=sumarMeses(this.value,comp==='pol'?VIDA_POL:VIDA_ISO);
+  document.getElementById('tq-venc-hint').textContent=v
+    ? 'Vencimiento: '+v+' ('+(comp==='pol'?VIDA_POL:VIDA_ISO)+' meses según ficha técnica)':'';
+});
+
+// ═══════════════════════════════════════════════════════════════
+// TEMPERATURA
+// ═══════════════════════════════════════════════════════════════
+const tempUnits={iso:'C',pol:'C',amb:'C'};
+function setTempUnit(cual,unit,btn){
+  const cont=btn.closest('.temp-toggle');
+  cont.querySelectorAll('.temp-btn').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  const prev=tempUnits[cual]; tempUnits[cual]=unit;
+  const input=document.getElementById('an-temp-'+cual);
+  const v=parseFloat(input.value);
+  if(!isNaN(v)){
+    if(prev==='C'&&unit==='F') input.value=((v*9/5)+32).toFixed(1);
+    else if(prev==='F'&&unit==='C') input.value=(((v-32)*5/9)).toFixed(1);
+  }
+  renderChequeos();
+}
+function tempEnC(id){
+  const v=parseFloat(document.getElementById('an-temp-'+id).value);
+  if(isNaN(v)) return NaN;
+  return tempUnits[id]==='F'?(v-32)*5/9:v;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANOTADOR
+// ═══════════════════════════════════════════════════════════════
+function setFechaHoraAhora(){
+  const now=new Date();
+  if(!sv('an-fecha')) document.getElementById('an-fecha').value=now.toISOString().slice(0,10);
+  if(!sv('an-hora')) document.getElementById('an-hora').value=now.toTimeString().slice(0,5);
+}
+
+function actualizarRatioPreview(){
+  const iso=gv('an-iso'), pol=gv('an-pol');
+  const prev=document.getElementById('ratio-preview'), corr=document.getElementById('ratio-correccion');
+  if(iso>0&&pol>0){
+    const r=iso/pol*100, nom=ratio(), tol=DB.producto.tol||2;
+    const desv=(r-nom)/nom*100;
+    document.getElementById('ratio-val').textContent=f(r,2)+' PBW  ('+(desv>0?'+':'')+f(desv,2)+' %)';
+    document.getElementById('ratio-status').textContent=
+      Math.abs(desv)<=tol?'✅ Dentro de tolerancia ('+nom+' PBW ± '+tol+' %)'
+      :Math.abs(desv)<=tol*2?'⚠️ Fuera de tolerancia — ajuste fino'
+      :'🔴 Fuera de rango — hay que corregir la bomba';
+    const isoObj=pol*factorIso(), dif=isoObj-iso;
+    let txt='<b>Corrección:</b> con '+f(pol,0)+' g de poliol, el ISO debería pesar <b>'+f(isoObj,1)+' g</b> ('+(dif>0?'faltan ':'sobran ')+f(Math.abs(dif),1)+' g).';
+    const hzIso=gv('an-hz-iso'), hzPol=gv('an-hz-pol');
+    if(Number.isFinite(hzIso)&&hzIso>0) txt+='<br>Bomba ISO: '+f(hzIso,1)+' → <b>'+f(hzIso*(isoObj/iso),1)+' Hz</b>';
+    if(Number.isFinite(hzPol)&&hzPol>0) txt+='<br>O bomba poliol: '+f(hzPol,1)+' → <b>'+f(hzPol*((iso/factorIso())/pol),1)+' Hz</b>';
+    txt+='<br><span style="color:var(--gris-4)">Estimación lineal: volvé a disparar y confirmá el peso real.</span>';
+    corr.innerHTML=txt; corr.style.display='block';
+    prev.style.display='block';
+  } else prev.style.display='none';
+  renderChequeos(); pintarCajaMarchaCal();
+}
+
+let marchaCal='media';
+function elegirMarchaCal(k){ marchaCal=k; pintarMarchasCal(); }
+
+function pintarMarchasCal(){
+  const cont=document.getElementById('marchas-cal');
+  if(!cont) return;
+  cont.innerHTML=MARCHAS.map(([k,nom])=>{
+    const m=DB.marchas[k];
+    return '<button class="marcha-btn'+(marchaCal===k?' activo':'')+'" onclick="elegirMarchaCal(\''+k+'\')">'
+      +'<div class="mn">'+nom+'</div>'
+      +'<div class="mv">'+(m.gs>0?f(m.gs,1):'—')+'</div>'
+      +'<div class="mu">g/s guardado</div></button>';
+  }).join('');
+  pintarCajaMarchaCal();
+}
+
+function pintarCajaMarchaCal(){
+  const caja=document.getElementById('cal-marcha-caja');
+  if(!caja) return;
+  const iso=gv('an-iso'), pol=gv('an-pol'), seg=gv('an-seg');
+  if(!(iso>0&&pol>0&&seg>0)){
+    caja.innerHTML='<div class="hint" style="margin-top:8px">Cargá isocianato, poliol y segundos para poder volcar esta medición a una marcha.</div>';
+    return;
+  }
+  const gs=(iso+pol)/seg;
+  const actual=DB.marchas[marchaCal].gs;
+  caja.innerHTML='<div class="alerta azul" style="margin-top:10px">'
+    +'Esta prueba tira <b>'+f(gs,2)+' g/s</b> ('+f(gs*60/1000,3)+' kg/min).'
+    +(actual>0?' La marcha '+marchaCal+' hoy tiene guardado '+f(actual,2)+' g/s.':' La marcha '+marchaCal+' todavía no tiene valor.')
+    +'</div>'
+    +'<button class="btn-sec" onclick="volcarAMarcha()">⬆️ Guardar como mangueras libres de '+marchaCal+'</button>'
+    +'<div class="hint" style="margin-top:6px">Esto es la suma de los dos componentes en mangueras libres. '
+    +'El caudal que usan los cálculos es el medido por cabezal, en Ajustes → Marchas.</div>';
+}
+
+function volcarAMarcha(){
+  const iso=gv('an-iso'), pol=gv('an-pol'), seg=gv('an-seg');
+  if(!(iso>0&&pol>0&&seg>0)){ alert('Faltan isocianato, poliol o segundos.'); return; }
+  const gs=(iso+pol)/seg;
+  if(!confirm('¿Guardar '+f(gs,2)+' g/s como MANGUERAS LIBRES de la marcha '+marchaCal+'?\n\nEl caudal que usan los cálculos es el del cabezal, que se mide aparte en Ajustes.')) return;
+  DB.marchas[marchaCal]=Object.assign({},DB.marchas[marchaCal],{ seg:seg, g:+(iso+pol).toFixed(1), gs:gs });
+  guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
+  alert('Mangueras libres de la marcha '+marchaCal+': '+f(gs,2)+' g/s.'+(DB.marchas[marchaCal].rgs>0?'':'\n\nFalta medir el cabezal para que los segundos y el tanque salgan exactos.'));
+}
+
+function renderChequeos(){
+  const cont=document.getElementById('chequeos');
+  if(!cont) return;
+  const filas=[
+    {n:'Temperatura ISO', v:tempEnC('iso'), r:R_TEMP, u:'°C', d:1},
+    {n:'Temperatura Poliol', v:tempEnC('pol'), r:R_TEMP, u:'°C', d:1},
+    {n:'Tiempo de crema', v:gv('an-crema'), r:R_CREMA, u:'seg', d:0},
+    {n:'Tiempo de hilos', v:gv('an-hilos'), r:R_HILOS, u:'seg', d:0}
+  ];
+  cont.innerHTML=filas.map(x=>{
+    const hay=Number.isFinite(x.v);
+    const ok=hay&&x.v>=x.r[0]&&x.v<=x.r[1];
+    const cls=!hay?'na':ok?'ok':'mal';
+    const ico=!hay?'·':ok?'✅':'🔴';
+    return '<div class="chk '+cls+'"><span class="chk-n">'+x.n+'</span>'
+      +'<span class="chk-r">'+x.r[0]+'–'+x.r[1]+' '+x.u+'</span>'
+      +'<span class="chk-v">'+(hay?f(x.v,x.d):'—')+'</span>'
+      +'<span class="chk-e">'+ico+'</span></div>';
+  }).join('');
+}
+
+['an-iso','an-pol','an-hz-iso','an-hz-pol','an-seg'].forEach(id=>
+  document.getElementById(id).addEventListener('input',actualizarRatioPreview));
+['an-crema','an-hilos','an-temp-iso','an-temp-pol'].forEach(id=>
+  document.getElementById(id).addEventListener('input',renderChequeos));
+
+function guardarPrueba(){
+  const iso=gv('an-iso'), pol=gv('an-pol');
+  const fecha=sv('an-fecha'), hora=sv('an-hora');
+  if(!iso||!pol||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+  const seg=gv('an-seg');
+  const r=+(iso/pol*100).toFixed(2), nom=ratio(), tol=DB.producto.tol||2;
+  const tIso=sv('an-temp-iso'), tPol=sv('an-temp-pol'), tAmb=sv('an-temp-amb');
+  DB.pruebas.unshift({
+    id:Date.now(), tipo:'cal', iso, pol,
+    seg:Number.isFinite(seg)?seg:'',
+    hzIso:Number.isFinite(gv('an-hz-iso'))?gv('an-hz-iso'):'',
+    hzPol:Number.isFinite(gv('an-hz-pol'))?gv('an-hz-pol'):'',
+    crema:sv('an-crema'), hilos:sv('an-hilos'),
+    caudal:(Number.isFinite(seg)&&seg>0)?+((iso+pol)/seg).toFixed(2):'',
+    tempIso:tIso?tIso+'°'+tempUnits.iso:'', tempPol:tPol?tPol+'°'+tempUnits.pol:'',
+    tempAmb:tAmb?tAmb+'°'+tempUnits.amb:'', marcha:marchaCal,
+    fecha, hora, nota:sv('an-nota').trim(), ratio:r,
+    ok:Math.abs((r-nom)/nom*100)<=tol,
+    producto:DB.producto.nombre, ratioNom:nom
+  });
+  guardarDB();
+  ['an-iso','an-pol','an-seg','an-hz-iso','an-hz-pol','an-crema','an-hilos',
+   'an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ratio-preview').style.display='none';
+  renderChequeos();
+  irATab('historial');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DENSIDAD LIBRE
+// ═══════════════════════════════════════════════════════════════
+function calcularDensidad(){
+  const vol=gv('d-vol'), tara=Number.isFinite(gv('d-tara'))?gv('d-tara'):0, bruto=gv('d-bruto');
+  const neto=Number.isFinite(bruto)?bruto-tara:NaN;
+  const dens=(vol>0&&Number.isFinite(neto))?neto/vol:NaN;
+
+  const obj=document.getElementById('d-objetivo');
+  if(vol>0){
+    obj.textContent=f(R_LIBRE[0]*vol,0)+' a '+f(R_LIBRE[1]*vol,0)+' g';
+    document.getElementById('d-objetivo-det').textContent=
+      'Espuma neta para '+f(vol,2)+' litro(s), buscando '+R_LIBRE[0]+' a '+R_LIBRE[1]+' kg/m³'
+      +(tara>0?'. Con el recipiente vacío de '+f(tara,0)+' g, la balanza tiene que marcar entre '+f(R_LIBRE[0]*vol+tara,0)+' y '+f(R_LIBRE[1]*vol+tara,0)+' g.':'');
+  } else { obj.textContent='—'; }
+
+  document.getElementById('d-neto').textContent=Number.isFinite(neto)?f(neto,1)+' g':'—';
+  document.getElementById('d-neto-det').textContent=tara>0?'bruto '+f(bruto,1)+' g menos tara '+f(tara,1)+' g':'sin tara';
+  document.getElementById('d-result').textContent=Number.isFinite(dens)?f(dens,1):'—';
+  document.getElementById('d-result-det').textContent=Number.isFinite(dens)?'kg/m³':'—';
+
+  let al='';
+  if(Number.isFinite(dens)){
+    if(dens>=R_LIBRE[0]&&dens<=R_LIBRE[1])
+      al='<div class="alerta verde">✅ '+f(dens,1)+' kg/m³ — dentro de '+R_LIBRE[0]+' a '+R_LIBRE[1]+'.</div>';
+    else if(dens<R_LIBRE[0])
+      al='<div class="alerta roja">🔴 '+f(dens,1)+' kg/m³ — por debajo de '+R_LIBRE[0]+'. Espuma liviana: revisá temperaturas, ratio y estado del poliol.</div>';
+    else
+      al='<div class="alerta roja">🔴 '+f(dens,1)+' kg/m³ — por encima de '+R_LIBRE[1]+'. Espuma pesada: revisá temperaturas y agente de expansión.</div>';
+  }
+  document.getElementById('d-alertas').innerHTML=al;
+  return {vol,tara,bruto,neto,dens};
+}
+
+function guardarDensidad(){
+  const d=calcularDensidad();
+  if(!Number.isFinite(d.dens)){ alert('Completá el volumen del recipiente y el peso.'); return; }
+  const now=new Date();
+  DB.densidades.unshift({
+    id:Date.now(), tipo:'den',
+    fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
+    vol:d.vol, tara:d.tara, bruto:d.bruto, neto:+d.neto.toFixed(1), dens:+d.dens.toFixed(1),
+    marcha:sv('d-marcha'), ok:(d.dens>=R_LIBRE[0]&&d.dens<=R_LIBRE[1]),
+    nota:sv('d-nota').trim(), producto:DB.producto.nombre
+  });
+  guardarDB();
+  document.getElementById('d-bruto').value=''; document.getElementById('d-nota').value='';
+  calcularDensidad(); renderDensidades();
+  alert('Prueba guardada.');
+}
+
+function borrarDensidad(id){
+  if(!confirm('¿Eliminar esta prueba?')) return;
+  DB.densidades=DB.densidades.filter(x=>x.id!==id);
+  guardarDB(); renderDensidades(); renderHistorial();
+}
+
+function renderDensidades(){
+  const cont=document.getElementById('d-lista');
+  if(!cont) return;
+  const lista=(DB.densidades||[]).slice(0,8);
+  if(!lista.length){
+    cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">🥤</div><div class="lista-vacia-txt">Todavía no hay pruebas de densidad.</div></div>';
+    return;
+  }
+  cont.innerHTML=lista.map(x=>
+    '<div class="prueba-card'+(x.ok?'':' fallo')+'">'
+    +'<button class="btn-del" onclick="borrarDensidad('+x.id+')" title="Eliminar">🗑</button>'
+    +'<div class="prueba-num">'+(x.ok?'✅':'🔴')+' '+x.fecha+' '+x.hora+(x.marcha?' · marcha '+x.marcha:'')+'</div>'
+    +'<div class="prueba-fila">'
+    + dato('Densidad',f(x.dens,1),x.ok?'iso':'mal')
+    + dato('Espuma',f(x.neto,1)+' g')
+    + dato('Recipiente',f(x.vol,2)+' L')
+    +'</div>'
+    +(x.nota?'<div class="prueba-nota">"'+x.nota+'"</div>':'')
+    +'</div>').join('');
+}
+
+['d-vol','d-tara','d-bruto'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',calcularDensidad);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════════════════════════
+let filtroActual='todo';
+function setFiltro(x,btn){
+  filtroActual=x;
+  document.querySelectorAll('.filtro').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  renderHistorial();
+}
+function eliminarRegistro(tipo,id){
+  if(!confirm('¿Eliminar este registro?\n\nOjo: si es una inyección, el nivel del tanque NO se vuelve atrás.')) return;
+  if(tipo==='cal') DB.pruebas=DB.pruebas.filter(p=>p.id!==id);
+  if(tipo==='iny') DB.inyecciones=DB.inyecciones.filter(p=>p.id!==id);
+  if(tipo==='tq') DB.movimientos=DB.movimientos.filter(p=>p.id!==id);
+  if(tipo==='den') DB.densidades=DB.densidades.filter(p=>p.id!==id);
+  guardarDB(); renderHistorial();
+}
+function dato(l,v,c){ return '<div class="prueba-dato"><span class="prueba-dato-label">'+l+'</span><span class="prueba-dato-val '+(c||'')+'">'+v+'</span></div>'; }
+
+function renderHistorial(){
+  actualizarContadores();
+  const cont=document.getElementById('lista-pruebas');
+  let items=[];
+  if(filtroActual==='todo'||filtroActual==='cal') items=items.concat(DB.pruebas.map(p=>Object.assign({},p,{tipo:'cal'})));
+  if(filtroActual==='todo'||filtroActual==='iny') items=items.concat(DB.inyecciones.map(p=>Object.assign({},p,{tipo:'iny'})));
+  if(filtroActual==='todo'||filtroActual==='tq') items=items.concat(DB.movimientos.map(p=>Object.assign({},p,{tipo:'tq'})));
+  if(filtroActual==='todo'||filtroActual==='den') items=items.concat((DB.densidades||[]).map(p=>Object.assign({},p,{tipo:'den'})));
+  items.sort((a,b)=>b.id-a.id);
+
+  if(!items.length){
+    cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">📋</div><div class="lista-vacia-txt">No hay registros para este filtro.</div></div>';
+    return;
+  }
+  cont.innerHTML=items.map(p=>{
+    let cuerpo='', titulo='', clase='';
+    if(p.tipo==='cal'){
+      titulo='⚗️ Calibración · '+p.fecha+' '+p.hora;
+      cuerpo=dato('ISO',p.iso+' g','iso')+dato('Poliol',p.pol+' g')
+        +dato('Ratio',f(p.ratio,2)+' PBW',p.ok?'ratio':'mal');
+      if(p.caudal) cuerpo+=dato('Caudal',p.caudal+' g/s');
+      if(p.marcha) cuerpo+=dato('Marcha',p.marcha);
+      if(p.hzIso) cuerpo+=dato('Hz ISO',p.hzIso,'hz');
+      if(p.hzPol) cuerpo+=dato('Hz Pol',p.hzPol,'hz');
+      if(p.tempIso) cuerpo+=dato('🌡 ISO',p.tempIso,'temp');
+      if(p.tempPol) cuerpo+=dato('🌡 Poliol',p.tempPol,'temp');
+      if(p.tempMol) cuerpo+=dato('🔧 Molde',p.tempMol,'temp');
+      if(p.tempAmb) cuerpo+=dato('🏭 Amb.',p.tempAmb,'temp');
+      if(p.crema) cuerpo+=dato('Crema',p.crema+' s');
+      if(p.hilos) cuerpo+=dato('Hilos',p.hilos+' s');
+      if(p.vaso) cuerpo+=dato('Vaso 1L',p.vaso);
+    } else if(p.tipo==='iny'){
+      clase='tipo-iny';
+      const lista=Array.isArray(p.paneles)?p.paneles:null;
+      if(lista){
+        titulo='🎯 Tanda de '+p.nPaneles+' panel'+(p.nPaneles>1?'es':'')+' · '+p.fecha+' '+p.hora;
+        cuerpo=dato('Paneles',p.nPaneles)
+          +dato('Mezcla total',f(p.mezclaKg,3)+' kg')
+          +dato('Tiempo',f(p.segTotal,1)+' s')
+          +dato('Poliol',f(p.totPol,2)+' kg')
+          +dato('ISO',f(p.totIso,2)+' kg','iso')
+          +(p.fallados?dato('Fallados',p.fallados,'mal'):'');
+        cuerpo+='</div><div class="panel-mini">'+lista.map(x=>
+          '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
+          +' · <b>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</b>'
+          +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b> · <b>'+f(x.mezclaKg,3)+'kg</b>'
+          +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
+      } else {
+        titulo='🎯 Inyección · '+p.fecha+' '+p.hora+(p.pieza?' · '+p.pieza:'');
+        cuerpo=dato('Paneles',p.n)
+          +dato('Medida',(p.largo||'?')+'×'+(p.ancho||'?')+'×'+(p.espesor||'?'))
+          +dato('Mezcla c/u',f(p.mezclaKg,3)+' kg')
+          +(p.segundos!==''?dato('Segundos',f(p.segundos,2)+' s'):'')
+          +(p.marcha?dato('Marcha',p.marcha):'')
+          +dato('Poliol',f(p.totPol,2)+' kg')
+          +dato('ISO',f(p.totIso,2)+' kg','iso');
+      }
+    } else if(p.tipo==='den'){
+      clase=p.ok?'':'fallo';
+      titulo='🥤 Densidad libre · '+p.fecha+' '+p.hora+(p.marcha?' · '+p.marcha:'');
+      cuerpo=dato('Densidad',f(p.dens,1),p.ok?'iso':'mal')+dato('Espuma',f(p.neto,1)+' g')+dato('Recipiente',f(p.vol,2)+' L');
+    } else {
+      clase='tipo-tq';
+      titulo='🛢️ '+(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel')+' · '+p.fecha+' '+p.hora;
+      cuerpo=dato('Componente',p.comp==='pol'?'Poliol':'ISO')+dato('Kilos',f(p.kg,1)+' kg');
+      if(p.mov==='ajuste'&&p.antes!==undefined) cuerpo+=dato('Antes',f(p.antes,1)+' kg');
+      if(p.lote) cuerpo+=dato('Lote',p.lote);
+      if(p.venc) cuerpo+=dato('Vence',p.venc);
+    }
+    return '<div class="prueba-card '+clase+'">'
+      +'<button class="btn-del" onclick="eliminarRegistro(\''+p.tipo+'\','+p.id+')" title="Eliminar">🗑</button>'
+      +'<div class="prueba-num">'+titulo+'</div>'
+      +'<div class="prueba-fila">'+cuerpo+'</div>'
+      +(p.nota?'<div class="prueba-nota">"'+p.nota+'"</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORTAR
+// ═══════════════════════════════════════════════════════════════
+function descargarArchivo(nombre,contenido,mime){
+  const blob=new Blob([contenido],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=nombre;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+function exportarRespaldo(){
+  DB.meta.ultimoRespaldo=Date.now();
+  guardarDB();
+  descargarArchivo('giovannetti_respaldo_'+new Date().toISOString().slice(0,10)+'.json',
+    JSON.stringify(DB,null,2),'application/json');
+  alert('Respaldo descargado.\n\nGuardalo o mandátelo por mail: con ese archivo recuperás todo, incluido el nivel de los tanques.');
+}
+
+function enviarRespaldo(){
+  const fecha=new Date().toISOString().slice(0,10);
+  const nombre='giovannetti_respaldo_'+fecha+'.json';
+  const texto=JSON.stringify(DB,null,2);
+  DB.meta.ultimoRespaldo=Date.now(); guardarDB();
+  try{
+    const archivo=new File([texto],nombre,{type:'application/json'});
+    if(navigator.canShare && navigator.canShare({files:[archivo]})){
+      navigator.share({ files:[archivo], title:'Respaldo Giovannetti',
+        text:'Respaldo del '+fecha+' — '+totalRegistros()+' registros' })
+        .catch(()=>{});
+      return;
+    }
+  }catch(e){}
+  descargarArchivo(nombre,texto,'application/json');
+  alert('Tu teléfono no permite compartir directo, así que se descargó el archivo.\n\nMandátelo por WhatsApp o mail desde la carpeta de descargas.');
+}
+
+function importarRespaldo(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    try{
+      const d=normalizar(JSON.parse(reader.result));
+      const nuevos=d.pruebas.length+d.inyecciones.length+d.movimientos.length;
+      if(!confirm('El respaldo tiene '+nuevos+' registros.\n\nSe suman a los '+totalRegistros()+' que ya hay acá, y se toma el nivel de tanques del respaldo. ¿Seguimos?')) return;
+      DB.pruebas=unir(DB.pruebas,d.pruebas);
+      DB.inyecciones=unir(DB.inyecciones,d.inyecciones);
+      DB.movimientos=unir(DB.movimientos,d.movimientos);
+      DB.tanques=d.tanques; DB.producto=d.producto; DB.marchas=d.marchas; DB.cfg=d.cfg;
+      guardarDB(); pintarTodo(); renderHistorial();
+      alert('Listo. Datos restaurados.');
+    }catch(e){ alert('Ese archivo no es un respaldo válido de la app.'); }
+  };
+  reader.readAsText(file);
+  ev.target.value='';
+}
+
+function borrarTodo(){
+  if(!confirm('¿Borrar TODAS las calibraciones, inyecciones y movimientos?')) return;
+  if(!confirm('Última confirmación. Esto no se puede deshacer.\n\n¿Descargaste un respaldo?')) return;
+  DB.pruebas=[]; DB.inyecciones=[]; DB.movimientos=[];
+  guardarDB(); renderHistorial();
+}
+
+function exportarCSV(){
+  if(!totalRegistros()){ alert('No hay registros para exportar'); return; }
+  const q=v=>'"'+String(v===undefined||v===null?'':v).replace(/"/g,'""')+'"';
+  const L=[];
+  L.push('PRODUCTO,'+q(DB.producto.nombre)+',Ratio,'+DB.producto.ratio+',PE Poliol,'+DB.producto.pePol+',PE ISO,'+DB.producto.peIso);
+  L.push('','CALIBRACIONES');
+  L.push('Fecha,Hora,Marcha,ISO (g),Poliol (g),Seg,Caudal (g/s),Ratio (PBW),En tolerancia,Hz ISO,Hz Poliol,Crema (s),Hilos (s),Temp ISO,Temp Poliol,Temp Amb,Notas');
+  DB.pruebas.forEach(p=>L.push([p.fecha,p.hora,p.marcha||'',p.iso,p.pol,p.seg,p.caudal,p.ratio,p.ok?'SI':'NO',p.hzIso,p.hzPol,p.crema,p.hilos,p.tempIso,p.tempPol,p.tempAmb,q(p.nota)].join(',')));
+  L.push('','INYECCIONES (una fila por panel)');
+  L.push('Tanda,Fecha,Hora,Panel,Estado,Largo,Ancho,Espesor,Volumen (L),Densidad,Sobreempaque (%),Densidad real,Temp molde,Mezcla (kg),Segundos,Marcha,g/s,Poliol (kg),ISO (kg),Notas de la tanda');
+  DB.inyecciones.forEach(t=>{
+    const lista=Array.isArray(t.paneles)?t.paneles:null;
+    if(lista){
+      lista.forEach(x=>L.push([t.id,t.fecha,t.hora,q(x.nombre),x.ok?'BIEN':'FALLO',x.largo,x.ancho,x.espesor,x.volL,
+        x.densidad,x.sobre,x.densReal,x.tmolde,x.mezclaKg,x.segundos,x.marcha,x.gs,x.polKg,x.isoKg,q(t.nota)].join(',')));
+    } else {
+      L.push([t.id,t.fecha,t.hora,q(t.pieza),'BIEN',t.largo,t.ancho,t.espesor,t.volL,t.densidad,t.sobre,
+        t.densReal,'',t.mezclaKg,t.segundos,t.marcha,t.gs,t.totPol,t.totIso,q(t.nota)].join(','));
+    }
+  });
+  L.push('','RESUMEN POR TANDA');
+  L.push('Tanda,Fecha,Hora,Paneles,Fallados,Mezcla total (kg),Tiempo total (s),Poliol (kg),ISO (kg)');
+  DB.inyecciones.forEach(t=>L.push([t.id,t.fecha,t.hora,t.nPaneles||t.n||1,t.fallados||0,t.mezclaKg,t.segTotal||t.segundos,t.totPol,t.totIso].join(',')));
+  L.push('','PRUEBAS DE DENSIDAD LIBRE');
+  L.push('Fecha,Hora,Marcha,Recipiente (L),Tara (g),Bruto (g),Espuma neta (g),Densidad (kg/m3),En rango,Notas');
+  (DB.densidades||[]).forEach(x=>L.push([x.fecha,x.hora,x.marcha,x.vol,x.tara,x.bruto,x.neto,x.dens,x.ok?'SI':'NO',q(x.nota)].join(',')));
+  L.push('','MODELOS DE PANEL');
+  L.push('Nombre,Largo,Ancho,Espesor,Densidad,Sobreempaque');
+  DB.modelos.forEach(m=>L.push([q(m.nombre),m.largo,m.ancho,m.espesor,m.densidad,m.sobre].join(',')));
+  L.push('','MOVIMIENTOS DE TANQUE');
+  L.push('Fecha,Hora,Movimiento,Componente,Kilos,Lote,Elaboración,Vencimiento,Notas');
+  DB.movimientos.forEach(p=>L.push([p.fecha,p.hora,p.mov,p.comp==='pol'?'Poliol':'ISO',p.kg,q(p.lote),p.elab,p.venc,q(p.nota)].join(',')));
+  L.push('','MARCHAS');
+  L.push('Marcha,Mangueras libres (g/s),Cabezal real (g/s),Rendimiento (%),Caida manual (%),Usado en calculos (g/s)');
+  MARCHAS.forEach(([k,n])=>{ const m=DB.marchas[k]; const r=rendimiento(k);
+    L.push([n,m.gs?m.gs.toFixed(2):'',m.rgs?m.rgs.toFixed(2):'',Number.isFinite(r)?r.toFixed(1):'',m.caida,(gsEfectivo(k)||0).toFixed(2)].join(',')); });
+  L.push('','TANQUES AL EXPORTAR');
+  L.push('Componente,Kilos,Litros,Capacidad,Alarma,Lote,Vencimiento');
+  L.push(['Poliol',DB.tanques.pol.kg.toFixed(2),(DB.tanques.pol.kg/DB.producto.pePol).toFixed(1),DB.tanques.pol.cap,DB.tanques.pol.alarma,q(DB.tanques.pol.lote),DB.tanques.pol.venc].join(','));
+  L.push(['ISO',DB.tanques.iso.kg.toFixed(2),(DB.tanques.iso.kg/DB.producto.peIso).toFixed(1),DB.tanques.iso.cap,DB.tanques.iso.alarma,q(DB.tanques.iso.lote),DB.tanques.iso.venc].join(','));
+  descargarArchivo('giovannetti_'+new Date().toISOString().slice(0,10)+'.csv','\uFEFF'+L.join('\n'),'text/csv;charset=utf-8;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════
+const ORDEN_TABS=['calibrador','inyeccion','tanques','anotador','densidad','historial','ajustes'];
+function irATab(nombre){
+  const i=ORDEN_TABS.indexOf(nombre);
+  const b=document.querySelectorAll('.tab-btn')[i];
+  if(b) setTab(nombre,b);
+}
+
+function setTab(nombre,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('activo'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('activo'));
+  document.getElementById('panel-'+nombre).classList.add('activo');
+  btn.classList.add('activo');
+  if(nombre==='historial') renderHistorial();
+  if(nombre==='tanques') renderTanques();
+  if(nombre==='inyeccion'){ pintarMarchasSel(); renderModelos(); calcularInyeccion(); renderTanda(); }
+  if(nombre==='anotador'){ setFechaHoraAhora(); renderChequeos(); pintarMarchasCal(); }
+  if(nombre==='densidad'){ calcularDensidad(); renderDensidades(); }
+  if(nombre==='ajustes'){ pintarEstadoDatos(); pintarProducto(); pintarMarchasConfig(); setTimeout(()=>dibujarLogo(document.getElementById('logo-grande'),256),50); }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOGO
+// ═══════════════════════════════════════════════════════════════
+function dibujarLogo(canvas,size){
+  const c=canvas; c.width=size; c.height=size;
+  const ctx=c.getContext('2d');
+  const s=size, r=s*0.18;
+  const bg=ctx.createLinearGradient(0,0,s,s);
+  bg.addColorStop(0,'#0f2a5e'); bg.addColorStop(1,'#1B5EA6');
+  ctx.fillStyle=bg;
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(s-r,0); ctx.quadraticCurveTo(s,0,s,r);
+  ctx.lineTo(s,s-r); ctx.quadraticCurveTo(s,s,s-r,s);
+  ctx.lineTo(r,s); ctx.quadraticCurveTo(0,s,0,s-r);
+  ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+  ctx.fill();
+  const cx=s/2, cy=s*0.42, rad=s*0.28;
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=s*0.006;
+  for(let a=0;a<6;a++){ const ang=a*60*(Math.PI/180);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+rad*Math.cos(ang),cy+rad*Math.sin(ang)); ctx.stroke(); }
+  ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=s*0.022; ctx.lineCap='round';
+  for(let a=0;a<6;a++){ const ang=a*60*(Math.PI/180);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+rad*Math.cos(ang),cy+rad*Math.sin(ang)); ctx.stroke(); }
+  ctx.strokeStyle='rgba(147,210,255,0.8)'; ctx.lineWidth=s*0.012;
+  for(let a=0;a<6;a++){ const ang=a*60*(Math.PI/180);
+    for(let t=0.35;t<=0.85;t+=0.25){
+      const bx=cx+rad*t*Math.cos(ang), by=cy+rad*t*Math.sin(ang);
+      const pa=(ang+Math.PI/2), rl=rad*0.18;
+      ctx.beginPath(); ctx.moveTo(bx-rl*Math.cos(pa),by-rl*Math.sin(pa));
+      ctx.lineTo(bx+rl*Math.cos(pa),by+rl*Math.sin(pa)); ctx.stroke();
+    } }
+  ctx.beginPath(); ctx.arc(cx,cy,s*0.045,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+  const tx=cx+rad*0.72, ty=cy-rad*0.12, tw=s*0.038, th=s*0.15;
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  if(ctx.roundRect){
+    ctx.beginPath(); ctx.roundRect(tx-tw/2,ty-th,tw,th+tw,tw/2); ctx.fill();
+    ctx.fillStyle='#f97316';
+    ctx.beginPath(); ctx.roundRect(tx-tw/2*0.6,ty-th+th*0.4,tw*0.6,th*0.6+tw*0.6,tw*0.25); ctx.fill();
+  } else {
+    ctx.fillRect(tx-tw/2,ty-th,tw,th+tw);
+    ctx.fillStyle='#f97316';
+    ctx.fillRect(tx-tw/2*0.6,ty-th+th*0.4,tw*0.6,th*0.6+tw*0.6);
+  }
+  ctx.beginPath(); ctx.arc(tx,ty+tw*0.3,tw*0.75,0,Math.PI*2); ctx.fillStyle='#f97316'; ctx.fill();
+  ctx.font='900 '+(s*0.13)+"px 'Arial Black',sans-serif";
+  ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('G',s*0.82,s*0.28);
+  ctx.font='700 '+(s*0.09)+"px 'Arial',sans-serif";
+  ctx.fillStyle='#ffffff'; ctx.fillText('GIOVANNETTI',s/2,s*0.77);
+  ctx.font='500 '+(s*0.055)+"px 'Arial',sans-serif";
+  ctx.fillStyle='rgba(147,210,255,0.9)'; ctx.fillText('REFRIGERACIÓN',s/2,s*0.87);
+  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.fillRect(s*0.15,s*0.72,s*0.7,s*0.005);
+}
+function descargarLogo(size){
+  const c=document.createElement('canvas');
+  dibujarLogo(c,size);
+  const a=document.createElement('a');
+  a.download='giovannetti-logo-'+size+'.png';
+  a.href=c.toDataURL('image/png'); a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PWA
+// ═══════════════════════════════════════════════════════════════
+(function(){
+  function instalarPWA(){
+    try{
+      const c1=document.createElement('canvas'); dibujarLogo(c1,192);
+      const c2=document.createElement('canvas'); dibujarLogo(c2,512);
+      const i192=c1.toDataURL('image/png'), i512=c2.toDataURL('image/png');
+      document.getElementById('apple-touch-icon').href=i512;
+      const manifest={ name:'Giovannetti Refrigeración', short_name:'Giovannetti',
+        description:'Calibración e inyección de poliuretano', start_url:'.', display:'standalone',
+        background_color:'#0f2a5e', theme_color:'#0f2a5e', orientation:'portrait',
+        icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
+               {src:i512,sizes:'512x512',type:'image/png',purpose:'any maskable'}] };
+      const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+      document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
+    }catch(e){}
+    if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+      const sw="const CACHE='giovannetti-v3';const ASSETS=[self.location.href];"
+        +"self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});"
+        +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
+        +"self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(ASSETS[0]))))});";
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(()=>{});
+    }
+  }
+  if(document.readyState==='complete') instalarPWA();
+  else window.addEventListener('load',instalarPWA);
+
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; mostrarBanner(); });
+  function mostrarBanner(){
+    if(document.getElementById('banner-instalar')) return;
+    const b=document.createElement('div');
+    b.id='banner-instalar';
+    b.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0f2a5e;color:#fff;padding:14px 20px;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:12px;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;font-size:15px;font-weight:700;max-width:340px;width:92%';
+    b.innerHTML='<span style="font-size:24px">📲</span><div style="flex:1;line-height:1.3">Instalá la app en tu pantalla de inicio</div>'
+      +'<button onclick="instalarApp()" style="background:#4A90D9;color:#fff;border:none;border-radius:8px;padding:9px 15px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">Instalar</button>'
+      +'<button onclick="document.getElementById(\'banner-instalar\').remove()" style="background:transparent;color:rgba(255,255,255,.5);border:none;font-size:22px;cursor:pointer;padding:0 2px;line-height:1">×</button>';
+    document.body.appendChild(b);
+  }
+  window.instalarApp=function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{ deferredPrompt=null;
+      const b=document.getElementById('banner-instalar'); if(b) b.remove(); });
+  };
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// ARRANQUE
+// ═══════════════════════════════════════════════════════════════
+dibujarLogo(document.getElementById('logo-header'),56);
+cargarTodo();
+renderHistorial();
+</script>
+</body>
+</html>
