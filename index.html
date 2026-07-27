@@ -94,7 +94,11 @@
   tbody td{padding:12px 14px;text-align:right;font-size:14px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--gris-2)}
   tbody td:first-child{text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
   tbody tr:last-child td{border-bottom:none}
-  .fila-nom{background:linear-gradient(90deg,rgba(26,158,110,.09),rgba(26,158,110,.03))}
+  .fila-nom{background:linear-gradient(90deg,rgba(26,158,110,.16),rgba(26,158,110,.06))}
+  .fila-ok{background:rgba(26,158,110,.05)}
+  .fila-fuera{opacity:.55}
+  .pill-fuera{display:inline-block;background:var(--gris-3);color:#fff;font-size:9px;font-family:'Plus Jakarta Sans';
+    font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:20px;padding:2px 7px;margin-left:7px;vertical-align:middle}
   .td-ratio{font-weight:800;color:var(--azul);font-size:15px}
   .td-iso-g{color:var(--verde);font-weight:700}.td-iso-kg{color:var(--verde)}.td-iso-l{color:var(--azul-mid)}
   .td-tot-g{color:var(--naranja);font-weight:700}.td-tot-kg{color:var(--naranja)}.td-tot-l{color:var(--naranja)}
@@ -186,7 +190,7 @@
   .prueba-card{background:var(--blanco);border-radius:12px;box-shadow:var(--sombra-sm);padding:15px 16px;margin-bottom:10px;border-left:5px solid var(--azul);position:relative}
   .prueba-card.tipo-iny{border-left-color:var(--naranja)}
   .prueba-card.tipo-tq{border-left-color:var(--verde)}
-  .prueba-num{font-size:13px;font-weight:800;color:var(--gris-5);margin-bottom:10px;padding-right:30px}
+  .prueba-num{font-size:13px;font-weight:800;color:var(--gris-5);margin-bottom:10px;padding-right:96px}
   .prueba-fila{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .prueba-dato{display:flex;flex-direction:column;gap:3px;background:var(--gris-1);border-radius:8px;padding:8px 11px;min-width:78px}
   .prueba-dato-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gris-4)}
@@ -212,6 +216,49 @@
   .btn-dl-192{background:var(--gris-2);color:var(--azul-dark)}
   .platform-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   .chip{background:var(--azul-light);color:var(--azul);border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:700;border:1px solid #c2d8f0}
+
+  /* HOJA PARA IMPRIMIR / PDF */
+  #hoja-impresion{display:none}
+  .btn-print{position:absolute;top:9px;right:44px;background:var(--blanco);border:2px solid var(--gris-2);
+    border-radius:7px;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:.4px;
+    color:var(--azul);padding:4px 9px}
+  .btn-print:hover{border-color:var(--azul);background:var(--azul-light)}
+  .descargas{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+  .btn-descarga{border:2px solid var(--azul);background:var(--blanco);color:var(--azul);border-radius:10px;
+    padding:14px 10px;font-family:inherit;font-size:14.5px;font-weight:800;cursor:pointer}
+  .btn-descarga:hover{background:var(--azul);color:#fff}
+  .btn-descarga:active{transform:scale(.99)}
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff!important;padding:0!important}
+    body>header,body>main,body>footer,body>.alarma-nivel,#banner-instalar{display:none!important}
+    #hoja-impresion{display:block!important}
+    .hoja{page-break-after:always}
+    .hoja:last-child{page-break-after:auto}
+  }
+  .hoja{font-family:'Plus Jakarta Sans',sans-serif;color:#000;max-width:180mm;margin:0 auto 14mm}
+  .hoja-top{display:flex;align-items:center;gap:12px;border-bottom:3px solid #0f2a5e;padding-bottom:10px;margin-bottom:14px}
+  .hoja-top img{width:46px;height:46px;border-radius:8px}
+  .hoja-top .ht-n{font-size:19px;font-weight:800;color:#0f2a5e;line-height:1.15}
+  .hoja-top .ht-s{font-size:12px;color:#444;margin-top:3px}
+  .hoja-top .ht-f{margin-left:auto;text-align:right;font-size:12px;color:#444;line-height:1.6}
+  .hoja h3{font-size:14px;font-weight:800;color:#0f2a5e;margin:16px 0 7px;
+    text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #ccc;padding-bottom:4px}
+  .hoja table{width:100%;border-collapse:collapse;margin-bottom:4px}
+  .hoja td{padding:6px 8px;font-size:13px;border-bottom:1px solid #e4e4e4;vertical-align:top}
+  .hoja td:first-child{width:44%;color:#444;font-weight:600}
+  .hoja td:last-child{font-family:'JetBrains Mono',monospace;font-weight:700}
+  .hoja .tabla-paneles td{font-size:12px}
+  .hoja .tabla-paneles th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#444;
+    text-align:left;border-bottom:2px solid #999;padding:6px 8px}
+  .hoja .ok{color:#0D5C40}.hoja .mal{color:#8F1717}
+  .hoja-firma{margin-top:26px;display:flex;gap:30px}
+  .hoja-firma div{flex:1;border-top:1px solid #666;padding-top:6px;font-size:11px;color:#555}
+  .hoja-pie{margin-top:14px;font-size:10px;color:#777;text-align:center}
+
+  .pasos-prueba{margin:0 0 14px 20px;padding:0}
+  .pasos-prueba li{font-size:14.5px;line-height:1.65;color:var(--gris-5);margin-bottom:9px;padding-left:4px}
+  .pasos-prueba li b{color:var(--azul-dark)}
 
   /* MODELOS Y TANDA */
   .modelos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
@@ -274,12 +321,12 @@
 
   <div class="tabs-nav">
     <button class="tab-btn activo" onclick="setTab('calibrador',this)">⚗️ Calibrador</button>
-    <button class="tab-btn" onclick="setTab('inyeccion',this)">🎯 Inyección</button>
-    <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
     <button class="tab-btn" onclick="setTab('anotador',this)">📋 Anotador</button>
     <button class="tab-btn" onclick="setTab('densidad',this)">🥤 Densidad libre</button>
+    <button class="tab-btn" onclick="setTab('inyeccion',this)">🎯 Inyección</button>
+    <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
     <button class="tab-btn" onclick="setTab('historial',this)">📊 Historial</button>
-    <button class="tab-btn" onclick="setTab('ajustes',this)">⚙️ Ajustes</button>
+    <button class="tab-btn" onclick="setTab('ajustes',this)">⚙️ Parámetros</button>
   </div>
 
   <!-- ========== CALIBRADOR ========== -->
@@ -348,6 +395,7 @@
         <div class="ley"><div class="ley-dot" style="background:var(--azul)"></div>Ratio ISO (PBW)</div>
         <div class="ley"><div class="ley-dot" style="background:var(--verde)"></div>ISO requerido</div>
         <div class="ley"><div class="ley-dot" style="background:var(--naranja)"></div>Mezcla total</div>
+        <div class="ley"><div class="ley-dot" style="background:var(--verde-light);border:1px solid var(--verde)"></div>Dentro de tolerancia</div>
       </div>
     </div>
   </div>
@@ -533,38 +581,45 @@
   <div id="panel-anotador" class="panel">
     <div class="anotador-form">
       <div class="form-titulo">📋 Nueva prueba de calibración</div>
+      <div class="hint" style="margin-bottom:14px">
+        Recolectás cada componente por separado en un balde tarado y los pesás. Sirve para ajustar el ratio
+        y para saber cuánto tira la máquina por segundo.
+      </div>
+
+      <div class="card-label">Pesos del disparo</div>
       <div class="form-grid">
         <div class="form-field">
-          <label>🧪 Isocianato (g)</label>
+          <label>🧪 Isocianato</label>
           <input type="number" id="an-iso" placeholder="0" min="0" step="0.1">
+          <div class="hint">gramos</div>
         </div>
         <div class="form-field">
-          <label>💧 Poliol (g)</label>
+          <label>💧 Poliol</label>
           <input type="number" id="an-pol" placeholder="0" min="0" step="0.1">
+          <div class="hint">gramos</div>
         </div>
-        <div class="form-field">
-          <label>⏱ Segundos</label>
+        <div class="form-field full">
+          <label>⏱ Segundos de disparo</label>
           <input type="number" id="an-seg" placeholder="0" min="0" step="0.1">
         </div>
+      </div>
+
+      <div class="card-label" style="margin-top:18px">Bombas</div>
+      <div class="form-grid">
         <div class="form-field">
-          <label>⚡ Hz Bomba ISO</label>
+          <label>⚡ Hz bomba ISO</label>
           <input type="number" id="an-hz-iso" placeholder="0.0" min="0" step="0.1">
         </div>
         <div class="form-field">
-          <label>⚡ Hz Bomba Poliol</label>
+          <label>⚡ Hz bomba poliol</label>
           <input type="number" id="an-hz-pol" placeholder="0.0" min="0" step="0.1">
         </div>
-        <div class="form-field">
-          <label>⏳ Tiempo de crema (seg)</label>
-          <input type="number" id="an-crema" placeholder="0" min="0" step="1">
-        </div>
-        <div class="form-field">
-          <label>🧵 Tiempo de hilos (seg)</label>
-          <input type="number" id="an-hilos" placeholder="0" min="0" step="1">
-        </div>
+      </div>
 
+      <div class="card-label" style="margin-top:18px">Temperaturas</div>
+      <div class="form-grid">
         <div class="form-field">
-          <label>🌡️ Temp. Isocianato</label>
+          <label>🌡️ Isocianato</label>
           <div class="temp-fila">
             <input type="number" id="an-temp-iso" placeholder="—" step="0.1">
             <div class="temp-toggle">
@@ -574,7 +629,7 @@
           </div>
         </div>
         <div class="form-field">
-          <label>🌡️ Temp. Poliol</label>
+          <label>🌡️ Poliol</label>
           <div class="temp-fila">
             <input type="number" id="an-temp-pol" placeholder="—" step="0.1">
             <div class="temp-toggle">
@@ -583,8 +638,8 @@
             </div>
           </div>
         </div>
-        <div class="form-field">
-          <label>🏭 Temp. Ambiente</label>
+        <div class="form-field full">
+          <label>🏭 Ambiente</label>
           <div class="temp-fila">
             <input type="number" id="an-temp-amb" placeholder="—" step="0.1">
             <div class="temp-toggle">
@@ -593,7 +648,10 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <div class="card-label" style="margin-top:18px">Registro</div>
+      <div class="form-grid">
         <div class="form-field">
           <label>📅 Fecha</label>
           <input type="date" id="an-fecha">
@@ -608,7 +666,7 @@
         </div>
       </div>
 
-      <div class="section-title" style="margin-bottom:8px">¿A qué potencia calibraste?</div>
+      <div class="card-label" style="margin-top:18px">¿A qué potencia calibraste?</div>
       <div class="marchas" id="marchas-cal"></div>
       <div id="cal-marcha-caja"></div>
 
@@ -630,48 +688,116 @@
 
   <!-- ========== DENSIDAD LIBRE ========== -->
   <div id="panel-densidad" class="panel">
+
     <div class="anotador-form">
-      <div class="form-titulo">🥤 Prueba de densidad libre</div>
-      <div class="hint" style="margin-bottom:14px">
-        Disparás espuma en un recipiente, la dejás levantar libre, la dejás curar y la pesás.
-        Los gramos por litro son directamente la densidad en kg/m³.
+      <div class="form-titulo">🥤 Cómo se hace la prueba</div>
+      <div class="alerta naranja">
+        <b>Antes de empezar, la temperatura.</b> La ficha pide los dos componentes entre <b>20 y 23 °C</b>.
+        Si están más fríos, la espuma sale más pesada y los tiempos se alargan; si están más calientes, al revés.
+        Medí y anotá la temperatura de cada uno abajo: sin eso, el resultado no se puede comparar con nada.
       </div>
-      <div class="form-grid">
+      <ol class="pasos-prueba">
+        <li>Acondicioná los componentes a 20–23 °C y agitá bien el poliol antes de sacar la muestra.</li>
+        <li>Agarrá un vaso o recipiente de boca ancha. Pesalo vacío y anotá esa tara.</li>
+        <li>Cargá el volumen del recipiente. La app te dice cuántos gramos pesar de cada componente.</li>
+        <li>Pesá el poliol en el vaso de mezclado. Agregá el isocianato de una sola vez.</li>
+        <li>Mezclá enérgicamente y volcá enseguida en el recipiente. Tenés que estar volcando bastante antes de los 27 segundos, que es cuando arranca la crema.</li>
+        <li>Arrancá el cronómetro al juntar los dos componentes. Anotá el <b>tiempo de crema</b>, cuando cambia de color y empieza a levantar.</li>
+        <li>Anotá el <b>tiempo de hilos</b>, cuando al tocarla con un palito se estiran hilos pegajosos.</li>
+        <li>Dejala curar diez o quince minutos, hasta que esté firme.</li>
+        <li>Cortá al ras del borde con un cuchillo de sierra y pesá el recipiente con la espuma.</li>
+      </ol>
+      <div class="alerta azul">
+        Se prepara un poco de más a propósito, para que rebalse apenas y el recipiente quede bien lleno.
+        Si va justo, queda un hueco arriba y la densidad da más baja de lo que es.
+      </div>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">1 · Cuánto preparar</div>
+      <div class="card-label">Recipiente</div>
+      <div class="marchas" id="d-vasos"></div>
+      <div class="form-grid" style="margin-top:14px">
         <div class="form-field">
-          <label>Volumen del recipiente</label>
+          <label>Volumen</label>
           <input type="number" id="d-vol" placeholder="1" min="0" step="any" value="1">
           <div class="hint">litros</div>
         </div>
         <div class="form-field">
-          <label>Peso del recipiente vacío</label>
-          <input type="number" id="d-tara" placeholder="0" min="0" step="any">
-          <div class="hint">gramos — opcional</div>
-        </div>
-        <div class="form-field">
-          <label>Peso con la espuma</label>
-          <input type="number" id="d-bruto" placeholder="0" min="0" step="any">
-          <div class="hint">gramos</div>
-        </div>
-        <div class="form-field">
-          <label>Marcha usada</label>
-          <select id="d-marcha">
-            <option value="">—</option>
-            <option value="baja">Baja</option>
-            <option value="media" selected>Media</option>
-            <option value="alta">Alta</option>
-          </select>
+          <label>Densidad buscada</label>
+          <input type="number" id="d-obj" placeholder="40" min="0" step="any" value="40">
+          <div class="hint">kg/m³ — ficha: 38 a 42</div>
         </div>
         <div class="form-field full">
-          <label>Notas</label>
-          <input type="text" id="d-nota" placeholder="Lote, temperatura, observaciones...">
+          <label>De más, para que rebalse</label>
+          <input type="number" id="d-margen" placeholder="20" min="0" step="any" value="20">
+          <div class="hint">%</div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">🎯 Tiene que pesar</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--azul-dark)" id="d-objetivo">—</div>
-      <div class="hint" id="d-objetivo-det">Rango de la ficha: 38 a 42 kg/m³</div>
+    <div class="resultados">
+      <div class="res-card tipo-pol visible">
+        <div class="res-etiqueta">Pesar de poliol</div>
+        <div class="res-principal" id="d-pol">—</div>
+        <div class="res-detalles">componente A</div>
+      </div>
+      <div class="res-card tipo-iso visible">
+        <div class="res-etiqueta">Pesar de isocianato</div>
+        <div class="res-principal" id="d-iso">—</div>
+        <div class="res-detalles">componente B</div>
+      </div>
+      <div class="res-card tipo-tot visible">
+        <div class="res-etiqueta">Mezcla total</div>
+        <div class="res-principal" id="d-tirar">—</div>
+        <div class="res-detalles" id="d-tirar-det">—</div>
+      </div>
+    </div>
+    <div id="d-avisos"></div>
+
+    <div class="anotador-form" style="margin-top:14px">
+      <div class="form-titulo">2 · Lo que midió</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Recipiente vacío (tara)</label>
+          <input type="number" id="d-tara" placeholder="0" min="0" step="any">
+          <div class="hint">gramos</div>
+        </div>
+        <div class="form-field">
+          <label>Recipiente con la espuma</label>
+          <input type="number" id="d-bruto" placeholder="0" min="0" step="any">
+          <div class="hint">gramos, ya cortada al ras</div>
+        </div>
+        <div class="form-field">
+          <label>⏳ Tiempo de crema</label>
+          <input type="number" id="d-crema" placeholder="0" min="0" step="1">
+          <div class="hint">segundos — ficha: 27 a 33</div>
+        </div>
+        <div class="form-field">
+          <label>🧵 Tiempo de hilos</label>
+          <input type="number" id="d-hilos" placeholder="0" min="0" step="1">
+          <div class="hint">segundos — ficha: 120 a 160</div>
+        </div>
+        <div class="form-field">
+          <label>🌡️ Temp. poliol</label>
+          <input type="number" id="d-tpol" placeholder="—" step="0.1">
+          <div class="hint">°C — ficha: 20 a 23</div>
+        </div>
+        <div class="form-field">
+          <label>🌡️ Temp. isocianato</label>
+          <input type="number" id="d-tiso" placeholder="—" step="0.1">
+          <div class="hint">°C — ficha: 20 a 23</div>
+        </div>
+        <div class="form-field full">
+          <label>🏭 Temp. ambiente</label>
+          <input type="number" id="d-tamb" placeholder="—" step="0.1">
+          <div class="hint">°C — la ficha no fija un valor; lo razonable es 20 a 25</div>
+        </div>
+        <div class="form-field full">
+          <label>Notas</label>
+          <input type="text" id="d-nota" placeholder="Lote, mezclado a mano o máquina, observaciones...">
+        </div>
+      </div>
     </div>
 
     <div class="resultados dos">
@@ -687,6 +813,11 @@
       </div>
     </div>
 
+    <div class="anotador-form">
+      <div class="form-titulo">✅ Control contra ficha</div>
+      <div id="d-chequeos"></div>
+    </div>
+
     <div id="d-alertas"></div>
     <button class="btn-guardar" onclick="guardarDensidad()">💾 Guardar prueba de densidad</button>
 
@@ -698,10 +829,15 @@
   <div id="panel-historial" class="panel">
     <div class="pruebas-header">
       <div class="section-title" style="margin:0">Registro</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="pruebas-count" id="pruebas-count">0</span>
-        <button class="btn-exportar" onclick="exportarCSV()">⬇ CSV</button>
-      </div>
+      <span class="pruebas-count" id="pruebas-count">0</span>
+    </div>
+    <div class="descargas">
+      <button class="btn-descarga" onclick="imprimirFiltro()">Descargar PDF</button>
+      <button class="btn-descarga" onclick="exportarCSV()">Descargar Excel</button>
+    </div>
+    <div class="hint" style="margin-bottom:14px">
+      El <b>PDF</b> es una hoja armada para leer, firmar o archivar. El <b>Excel</b> es una planilla
+      con todas las columnas, para sacar cuentas. Baja lo que estés viendo con el filtro puesto.
     </div>
     <div class="filtros">
       <button class="filtro activo" onclick="setFiltro('todo',this)">Todo</button>
@@ -731,6 +867,11 @@
         <div class="form-field">
           <label>Tolerancia ratio (±%)</label>
           <input type="number" id="pr-tol" min="0" step="any">
+        </div>
+        <div class="form-field">
+          <label>Ancho de la tabla de ajuste</label>
+          <input type="number" id="pr-tabla" min="1" max="15" step="1">
+          <div class="hint">± PBW alrededor del nominal</div>
         </div>
         <div class="form-field">
           <label>Peso específico poliol</label>
@@ -822,6 +963,8 @@
 
 <footer id="pie">—</footer>
 
+<div id="hoja-impresion"></div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -856,7 +999,7 @@ const OLD_KEYS=['giovannetti_v2','pruebas_giovannetti'];
 
 function dbVacia(){
   return {
-    producto:{ nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, pePol:1.09, peIso:1.235 },
+    producto:{ nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, tabla:4, pePol:1.09, peIso:1.235 },
     marchas:{
       baja:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
       media:{ g:'', seg:'', gs:0, rg:'', rseg:'', rgs:0, caida:'' },
@@ -979,7 +1122,7 @@ function guardarDB(){
   DB.meta.guardadoEn=Date.now();
   const txt=JSON.stringify(DB);
   try{ localStorage.setItem(LS_KEY,txt); }
-  catch(e){ alert('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Ajustes ya mismo.'); }
+  catch(e){ alert('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Parámetros ya mismo.'); }
   idbEscribir(JSON.parse(txt));
   actualizarContadores();
 }
@@ -1013,7 +1156,8 @@ function pintarTodo(){
   document.getElementById('titulo-resultado').textContent='Resultado — ratio nominal '+ratio()+' PBW';
   document.getElementById('et-iso').textContent='ISO requerido ('+ratio()+' PBW)';
   const r=ratio();
-  document.getElementById('titulo-tabla').textContent='Tabla de ajuste — '+(r-5)+' → '+(r+5)+' PBW';
+  const pasoT2=Math.max(1,Math.round(DB.producto.tabla||4));
+  document.getElementById('titulo-tabla').textContent='Tabla de ajuste — '+(r-pasoT2)+' a '+(r+pasoT2)+' PBW';
   document.getElementById('tabla-ficha').innerHTML=FICHA_FILAS.map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td></tr>').join('');
   pintarProducto(); pintarMarchasConfig(); pintarMarchasSel();
   precargarInyeccion();
@@ -1078,6 +1222,7 @@ function pintarProducto(){
   document.getElementById('pr-nombre').value=DB.producto.nombre||'';
   document.getElementById('pr-ratio').value=DB.producto.ratio;
   document.getElementById('pr-tol').value=DB.producto.tol;
+  document.getElementById('pr-tabla').value=DB.producto.tabla||4;
   document.getElementById('pr-pe-pol').value=DB.producto.pePol;
   document.getElementById('pr-pe-iso').value=DB.producto.peIso;
 }
@@ -1087,7 +1232,10 @@ function guardarProducto(){
   if(!nom){ alert('Ponele un nombre al producto.'); return; }
   if(!(r>0)){ alert('El ratio tiene que ser un número mayor que cero.'); return; }
   if(!(pp>0)||!(pi>0)){ alert('Los pesos específicos tienen que ser mayores que cero.'); return; }
-  DB.producto={ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, pePol:pp, peIso:pi };
+  let anchoT=gv('pr-tabla');
+  if(!Number.isFinite(anchoT)||anchoT<1) anchoT=4;
+  anchoT=Math.min(15,Math.round(anchoT));
+  DB.producto={ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi };
   guardarDB(); pintarTodo();
   alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir las tres marchas por cabezal antes de inyectar.');
 }
@@ -1239,12 +1387,18 @@ function calcular(){
 
   document.getElementById('tabla-desc').textContent='Poliol: '+f(polG)+' g · '+f(seg,1)+' seg';
   const r=Math.round(ratio());
+  const tol=DB.producto.tol||2;
+  const paso=Math.max(1,Math.round(DB.producto.tabla||4));   // ancho elegido por el usuario
+  const bandaLo=r*(1-tol/100), bandaHi=r*(1+tol/100);        // qué filas son aceptables
   let html='<table><thead><tr><th>Ratio ISO</th><th>ISO (g)</th><th>ISO (kg)</th><th>ISO (L)</th><th>Total (g)</th><th>Total (kg)</th><th>Total (L)</th></tr></thead><tbody>';
-  for(let x=r-5;x<=r+5;x++){
+  for(let x=r-paso;x<=r+paso;x++){
     const ig=polG*(x/100), ikg=ig/1000, il=ig/peIso/1000;
     const tg=polG+ig, tkg=tg/1000, tl=(polG/pePol+ig/peIso)/1000;
     const nom=(x===r);
-    html+='<tr class="'+(nom?'fila-nom':'')+'"><td class="td-ratio">'+x+' PBW'+(nom?'<span class="pill-nom">nominal</span>':'')+'</td>'
+    const dentro=(x>=bandaLo&&x<=bandaHi);
+    const cls=nom?'fila-nom':(dentro?'fila-ok':'fila-fuera');
+    const sello=nom?'<span class="pill-nom">nominal</span>':(dentro?'':'<span class="pill-fuera">fuera</span>');
+    html+='<tr class="'+cls+'"><td class="td-ratio">'+x+' PBW'+sello+'</td>'
       +'<td class="td-iso-g">'+f(ig)+'</td><td class="td-iso-kg">'+f(ikg,3)+'</td><td class="td-iso-l">'+f(il,3)+'</td>'
       +'<td class="td-tot-g">'+f(tg)+'</td><td class="td-tot-kg">'+f(tkg,3)+'</td><td class="td-tot-l">'+f(tl,3)+'</td></tr>';
   }
@@ -1307,8 +1461,8 @@ function calcularInyeccion(){
   document.getElementById('r-iso-det').innerHTML=hay?f(d.isoKg,3)+' kg<br>'+f(d.isoKg/peIso,3)+' L':'—';
 
   let al='';
-  if(hay&&!(d.gs>0)) al+='<div class="alerta naranja">⚠️ Todavía no cargaste la marcha '+d.marcha+'. Andá a Ajustes → Marchas y medí lo que sale del cabezal.</div>';
-  else if(hay&&esEstimado(d.marcha)) al+='<div class="alerta naranja">⚠️ La marcha '+d.marcha+' no tiene medición de cabezal: estos segundos y el descuento de tanque son un estimado. Medila y cargala en Ajustes.</div>';
+  if(hay&&!(d.gs>0)) al+='<div class="alerta naranja">⚠️ Todavía no cargaste la marcha '+d.marcha+'. Andá a Parámetros → Marchas y medí lo que sale del cabezal.</div>';
+  else if(hay&&esEstimado(d.marcha)) al+='<div class="alerta naranja">⚠️ La marcha '+d.marcha+' no tiene medición de cabezal: estos segundos y el descuento de tanque son un estimado. Medila y cargala en Parámetros.</div>';
   if(Number.isFinite(d.segundos)&&d.segundos>=R_CREMA[0])
     al+='<div class="alerta roja">🔴 Este panel tarda '+f(d.segundos,1)+' s y la crema arranca a los '+R_CREMA[0]+' s. Pasá a una marcha más alta o dividí el disparo.</div>';
   else if(Number.isFinite(d.segundos)&&d.segundos>R_CREMA[0]*0.7)
@@ -1719,14 +1873,14 @@ function pintarCajaMarchaCal(){
     +'</div>'
     +'<button class="btn-sec" onclick="volcarAMarcha()">⬆️ Guardar como mangueras libres de '+marchaCal+'</button>'
     +'<div class="hint" style="margin-top:6px">Esto es la suma de los dos componentes en mangueras libres. '
-    +'El caudal que usan los cálculos es el medido por cabezal, en Ajustes → Marchas.</div>';
+    +'El caudal que usan los cálculos es el medido por cabezal, en Parámetros → Marchas.</div>';
 }
 
 function volcarAMarcha(){
   const iso=gv('an-iso'), pol=gv('an-pol'), seg=gv('an-seg');
   if(!(iso>0&&pol>0&&seg>0)){ alert('Faltan isocianato, poliol o segundos.'); return; }
   const gs=(iso+pol)/seg;
-  if(!confirm('¿Guardar '+f(gs,2)+' g/s como MANGUERAS LIBRES de la marcha '+marchaCal+'?\n\nEl caudal que usan los cálculos es el del cabezal, que se mide aparte en Ajustes.')) return;
+  if(!confirm('¿Guardar '+f(gs,2)+' g/s como MANGUERAS LIBRES de la marcha '+marchaCal+'?\n\nEl caudal que usan los cálculos es el del cabezal, que se mide aparte en Parámetros.')) return;
   DB.marchas[marchaCal]=Object.assign({},DB.marchas[marchaCal],{ seg:seg, g:+(iso+pol).toFixed(1), gs:gs });
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
   alert('Mangueras libres de la marcha '+marchaCal+': '+f(gs,2)+' g/s.'+(DB.marchas[marchaCal].rgs>0?'':'\n\nFalta medir el cabezal para que los segundos y el tanque salgan exactos.'));
@@ -1737,9 +1891,7 @@ function renderChequeos(){
   if(!cont) return;
   const filas=[
     {n:'Temperatura ISO', v:tempEnC('iso'), r:R_TEMP, u:'°C', d:1},
-    {n:'Temperatura Poliol', v:tempEnC('pol'), r:R_TEMP, u:'°C', d:1},
-    {n:'Tiempo de crema', v:gv('an-crema'), r:R_CREMA, u:'seg', d:0},
-    {n:'Tiempo de hilos', v:gv('an-hilos'), r:R_HILOS, u:'seg', d:0}
+    {n:'Temperatura Poliol', v:tempEnC('pol'), r:R_TEMP, u:'°C', d:1}
   ];
   cont.innerHTML=filas.map(x=>{
     const hay=Number.isFinite(x.v);
@@ -1755,7 +1907,7 @@ function renderChequeos(){
 
 ['an-iso','an-pol','an-hz-iso','an-hz-pol','an-seg'].forEach(id=>
   document.getElementById(id).addEventListener('input',actualizarRatioPreview));
-['an-crema','an-hilos','an-temp-iso','an-temp-pol'].forEach(id=>
+['an-temp-iso','an-temp-pol'].forEach(id=>
   document.getElementById(id).addEventListener('input',renderChequeos));
 
 function guardarPrueba(){
@@ -1770,7 +1922,6 @@ function guardarPrueba(){
     seg:Number.isFinite(seg)?seg:'',
     hzIso:Number.isFinite(gv('an-hz-iso'))?gv('an-hz-iso'):'',
     hzPol:Number.isFinite(gv('an-hz-pol'))?gv('an-hz-pol'):'',
-    crema:sv('an-crema'), hilos:sv('an-hilos'),
     caudal:(Number.isFinite(seg)&&seg>0)?+((iso+pol)/seg).toFixed(2):'',
     tempIso:tIso?tIso+'°'+tempUnits.iso:'', tempPol:tPol?tPol+'°'+tempUnits.pol:'',
     tempAmb:tAmb?tAmb+'°'+tempUnits.amb:'', marcha:marchaCal,
@@ -1779,7 +1930,7 @@ function guardarPrueba(){
     producto:DB.producto.nombre, ratioNom:nom
   });
   guardarDB();
-  ['an-iso','an-pol','an-seg','an-hz-iso','an-hz-pol','an-crema','an-hilos',
+  ['an-iso','an-pol','an-seg','an-hz-iso','an-hz-pol',
    'an-temp-iso','an-temp-pol','an-temp-amb','an-nota'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ratio-preview').style.display='none';
   renderChequeos();
@@ -1789,50 +1940,102 @@ function guardarPrueba(){
 // ═══════════════════════════════════════════════════════════════
 // DENSIDAD LIBRE
 // ═══════════════════════════════════════════════════════════════
+const VASOS=[[0.25,'¼ litro'],[0.5,'½ litro'],[1,'1 litro'],[1.5,'1½ litro']];
+
+function pintarVasos(){
+  const cont=document.getElementById('d-vasos');
+  if(!cont) return;
+  const actual=gv('d-vol');
+  cont.innerHTML=VASOS.map(([v,nom])=>
+    '<button class="marcha-btn'+(Math.abs(actual-v)<0.001?' activo':'')+'" onclick="elegirVaso('+v+')">'
+    +'<div class="mn">'+nom+'</div><div class="mv">'+String(v).replace('.',',')+'</div><div class="mu">litros</div></button>'
+  ).join('');
+}
+function elegirVaso(v){ document.getElementById('d-vol').value=v; calcularDensidad(); }
+
 function calcularDensidad(){
-  const vol=gv('d-vol'), tara=Number.isFinite(gv('d-tara'))?gv('d-tara'):0, bruto=gv('d-bruto');
+  const vol=gv('d-vol');
+  const obj=Number.isFinite(gv('d-obj'))?gv('d-obj'):40;
+  const margen=Number.isFinite(gv('d-margen'))?gv('d-margen'):20;
+
+  // --- cuánto preparar, repartido por componente ---
+  const paraLlenar=vol>0?vol*obj:NaN;
+  const total=Number.isFinite(paraLlenar)?paraLlenar*(1+margen/100):NaN;
+  const gPol=Number.isFinite(total)?total/partes():NaN;
+  const gIso=Number.isFinite(total)?total*factorIso()/partes():NaN;
+
+  document.getElementById('d-pol').textContent=Number.isFinite(gPol)?f(gPol,1)+' g':'—';
+  document.getElementById('d-iso').textContent=Number.isFinite(gIso)?f(gIso,1)+' g':'—';
+  document.getElementById('d-tirar').textContent=Number.isFinite(total)?f(total,1)+' g':'—';
+  document.getElementById('d-tirar-det').innerHTML=Number.isFinite(paraLlenar)
+    ? 'para llenar justo: '+f(paraLlenar,1)+' g<br>más '+f(margen,0)+' % para que rebalse':'—';
+
+  let av='';
+  if(Number.isFinite(total)&&total<25)
+    av+='<div class="alerta naranja">⚠️ Son cantidades muy chicas para pesar y mezclar bien. Con un recipiente de medio litro o más la prueba sale más confiable.</div>';
+  av+='<div class="alerta azul">Pesás <b>'+f(gPol,1)+' g</b> de poliol y le agregás <b>'+f(gIso,1)+' g</b> de isocianato, que es el ratio '+ratio()+' del producto cargado.</div>';
+  document.getElementById('d-avisos').innerHTML=av;
+  pintarVasos();
+
+  // --- lo que midió ---
+  const tara=Number.isFinite(gv('d-tara'))?gv('d-tara'):0;
+  const bruto=gv('d-bruto');
   const neto=Number.isFinite(bruto)?bruto-tara:NaN;
   const dens=(vol>0&&Number.isFinite(neto))?neto/vol:NaN;
 
-  const obj=document.getElementById('d-objetivo');
-  if(vol>0){
-    obj.textContent=f(R_LIBRE[0]*vol,0)+' a '+f(R_LIBRE[1]*vol,0)+' g';
-    document.getElementById('d-objetivo-det').textContent=
-      'Espuma neta para '+f(vol,2)+' litro(s), buscando '+R_LIBRE[0]+' a '+R_LIBRE[1]+' kg/m³'
-      +(tara>0?'. Con el recipiente vacío de '+f(tara,0)+' g, la balanza tiene que marcar entre '+f(R_LIBRE[0]*vol+tara,0)+' y '+f(R_LIBRE[1]*vol+tara,0)+' g.':'');
-  } else { obj.textContent='—'; }
-
   document.getElementById('d-neto').textContent=Number.isFinite(neto)?f(neto,1)+' g':'—';
-  document.getElementById('d-neto-det').textContent=tara>0?'bruto '+f(bruto,1)+' g menos tara '+f(tara,1)+' g':'sin tara';
+  document.getElementById('d-neto-det').textContent=tara>0
+    ? 'bruto '+f(bruto,1)+' menos tara '+f(tara,1)+' g'
+    : (Number.isFinite(bruto)?'sin tara cargada':'—');
   document.getElementById('d-result').textContent=Number.isFinite(dens)?f(dens,1):'—';
   document.getElementById('d-result-det').textContent=Number.isFinite(dens)?'kg/m³':'—';
 
+  // --- chequeos ---
+  const filas=[
+    {n:'Densidad libre', v:dens, r:R_LIBRE, u:'kg/m³', d:1},
+    {n:'Tiempo de crema', v:gv('d-crema'), r:R_CREMA, u:'seg', d:0},
+    {n:'Tiempo de hilos', v:gv('d-hilos'), r:R_HILOS, u:'seg', d:0},
+    {n:'Temperatura poliol', v:gv('d-tpol'), r:R_TEMP, u:'°C', d:1},
+    {n:'Temperatura isocianato', v:gv('d-tiso'), r:R_TEMP, u:'°C', d:1}
+  ];
+  document.getElementById('d-chequeos').innerHTML=filas.map(x=>{
+    const hay=Number.isFinite(x.v);
+    const ok=hay&&x.v>=x.r[0]&&x.v<=x.r[1];
+    return '<div class="chk '+(!hay?'na':ok?'ok':'mal')+'"><span class="chk-n">'+x.n+'</span>'
+      +'<span class="chk-r">'+x.r[0]+'–'+x.r[1]+' '+x.u+'</span>'
+      +'<span class="chk-v">'+(hay?f(x.v,x.d):'—')+'</span>'
+      +'<span class="chk-e">'+(!hay?'·':ok?'✅':'🔴')+'</span></div>';
+  }).join('');
+
   let al='';
+  const tp=gv('d-tpol'), ti=gv('d-tiso');
+  const friosOcalientes=(Number.isFinite(tp)&&(tp<R_TEMP[0]||tp>R_TEMP[1]))||(Number.isFinite(ti)&&(ti<R_TEMP[0]||ti>R_TEMP[1]));
   if(Number.isFinite(dens)){
-    if(dens>=R_LIBRE[0]&&dens<=R_LIBRE[1])
-      al='<div class="alerta verde">✅ '+f(dens,1)+' kg/m³ — dentro de '+R_LIBRE[0]+' a '+R_LIBRE[1]+'.</div>';
-    else if(dens<R_LIBRE[0])
-      al='<div class="alerta roja">🔴 '+f(dens,1)+' kg/m³ — por debajo de '+R_LIBRE[0]+'. Espuma liviana: revisá temperaturas, ratio y estado del poliol.</div>';
-    else
-      al='<div class="alerta roja">🔴 '+f(dens,1)+' kg/m³ — por encima de '+R_LIBRE[1]+'. Espuma pesada: revisá temperaturas y agente de expansión.</div>';
+    if(dens<R_LIBRE[0]) al='<div class="alerta roja">🔴 Espuma liviana. Revisá el ratio y que el poliol esté bien agitado.</div>';
+    else if(dens>R_LIBRE[1]) al='<div class="alerta roja">🔴 Espuma pesada. Puede ser temperatura baja, o que el tambor haya perdido agente de expansión por calor.</div>';
   }
+  if(friosOcalientes) al+='<div class="alerta naranja">⚠️ Los componentes están fuera de 20–23 °C. Este resultado no sirve para comparar: acondicioná y repetí.</div>';
   document.getElementById('d-alertas').innerHTML=al;
-  return {vol,tara,bruto,neto,dens};
+
+  return {vol,obj,margen,total,gPol,gIso,tara,bruto,neto,dens};
 }
 
 function guardarDensidad(){
   const d=calcularDensidad();
-  if(!Number.isFinite(d.dens)){ alert('Completá el volumen del recipiente y el peso.'); return; }
+  if(!Number.isFinite(d.dens)){ alert('Completá el volumen del recipiente y el peso con la espuma.'); return; }
   const now=new Date();
   DB.densidades.unshift({
     id:Date.now(), tipo:'den',
     fecha:now.toISOString().slice(0,10), hora:now.toTimeString().slice(0,5),
     vol:d.vol, tara:d.tara, bruto:d.bruto, neto:+d.neto.toFixed(1), dens:+d.dens.toFixed(1),
-    marcha:sv('d-marcha'), ok:(d.dens>=R_LIBRE[0]&&d.dens<=R_LIBRE[1]),
-    nota:sv('d-nota').trim(), producto:DB.producto.nombre
+    gPol:+d.gPol.toFixed(1), gIso:+d.gIso.toFixed(1),
+    crema:sv('d-crema'), hilos:sv('d-hilos'),
+    tpol:sv('d-tpol'), tiso:sv('d-tiso'), tamb:sv('d-tamb'),
+    ok:(d.dens>=R_LIBRE[0]&&d.dens<=R_LIBRE[1]),
+    nota:sv('d-nota').trim(), producto:DB.producto.nombre, ratio:ratio()
   });
   guardarDB();
-  document.getElementById('d-bruto').value=''; document.getElementById('d-nota').value='';
+  ['d-bruto','d-crema','d-hilos','d-nota'].forEach(id=>document.getElementById(id).value='');
   calcularDensidad(); renderDensidades();
   alert('Prueba guardada.');
 }
@@ -1854,20 +2057,23 @@ function renderDensidades(){
   cont.innerHTML=lista.map(x=>
     '<div class="prueba-card'+(x.ok?'':' fallo')+'">'
     +'<button class="btn-del" onclick="borrarDensidad('+x.id+')" title="Eliminar">🗑</button>'
-    +'<div class="prueba-num">'+(x.ok?'✅':'🔴')+' '+x.fecha+' '+x.hora+(x.marcha?' · marcha '+x.marcha:'')+'</div>'
+    +'<div class="prueba-num">'+(x.ok?'✅':'🔴')+' '+x.fecha+' '+x.hora+'</div>'
     +'<div class="prueba-fila">'
     + dato('Densidad',f(x.dens,1),x.ok?'iso':'mal')
     + dato('Espuma',f(x.neto,1)+' g')
     + dato('Recipiente',f(x.vol,2)+' L')
+    + (x.crema?dato('Crema',x.crema+' s'):'')
+    + (x.hilos?dato('Hilos',x.hilos+' s'):'')
     +'</div>'
     +(x.nota?'<div class="prueba-nota">"'+x.nota+'"</div>':'')
     +'</div>').join('');
 }
 
-['d-vol','d-tara','d-bruto'].forEach(id=>{
+['d-vol','d-tara','d-bruto','d-obj','d-margen','d-crema','d-hilos','d-tpol','d-tiso','d-tamb'].forEach(id=>{
   const el=document.getElementById(id);
   if(el) el.addEventListener('input',calcularDensidad);
 });
+
 
 // ═══════════════════════════════════════════════════════════════
 // HISTORIAL
@@ -1889,15 +2095,19 @@ function eliminarRegistro(tipo,id){
 }
 function dato(l,v,c){ return '<div class="prueba-dato"><span class="prueba-dato-label">'+l+'</span><span class="prueba-dato-val '+(c||'')+'">'+v+'</span></div>'; }
 
-function renderHistorial(){
-  actualizarContadores();
-  const cont=document.getElementById('lista-pruebas');
+function itemsHistorial(){
   let items=[];
   if(filtroActual==='todo'||filtroActual==='cal') items=items.concat(DB.pruebas.map(p=>Object.assign({},p,{tipo:'cal'})));
   if(filtroActual==='todo'||filtroActual==='iny') items=items.concat(DB.inyecciones.map(p=>Object.assign({},p,{tipo:'iny'})));
   if(filtroActual==='todo'||filtroActual==='tq') items=items.concat(DB.movimientos.map(p=>Object.assign({},p,{tipo:'tq'})));
   if(filtroActual==='todo'||filtroActual==='den') items=items.concat((DB.densidades||[]).map(p=>Object.assign({},p,{tipo:'den'})));
-  items.sort((a,b)=>b.id-a.id);
+  return items.sort((a,b)=>b.id-a.id);
+}
+
+function renderHistorial(){
+  actualizarContadores();
+  const cont=document.getElementById('lista-pruebas');
+  const items=itemsHistorial();
 
   if(!items.length){
     cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">📋</div><div class="lista-vacia-txt">No hay registros para este filtro.</div></div>';
@@ -1917,8 +2127,6 @@ function renderHistorial(){
       if(p.tempPol) cuerpo+=dato('🌡 Poliol',p.tempPol,'temp');
       if(p.tempMol) cuerpo+=dato('🔧 Molde',p.tempMol,'temp');
       if(p.tempAmb) cuerpo+=dato('🏭 Amb.',p.tempAmb,'temp');
-      if(p.crema) cuerpo+=dato('Crema',p.crema+' s');
-      if(p.hilos) cuerpo+=dato('Hilos',p.hilos+' s');
       if(p.vaso) cuerpo+=dato('Vaso 1L',p.vaso);
     } else if(p.tipo==='iny'){
       clase='tipo-iny';
@@ -1948,8 +2156,9 @@ function renderHistorial(){
       }
     } else if(p.tipo==='den'){
       clase=p.ok?'':'fallo';
-      titulo='🥤 Densidad libre · '+p.fecha+' '+p.hora+(p.marcha?' · '+p.marcha:'');
-      cuerpo=dato('Densidad',f(p.dens,1),p.ok?'iso':'mal')+dato('Espuma',f(p.neto,1)+' g')+dato('Recipiente',f(p.vol,2)+' L');
+      titulo='🥤 Densidad libre · '+p.fecha+' '+p.hora;
+      cuerpo=dato('Densidad',f(p.dens,1),p.ok?'iso':'mal')+dato('Espuma',f(p.neto,1)+' g')+dato('Recipiente',f(p.vol,2)+' L')
+        +(p.crema?dato('Crema',p.crema+' s'):'')+(p.hilos?dato('Hilos',p.hilos+' s'):'');
     } else {
       clase='tipo-tq';
       titulo='🛢️ '+(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel')+' · '+p.fecha+' '+p.hora;
@@ -1959,6 +2168,7 @@ function renderHistorial(){
       if(p.venc) cuerpo+=dato('Vence',p.venc);
     }
     return '<div class="prueba-card '+clase+'">'
+      +'<button class="btn-print" onclick="imprimirRegistro(\''+p.tipo+'\','+p.id+')" title="Descargar esta hoja en PDF">PDF</button>'
       +'<button class="btn-del" onclick="eliminarRegistro(\''+p.tipo+'\','+p.id+')" title="Eliminar">🗑</button>'
       +'<div class="prueba-num">'+titulo+'</div>'
       +'<div class="prueba-fila">'+cuerpo+'</div>'
@@ -1966,6 +2176,148 @@ function renderHistorial(){
       +'</div>';
   }).join('');
 }
+
+// ═══════════════════════════════════════════════════════════════
+// IMPRIMIR / GUARDAR EN PDF
+// ═══════════════════════════════════════════════════════════════
+let LOGO_HOJA=null;
+function logoHoja(){
+  if(LOGO_HOJA) return LOGO_HOJA;
+  try{ const c=document.createElement('canvas'); dibujarLogo(c,120); LOGO_HOJA=c.toDataURL('image/png'); }
+  catch(e){ LOGO_HOJA=''; }
+  return LOGO_HOJA;
+}
+
+function fila(k,v,cls){
+  if(v===undefined||v===null||v===''||v==='—') return '';
+  return '<tr><td>'+k+'</td><td'+(cls?' class="'+cls+'"':'')+'>'+v+'</td></tr>';
+}
+
+function encabezadoHoja(titulo,sub,fecha){
+  return '<div class="hoja-top">'
+    +(logoHoja()?'<img src="'+logoHoja()+'" alt="">':'')
+    +'<div><div class="ht-n">Giovannetti Refrigeración</div><div class="ht-s">'+titulo+(sub?' · '+sub:'')+'</div></div>'
+    +'<div class="ht-f">'+fecha+'<br>'+(DB.producto.nombre||'')+'</div></div>';
+}
+
+function pieHoja(){
+  return '<div class="hoja-firma"><div>Operario</div><div>Firma</div><div>Control</div></div>'
+    +'<div class="hoja-pie">Emitido el '+new Date().toLocaleString('es-AR')+' · Ratio '+ratio()
+    +' PBW · Poliol '+f(DB.producto.pePol,3)+' g/ml · ISO '+f(DB.producto.peIso,3)+' g/ml</div>';
+}
+
+function rango(v,r,u,d){
+  if(!Number.isFinite(v)) return '';
+  const ok=v>=r[0]&&v<=r[1];
+  return f(v,d)+' '+u+'  <span class="'+(ok?'ok':'mal')+'">('+(ok?'en rango':'fuera')+' '+r[0]+'–'+r[1]+')</span>';
+}
+
+function hojaDe(p){
+  let s='<div class="hoja">';
+  if(p.tipo==='cal'){
+    const nom=p.ratioNom||ratio();
+    const desv=(p.ratio-nom)/nom*100;
+    s+=encabezadoHoja('Prueba de calibración','',p.fecha+' '+p.hora);
+    s+='<h3>Resultado</h3><table>'
+      +fila('Ratio obtenido',f(p.ratio,2)+' PBW',p.ok?'ok':'mal')
+      +fila('Ratio nominal',nom+' PBW')
+      +fila('Desvío',(desv>0?'+':'')+f(desv,2)+' %',p.ok?'ok':'mal')
+      +fila('Estado',p.ok?'DENTRO DE TOLERANCIA':'FUERA DE TOLERANCIA',p.ok?'ok':'mal')
+      +'</table>';
+    s+='<h3>Pesos del disparo</h3><table>'
+      +fila('Isocianato',f(p.iso,1)+' g')+fila('Poliol',f(p.pol,1)+' g')
+      +fila('Segundos',p.seg!==''?f(p.seg,1)+' s':'')
+      +fila('Caudal',p.caudal?f(p.caudal,2)+' g/s':'')
+      +fila('Marcha',p.marcha||'')
+      +'</table>';
+    if(p.hzIso||p.hzPol){
+      s+='<h3>Bombas</h3><table>'+fila('Hz ISO',p.hzIso?f(p.hzIso,1)+' Hz':'')
+        +fila('Hz Poliol',p.hzPol?f(p.hzPol,1)+' Hz':'')+'</table>';
+    }
+    if(p.tempIso||p.tempPol||p.tempAmb){
+      s+='<h3>Temperaturas</h3><table>'+fila('Isocianato',p.tempIso)+fila('Poliol',p.tempPol)
+        +fila('Ambiente',p.tempAmb)+'</table>';
+    }
+  } else if(p.tipo==='den'){
+    s+=encabezadoHoja('Prueba de densidad libre','',p.fecha+' '+p.hora);
+    s+='<h3>Resultado</h3><table>'
+      +fila('Densidad libre',rango(p.dens,R_LIBRE,'kg/m³',1))
+      +fila('Tiempo de crema',rango(parseFloat(p.crema),R_CREMA,'seg',0))
+      +fila('Tiempo de hilos',rango(parseFloat(p.hilos),R_HILOS,'seg',0))
+      +'</table>';
+    s+='<h3>Medición</h3><table>'
+      +fila('Recipiente',f(p.vol,2)+' litros')
+      +fila('Tara',p.tara?f(p.tara,1)+' g':'')
+      +fila('Bruto',p.bruto?f(p.bruto,1)+' g':'')
+      +fila('Espuma neta',f(p.neto,1)+' g')
+      +fila('Poliol pesado',p.gPol?f(p.gPol,1)+' g':'')
+      +fila('Isocianato pesado',p.gIso?f(p.gIso,1)+' g':'')
+      +'</table>';
+    s+='<h3>Condiciones</h3><table>'
+      +fila('Temperatura poliol',rango(parseFloat(p.tpol),R_TEMP,'°C',1))
+      +fila('Temperatura isocianato',rango(parseFloat(p.tiso),R_TEMP,'°C',1))
+      +fila('Temperatura ambiente',p.tamb?f(parseFloat(p.tamb),1)+' °C':'')
+      +'</table>';
+  } else if(p.tipo==='iny'){
+    const lista=Array.isArray(p.paneles)?p.paneles:null;
+    s+=encabezadoHoja('Parte de inyección',lista?p.nPaneles+' paneles':'',p.fecha+' '+p.hora);
+    s+='<h3>Totales</h3><table>'
+      +fila('Paneles',lista?p.nPaneles:p.n)
+      +fila('Fallados',p.fallados?String(p.fallados):'0',p.fallados?'mal':'ok')
+      +fila('Mezcla total',f(p.mezclaKg,3)+' kg')
+      +fila('Tiempo sumado',p.segTotal?f(p.segTotal,1)+' s':'')
+      +fila('Poliol consumido',f(p.totPol,3)+' kg')
+      +fila('ISO consumido',f(p.totIso,3)+' kg')
+      +'</table>';
+    if(lista){
+      s+='<h3>Detalle por panel</h3><table class="tabla-paneles">'
+        +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Marcha</th><th>Seg</th><th>Mezcla kg</th><th>Molde</th><th>Estado</th></tr>';
+      lista.forEach((x,i)=>{
+        s+='<tr><td>'+(i+1)+'</td><td>'+(x.nombre||'—')+'</td>'
+          +'<td>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</td>'
+          +'<td>'+x.marcha+'</td><td>'+f(x.segundos,2)+'</td><td>'+f(x.mezclaKg,3)+'</td>'
+          +'<td>'+(x.tmolde!==''&&x.tmolde!==undefined?f(x.tmolde,0)+'°':'—')+'</td>'
+          +'<td class="'+(x.ok?'ok':'mal')+'">'+(x.ok?'BIEN':'FALLÓ')+'</td></tr>';
+      });
+      s+='</table>';
+    }
+  } else {
+    s+=encabezadoHoja('Movimiento de tanque','',p.fecha+' '+p.hora);
+    s+='<table>'
+      +fila('Movimiento',p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel')
+      +fila('Componente',p.comp==='pol'?'Poliol':'Isocianato')
+      +fila('Kilos',f(p.kg,2)+' kg')
+      +fila('Nivel anterior',p.antes!==undefined?f(p.antes,2)+' kg':'')
+      +fila('Lote',p.lote)+fila('Elaboración',p.elab)+fila('Vencimiento',p.venc)
+      +'</table>';
+  }
+  if(p.nota) s+='<h3>Observaciones</h3><table><tr><td colspan="2" style="font-family:inherit;font-weight:400">'+p.nota+'</td></tr></table>';
+  s+=pieHoja()+'</div>';
+  return s;
+}
+
+function buscarRegistro(tipo,id){
+  const lista = tipo==='cal'?DB.pruebas : tipo==='iny'?DB.inyecciones : tipo==='den'?(DB.densidades||[]) : DB.movimientos;
+  const r=lista.find(x=>x.id===id);
+  return r?Object.assign({},r,{tipo}):null;
+}
+
+function imprimirRegistro(tipo,id){
+  const r=buscarRegistro(tipo,id);
+  if(!r){ alert('No encontré ese registro.'); return; }
+  document.getElementById('hoja-impresion').innerHTML=hojaDe(r);
+  setTimeout(()=>window.print(),150);
+}
+
+function imprimirFiltro(){
+  const items=itemsHistorial();
+  if(!items.length){ alert('No hay registros para imprimir.'); return; }
+  if(items.length>30 && !confirm('Son '+items.length+' registros, van a salir '+items.length+' hojas. ¿Seguimos?')) return;
+  document.getElementById('hoja-impresion').innerHTML=items.map(hojaDe).join('');
+  setTimeout(()=>window.print(),200);
+}
+
+window.addEventListener('afterprint',()=>{ document.getElementById('hoja-impresion').innerHTML=''; });
 
 // ═══════════════════════════════════════════════════════════════
 // EXPORTAR
@@ -2056,8 +2408,8 @@ function exportarCSV(){
   L.push('Tanda,Fecha,Hora,Paneles,Fallados,Mezcla total (kg),Tiempo total (s),Poliol (kg),ISO (kg)');
   DB.inyecciones.forEach(t=>L.push([t.id,t.fecha,t.hora,t.nPaneles||t.n||1,t.fallados||0,t.mezclaKg,t.segTotal||t.segundos,t.totPol,t.totIso].join(',')));
   L.push('','PRUEBAS DE DENSIDAD LIBRE');
-  L.push('Fecha,Hora,Marcha,Recipiente (L),Tara (g),Bruto (g),Espuma neta (g),Densidad (kg/m3),En rango,Notas');
-  (DB.densidades||[]).forEach(x=>L.push([x.fecha,x.hora,x.marcha,x.vol,x.tara,x.bruto,x.neto,x.dens,x.ok?'SI':'NO',q(x.nota)].join(',')));
+  L.push('Fecha,Hora,Recipiente (L),Poliol (g),ISO (g),Tara (g),Bruto (g),Espuma neta (g),Densidad (kg/m3),Crema (s),Hilos (s),Temp poliol,Temp ISO,Temp amb,En rango,Notas');
+  (DB.densidades||[]).forEach(x=>L.push([x.fecha,x.hora,x.vol,x.gPol,x.gIso,x.tara,x.bruto,x.neto,x.dens,x.crema,x.hilos,x.tpol,x.tiso,x.tamb,x.ok?'SI':'NO',q(x.nota)].join(',')));
   L.push('','MODELOS DE PANEL');
   L.push('Nombre,Largo,Ancho,Espesor,Densidad,Sobreempaque');
   DB.modelos.forEach(m=>L.push([q(m.nombre),m.largo,m.ancho,m.espesor,m.densidad,m.sobre].join(',')));
@@ -2078,7 +2430,7 @@ function exportarCSV(){
 // ═══════════════════════════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════════════════════════
-const ORDEN_TABS=['calibrador','inyeccion','tanques','anotador','densidad','historial','ajustes'];
+const ORDEN_TABS=['calibrador','anotador','densidad','inyeccion','tanques','historial','ajustes'];
 function irATab(nombre){
   const i=ORDEN_TABS.indexOf(nombre);
   const b=document.querySelectorAll('.tab-btn')[i];
