@@ -168,6 +168,8 @@
   .tambor{width:66px;height:126px;flex-shrink:0;border:3px solid var(--gris-3);border-radius:10px;background:var(--gris-1);position:relative;overflow:hidden;display:flex;flex-direction:column-reverse}
   .tambor-fill{width:100%;transition:height .4s ease}
   .tambor-aro{position:absolute;left:0;right:0;height:3px;background:rgba(0,0,0,.08)}
+  .tambor-marca{position:absolute;left:0;right:0;height:2px;background:rgba(220,38,38,.8);z-index:2}
+  .tambor-marca::before{content:'';position:absolute;right:0;top:-3px;width:0;height:0;border-left:5px solid rgba(220,38,38,.8);border-top:4px solid transparent;border-bottom:4px solid transparent}
   .tanque-info{flex:1;min-width:0}
   .tanque-nom{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-5)}
   .tanque-kg{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:var(--texto);line-height:1.2;margin-top:5px}
@@ -340,6 +342,7 @@
     <button class="tab-btn" onclick="setTab('anotador',this)">📋 Anotador</button>
     <button class="tab-btn" onclick="setTab('densidad',this)">🥤 Densidad</button>
     <button class="tab-btn" onclick="setTab('inyeccion',this)">🎯 Inyección</button>
+    <button class="tab-btn" onclick="setTab('conteo',this)">📦 Conteo</button>
     <button class="tab-btn" onclick="setTab('tanques',this)">🛢️ Tanques</button>
     <button class="tab-btn" onclick="setTab('historial',this)">🖨 Registros</button>
     <button class="tab-btn" onclick="setTab('ajustes',this)">⚙️ Parámetros</button>
@@ -459,8 +462,8 @@
         </div>
         <div class="form-field">
           <label>Temp. molde / prensa</label>
-          <input type="number" id="p-tmolde" placeholder="43" step="0.1">
-          <div class="hint" id="hint-tmolde">°C — ficha: 39 a 47</div>
+          <input type="number" id="p-tmolde" placeholder="40" step="0.1">
+          <div class="hint" id="hint-tmolde">°C — ficha: 36 a 44</div>
         </div>
         <div class="form-field">
           <label>Repetir este panel</label>
@@ -527,6 +530,23 @@
 
     <div class="section-title">Últimas tandas registradas</div>
     <div id="iny-lista"></div>
+  </div>
+
+  <!-- ========== CONTEO DE INYECCIONES ========== -->
+  <div id="panel-conteo" class="panel">
+    <div class="card" id="conteo-resumen" style="margin-bottom:12px;display:none">
+      <div class="card-label">📊 Totales acumulados</div>
+      <div class="prueba-fila" style="margin-top:8px" id="conteo-stats-fila"></div>
+    </div>
+    <div class="pruebas-header">
+      <div class="section-title" style="margin:0">Paneles inyectados</div>
+      <span class="pruebas-count" id="conteo-count">0</span>
+    </div>
+    <div class="descargas">
+      <button class="btn-descarga" onclick="imprimirConteo()">Descargar PDF</button>
+      <button class="btn-descarga" onclick="exportarConteoCSV()">Descargar Excel</button>
+    </div>
+    <div id="conteo-lista"></div>
   </div>
 
   <!-- ========== TANQUES ========== -->
@@ -753,7 +773,7 @@
         <div class="form-field">
           <label>Densidad buscada</label>
           <input type="number" id="d-obj" placeholder="40" min="0" step="any" value="40">
-          <div class="hint">kg/m³ — ficha: 38 a 42</div>
+          <div class="hint" id="hint-dobj">kg/m³ — ficha: 27 a 32</div>
         </div>
         <div class="form-field full">
           <label>De más, para que rebalse</label>
@@ -1056,20 +1076,21 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v13 · 27-07-2026';
+const VERSION='v14 · 01-08-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
 // ═══════════════════════════════════════════════════════════════
 // Estos rangos ya no son fijos: se llenan desde la ficha cargada en Parámetros.
 let R_TEMP=[20,23], R_CREMA=[27,33], R_HILOS=[120,160];
-let R_LIBRE=[38,42], R_MOLDE_T=[39,47], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
+let R_LIBRE=[27,32], R_MOLDE_T=[36,44], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
 let VIDA_POL=4, VIDA_ISO=6;
 
+// FICHA_ALKURAN — Rev. 07-01-2026 (ratio 141, densidad libre 27-32, molde 40 °C)
 const FICHA_ALKURAN={
-  nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:156, tol:2, tabla:4, pePol:1.09, peIso:1.235,
-  temp:[20,23], crema:[27,33], hilos:[120,160], libre:[38,42],
-  moldeT:[39,47], moldeD:[38,42], nucleo:[36,38], vidaPol:4, vidaIso:6,
+  nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:141, tol:2, tabla:4, pePol:1.09, peIso:1.235,
+  temp:[20,23], crema:[27,33], hilos:[120,160], libre:[27,32],
+  moldeT:[36,44], moldeD:[38,42], nucleo:[36,38], vidaPol:4, vidaIso:6,
   visc:'250 / 150–250 cps', nco:'30,2 – 32,0 %', cond:'0,022 – 0,023 W/m·K',
   estab:'< 3 %Vol', almac:'15–25 / 15–35 °C', envases:'220 (o IBC) / 250 kg'
 };
@@ -1078,10 +1099,15 @@ function aplicarFicha(){
   const p=DB.producto;
   const par=(v,d)=>(Array.isArray(v)&&v.length===2&&Number.isFinite(+v[0])&&Number.isFinite(+v[1]))?[+v[0],+v[1]]:d;
   R_TEMP=par(p.temp,[20,23]); R_CREMA=par(p.crema,[27,33]); R_HILOS=par(p.hilos,[120,160]);
-  R_LIBRE=par(p.libre,[38,42]); R_MOLDE_T=par(p.moldeT,[39,47]);
+  R_LIBRE=par(p.libre,[27,32]); R_MOLDE_T=par(p.moldeT,[36,44]);
   R_MOLDE_D=par(p.moldeD,[38,42]); R_NUCLEO=par(p.nucleo,[36,38]);
   VIDA_POL=Number.isFinite(+p.vidaPol)?+p.vidaPol:4;
   VIDA_ISO=Number.isFinite(+p.vidaIso)?+p.vidaIso:6;
+  // Actualizar hints dinámicos según la ficha cargada
+  const hTmolde=document.getElementById('hint-tmolde');
+  if(hTmolde) hTmolde.textContent='°C — ficha: '+R_MOLDE_T[0]+' a '+R_MOLDE_T[1];
+  const hDobj=document.getElementById('hint-dobj');
+  if(hDobj) hDobj.textContent='kg/m³ — ficha: '+R_LIBRE[0]+' a '+R_LIBRE[1];
 }
 
 function fichaFilas(){
@@ -1125,8 +1151,8 @@ function dbVacia(){
     },
     densidades:[],
     tanques:{
-      pol:{ cap:220, kg:0, lote:'', elab:'', venc:'', alarma:130 },
-      iso:{ cap:250, kg:0, lote:'', elab:'', venc:'', alarma:150 }
+      pol:{ cap:220, kg:0, lote:'', elab:'', venc:'', alarma:50 },
+      iso:{ cap:250, kg:0, lote:'', elab:'', venc:'', alarma:60 }
     },
     pruebas:[], inyecciones:[], movimientos:[],
     modelos:[], tanda:[],
@@ -1283,7 +1309,7 @@ function pintarTodo(){
   aplicarFicha(); pintarProducto(); pintarFicha(); pintarMarchasConfig(); pintarMarchasSel();
   precargarInyeccion();
   renderModelos(); renderTanques(); renderChequeos(); pintarMarchasCal(); calcularDensidad(); renderDensidades();
-  renderUltimasCal(); renderUltimosMov(); renderUltimasTandas(); calcularInyeccion(); renderTanda(); calcular();
+  renderUltimasCal(); renderUltimosMov(); renderUltimasTandas(); renderConteo(); calcularInyeccion(); renderTanda(); calcular();
   actualizarContadores(); revisarAlarma();
 }
 
@@ -1755,7 +1781,7 @@ function registrarTanda(){
   DB.tanda=[];
   guardarDB();
   document.getElementById('p-nota').value='';
-  renderTanda(); renderTanques(); revisarAlarma(); renderUltimasTandas();
+  renderTanda(); renderTanques(); revisarAlarma(); renderUltimasTandas(); renderConteo();
   alert('Tanda registrada: '+t.n+' paneles.\n\nPoliol: −'+f(t.pol,2)+' kg  (quedan '+f(DB.tanques.pol.kg,1)+')\nISO: −'+f(t.iso,2)+' kg  (quedan '+f(DB.tanques.iso.kg,1)+')');
 }
 
@@ -1822,6 +1848,110 @@ function guardarDebounce(){ clearTimeout(debTimer); debTimer=setTimeout(guardarD
 
 
 // ═══════════════════════════════════════════════════════════════
+// CONTEO DE INYECCIONES
+// ═══════════════════════════════════════════════════════════════
+function renderConteo(){
+  const cont=document.getElementById('conteo-lista');
+  const resumen=document.getElementById('conteo-resumen');
+  const fila=document.getElementById('conteo-stats-fila');
+  const count=document.getElementById('conteo-count');
+  if(!cont) return;
+  const lista=DB.inyecciones;
+  if(count) count.textContent=lista.length;
+
+  // Totales acumulados
+  let totalTandas=lista.length, totalPaneles=0, totalPol=0, totalIso=0, totalMezcla=0;
+  lista.forEach(p=>{
+    totalPaneles+=(p.nPaneles||p.n||1);
+    totalPol+=(p.totPol||0);
+    totalIso+=(p.totIso||0);
+    totalMezcla+=(p.mezclaKg||0);
+  });
+  if(resumen) resumen.style.display=totalTandas?'block':'none';
+  if(fila) fila.innerHTML=!totalTandas?'':
+    dato('Tandas',totalTandas)
+    +dato('Paneles',totalPaneles)
+    +dato('Poliol',f(totalPol,1)+' kg')
+    +dato('ISO',f(totalIso,1)+' kg','iso')
+    +dato('Mezcla total',f(totalMezcla,1)+' kg');
+
+  if(!lista.length){
+    cont.innerHTML='<div class="lista-vacia"><div class="lista-vacia-ico">📦</div>'
+      +'<div class="lista-vacia-txt">Todavía no hay inyecciones registradas.<br>Registrá una tanda en la pestaña <strong>Inyección</strong>.</div></div>';
+    return;
+  }
+  cont.innerHTML=lista.map(p=>{
+    const nPan=p.nPaneles||p.n||1;
+    const paneles=Array.isArray(p.paneles)?p.paneles:null;
+    let cuerpo=dato('Paneles',nPan)
+      +dato('Mezcla total',f(p.mezclaKg,3)+' kg')
+      +dato('Poliol',f(p.totPol,2)+' kg')
+      +dato('ISO',f(p.totIso,2)+' kg','iso')
+      +(p.fallados?dato('Fallados',p.fallados,'mal'):'');
+    if(paneles){
+      cuerpo+='</div><div class="panel-mini">'+paneles.map(x=>
+        '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
+        +' · <b>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</b>'
+        +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b>'
+        +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
+    }
+    return '<div class="prueba-card tipo-iny">'
+      +botonesRegistro('iny',p.id)
+      +'<div class="prueba-num">🎯 '+p.fecha+' '+p.hora+' · '+nPan+' panel'+(nPan>1?'es':'')
+      +(p.fallados?' · <span style="color:var(--rojo)">'+p.fallados+' fallado'+(p.fallados>1?'s':'')+'</span>':'')+'</div>'
+      +'<div class="prueba-fila">'+cuerpo+'</div>'
+      +(p.nota?'<div class="prueba-nota">"'+p.nota+'"</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+function imprimirConteo(){
+  const lista=DB.inyecciones;
+  if(!lista.length){ alert('No hay inyecciones registradas.'); return; }
+  let totalPol=0,totalIso=0,totalPaneles=0;
+  lista.forEach(p=>{ totalPol+=p.totPol||0; totalIso+=p.totIso||0; totalPaneles+=(p.nPaneles||p.n||1); });
+  const now=new Date().toLocaleDateString('es-AR');
+  let s='<div class="hoja">'+encabezadoHoja('Conteo de inyecciones','',now);
+  s+='<h3>Totales</h3><table>'
+    +fila('Tandas registradas',lista.length)
+    +fila('Paneles totales',totalPaneles)
+    +fila('Poliol consumido',f(totalPol,2)+' kg')
+    +fila('ISO consumido',f(totalIso,2)+' kg')
+    +'</table>';
+  s+='<h3>Detalle por tanda</h3><table class="tabla-paneles">'
+    +'<tr><th>Fecha</th><th>Hora</th><th>Paneles</th><th>Mezcla kg</th><th>Poliol kg</th><th>ISO kg</th><th>Fallados</th></tr>';
+  lista.forEach(p=>{
+    s+='<tr><td>'+p.fecha+'</td><td>'+p.hora+'</td><td>'+(p.nPaneles||p.n||1)+'</td>'
+      +'<td>'+f(p.mezclaKg,3)+'</td><td>'+f(p.totPol,2)+'</td><td>'+f(p.totIso,2)+'</td>'
+      +'<td class="'+(p.fallados?'mal':'ok')+'">'+(p.fallados||0)+'</td></tr>';
+  });
+  s+='</table>'+pieHoja()+'</div>';
+  document.getElementById('hoja-impresion').innerHTML=s;
+  window.print();
+}
+
+function exportarConteoCSV(){
+  const lista=DB.inyecciones;
+  if(!lista.length){ alert('No hay inyecciones registradas.'); return; }
+  const cab=['Fecha','Hora','Paneles','Mezcla_kg','Poliol_kg','ISO_kg','Fallados','Nota','Producto','Ratio'];
+  const rows=lista.map(p=>[
+    p.fecha,p.hora,(p.nPaneles||p.n||1),
+    f(p.mezclaKg,3).replace(',','.'),
+    f(p.totPol,4).replace(',','.'),
+    f(p.totIso,4).replace(',','.'),
+    p.fallados||0,
+    (p.nota||'').replace(/[",]/g,' '),
+    (p.producto||'').replace(/[",]/g,' '),
+    p.ratio||ratio()
+  ].map(v=>'"'+v+'"').join(','));
+  const csv='\uFEFF'+cab.join(',')+'\n'+rows.join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='giovannetti-conteo-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════
 // TANQUES
 // ═══════════════════════════════════════════════════════════════
 function renderTanques(){
@@ -1838,13 +1968,20 @@ function renderTanques(){
     const color=enAlarma?'var(--rojo)':(pct<=25?'var(--naranja)':def.color);
     const litros=def.pe>0?t.kg/def.pe:0;
     const vencido=t.venc&&new Date(t.venc+'T00:00:00')<new Date();
-    let meta=f(pct,0)+' % · '+f(litros,1)+' litros<br>';
+    // Marcador visual de alarma: línea horizontal en la posición del umbral
+    const alarmaPct=t.cap>0&&t.alarma>0?Math.max(0,Math.min(100,t.alarma/t.cap*100)):0;
+    const alarmaLabel=alarmaPct>0?(' · alarma al '+f(alarmaPct,0)+' %'):'';
+    let meta=f(pct,0)+' % · '+f(litros,1)+' litros'+alarmaLabel+'<br>';
     if(enAlarma) meta+='<span class="rojo">⚠️ Bajo el mínimo de '+f(t.alarma,0)+' kg</span><br>';
     if(t.lote) meta+='Lote '+t.lote+'<br>';
     if(t.venc) meta+='<span class="'+(vencido?'venc-mal':'')+'">Vence '+t.venc+(vencido?' · VENCIDO':'')+'</span>';
     return '<div class="tanque-card'+(enAlarma?' alarma':'')+'">'
-      +'<div class="tambor"><div class="tambor-aro" style="top:28%"></div><div class="tambor-aro" style="top:62%"></div>'
-      +'<div class="tambor-fill" style="height:'+pct+'%;background:'+color+'"></div></div>'
+      +'<div class="tambor">'
+      +'<div class="tambor-aro" style="top:28%"></div>'
+      +'<div class="tambor-aro" style="top:62%"></div>'
+      +(alarmaPct>0?'<div class="tambor-marca" style="bottom:'+alarmaPct.toFixed(1)+'%"></div>':'')
+      +'<div class="tambor-fill" style="height:'+pct+'%;background:'+color+'"></div>'
+      +'</div>'
       +'<div class="tanque-info"><div class="tanque-nom">'+def.nom+'</div>'
       +'<div class="tanque-kg">'+f(t.kg,1)+' <span>/ '+f(t.cap,0)+' kg</span></div>'
       +'<div class="tanque-barra"><div style="width:'+pct+'%;background:'+color+'"></div></div>'
@@ -2252,7 +2389,7 @@ function eliminarRegistro(tipo,id){
   if(tipo==='iny') DB.inyecciones=DB.inyecciones.filter(p=>p.id!==id);
   if(tipo==='tq') DB.movimientos=DB.movimientos.filter(p=>p.id!==id);
   if(tipo==='den') DB.densidades=DB.densidades.filter(p=>p.id!==id);
-  guardarDB(); renderHistorial();
+  guardarDB(); renderHistorial(); renderConteo(); renderUltimasTandas();
 }
 function botonesRegistro(tipo,id){
   return '<button class="btn-print" onclick="imprimirRegistro(\''+tipo+'\','+id+')" title="Descargar esta hoja en PDF">PDF</button>'
@@ -2380,12 +2517,19 @@ const GUIA=[
 <p><b>Bien o falló.</b> Cada panel de la lista se puede marcar. Los dos descuentan del tanque, porque el material salió igual, pero queda registrado cuál falló.</p>
 <p><b>La hoja para la máquina.</b> Antes de inyectar podés bajar el PDF de la tanda: sale con cada panel numerado, sus segundos y una casilla para tildar.</p>`},
 
+{t:'Conteo', i:'📦', c:`
+<p><b>Para qué sirve.</b> Es el historial exclusivo de inyecciones, separado de las calibraciones. En Registros todo aparece junto; acá solo están las tandas de paneles.</p>
+<p><b>Qué muestra arriba.</b> Los totales acumulados desde el primer registro: cuántas tandas se hicieron, cuántos paneles, y cuántos kilos de poliol e ISO se consumieron en total.</p>
+<p><b>La lista.</b> Cada tanda con su fecha, hora, detalle de paneles y material consumido. Tiene su propio botón PDF y Excel por si querés bajar solo el registro de producción sin mezclar con las calibraciones.</p>
+<p><b>Borrar un registro.</b> El botón de la papelera elimina la tanda del historial, pero el nivel del tanque NO se vuelve atrás: el material ya salió.</p>`},
+
 {t:'Tanques', i:'🛢️', c:`
 <p><b>Para qué sirve.</b> Saber cuánto material te queda de verdad, sin ir a mirar el tambor.</p>
 <p><b>Cargar.</b> Cuando entra un tambor, ponés los kilos, el lote y la fecha de elaboración. La app calcula sola el vencimiento con los meses de la ficha.</p>
 <p><b>Purga.</b> Lo que sale sin hacer panel —limpieza, purga, lo que gotea— se descuenta con este botón. Si no lo cargás, el tanque te va a mentir de a poco.</p>
 <p><b>Fijar nivel.</b> Si pesás el tambor y no coincide, ponés el número real y la app lo corrige.</p>
-<p><b>La alarma.</b> Cuando un componente baja del mínimo, aparece una barra roja arriba de todo, en todas las pantallas. El mínimo lo ponés vos en kilos.</p>`},
+<p><b>La alarma.</b> Cuando un componente baja del mínimo, aparece una barra roja arriba de todo, en todas las pantallas. El mínimo lo ponés vos en kilos, en Tanques → Capacidad y alarma. El valor por defecto es 50 kg para poliol y 60 kg para ISO, que es aproximadamente un cuarto del tambor.</p>
+<p><b>La línea roja en el dibujo.</b> En el dibujo del tambor aparece una línea roja horizontal que muestra exactamente dónde está el umbral de alarma. Así podés ver de antemano a qué altura visual va a disparar la alerta y ajustar el valor si querés que avise antes o después.</p>`},
 
 {t:'Registros', i:'🖨', c:`
 <p><b>Para qué sirve.</b> Todo lo que hiciste, junto y buscable.</p>
@@ -2922,7 +3066,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v13';"
+      const sw="const CACHE='giovannetti-v14';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
@@ -2960,6 +3104,28 @@ function descargarLogo(size,modo){
 dibujarLogo(document.getElementById('logo-header'),160,'compacto');
 cargarTodo();
 renderHistorial();
+
+// ── Migración v14: aviso si el producto sigue con ratio 156 (ficha vieja) ──
+setTimeout(function(){
+  if(!DB.meta.migV14 && DB.producto.ratio===156 && (DB.producto.nombre||'').includes('ALKURAN')){
+    const ok=confirm(
+      '📋 Actualización de ficha (enero 2026)\n\n'
+      +'La ficha del ALKURAN RF-30 H4 cambió:\n'
+      +'  · Ratio: 156 → 141\n'
+      +'  · Densidad libre: 38–42 → 27–32 kg/m³\n'
+      +'  · Temperatura de molde: 43±4 → 40 °C (±4)\n\n'
+      +'¿Actualizar los parámetros ahora?\n'
+      +'(También podés hacerlo luego en Parámetros → Volver a valores ALKURAN)'
+    );
+    if(ok){
+      DB.producto=Object.assign({},FICHA_ALKURAN);
+      guardarDB(); aplicarFicha(); pintarTodo();
+      alert('✅ Parámetros actualizados.\n\nOjo: recordá volver a medir las marchas por cabezal: la caída depende del producto.');
+    }
+    DB.meta.migV14=true;
+    guardarDB();
+  }
+},800);
 </script>
 </body>
 </html>
