@@ -363,7 +363,7 @@
       <div class="card">
         <div class="card-label">💧 Poliol recolectado</div>
         <div class="input-fila">
-          <input type="number" id="poliol-val" placeholder="0" min="0" step="any">
+          <input type="number" id="poliol-val" placeholder="500" min="0" step="1">
           <span class="input-unidad" id="unidad-display">g</span>
         </div>
         <div class="unidad-tabs">
@@ -397,7 +397,7 @@
       <div class="card-label">🚿 Caudal teórico de bombas</div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--azul-dark)" id="caudal-txt">—</div>
       <div class="hint" id="caudal-hint"></div>
-      <div class="alerta azul">Este es el caudal calculado de las bombas. Para inyectar usá las marchas, que se miden a la salida del mezclador.</div>
+      <div class="alerta azul">Este es el caudal calculado de las bombas. Para inyectar usá los caudales de inyección, que se miden a la salida del mezclador.</div>
     </div>
 
     <div class="section-title" id="titulo-tabla">Tabla de ajuste</div>
@@ -472,9 +472,9 @@
         </div>
       </div>
 
-      <div class="section-title" style="margin-bottom:8px">Potencia de este panel</div>
+      <div class="section-title" style="margin-bottom:8px">Caudal de inyección del panel</div>
       <div class="marchas" id="marchas-sel"></div>
-      <div class="hint" style="margin-top:8px">Cada panel de la tanda puede ir con una potencia distinta.</div>
+      <div class="hint" style="margin-top:8px">Cada panel de la tanda puede ir con un caudal distinto.</div>
     </div>
 
     <div class="resultados dos">
@@ -642,16 +642,21 @@
       </div>
 
       <div class="card-label">Pesos del disparo</div>
+      <div class="unidad-tabs" style="margin-bottom:12px">
+        <button class="utab utab-an activo" onclick="setUnidadAn('g',this)">gramos</button>
+        <button class="utab utab-an" onclick="setUnidadAn('kg',this)">kilos</button>
+        <button class="utab utab-an" onclick="setUnidadAn('l',this)">litros</button>
+      </div>
       <div class="form-grid">
         <div class="form-field">
           <label>🧪 Isocianato</label>
-          <input type="number" id="an-iso" placeholder="0" min="0" step="0.1">
-          <div class="hint">gramos</div>
+          <input type="number" id="an-iso" placeholder="500" min="0" step="1">
+          <div class="hint" id="hint-an-iso">gramos</div>
         </div>
         <div class="form-field">
           <label>💧 Poliol</label>
-          <input type="number" id="an-pol" placeholder="0" min="0" step="0.1">
-          <div class="hint">gramos</div>
+          <input type="number" id="an-pol" placeholder="354" min="0" step="1">
+          <div class="hint" id="hint-an-pol">gramos</div>
         </div>
         <div class="form-field full">
           <label>⏱ Segundos de disparo</label>
@@ -721,7 +726,7 @@
         </div>
       </div>
 
-      <div class="card-label" style="margin-top:18px">¿A qué potencia calibraste?</div>
+      <div class="card-label" style="margin-top:18px">¿Con qué caudal calibraste?</div>
       <div class="marchas" id="marchas-cal"></div>
       <div id="cal-marcha-caja"></div>
 
@@ -989,10 +994,10 @@
     </div>
 
     <div class="anotador-form">
-      <div class="form-titulo">⚙️ Marchas de la máquina</div>
+      <div class="form-titulo">⚙️ Caudales de inyección</div>
       <div class="hint" style="margin-bottom:14px">
         Medí lo que realmente sale del mezclador: disparás unos segundos contra un recipiente, lo pesás,
-        y la app saca los gramos por segundo de esa marcha.
+        y la app saca los gramos por segundo de ese caudal.
       </div>
       <div id="marchas-config"></div>
       <button class="btn-guardar" onclick="guardarMarchas()">💾 Guardar marchas</button>
@@ -1435,7 +1440,7 @@ function guardarProducto(){
   anchoT=Math.min(15,Math.round(anchoT));
   DB.producto=Object.assign({},DB.producto,{ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi });
   guardarDB(); pintarTodo();
-  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir las tres marchas por cabezal antes de inyectar.');
+  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir los tres caudales por cabezal antes de inyectar.');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1458,10 +1463,10 @@ function pintarMarchasConfig(){
       estado='<div class="alerta naranja">⚠️ Sin medir el cabezal. Se está usando <b>'+f(ef,2)+' g/s</b>'
         +(parseFloat(m.caida)>0?' (mangueras menos '+f(parseFloat(m.caida),1)+' % a mano)':' sin ninguna corrección')+'.</div>';
     } else {
-      estado='<div class="hint">Marcha sin medir.</div>';
+      estado='<div class="hint">Sin medir aún.</div>';
     }
     return '<div style="border:2px solid rgba(26,158,110,.25);border-radius:11px;padding:14px;margin-bottom:14px">'
-      +'<div style="font-size:17.5px;font-weight:800;color:#0D5C40;background:rgba(26,158,110,.12);border-radius:8px;padding:10px 15px;margin-bottom:14px;letter-spacing:.2px">⚡ Marcha '+nom+'</div>'
+      +'<div style="font-size:17.5px;font-weight:800;color:#0D5C40;background:rgba(26,158,110,.12);border-radius:8px;padding:10px 15px;margin-bottom:14px;letter-spacing:.2px">⚡ Caudal de inyección '+nom+'</div>'
 
       +'<div class="card-label" style="font-size:12.5px">1 · Mangueras libres (referencia)</div>'
       +'<div class="form-grid">'
@@ -1510,7 +1515,7 @@ function guardarMarchas(){
   });
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
   const sinCabezal=MARCHAS.filter(([k])=>esEstimado(k)).map(([,n])=>n);
-  alert('Marchas guardadas.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
+  alert('Caudales de inyección guardados.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
 }
 
 function pintarMarchasSel(){
@@ -1544,10 +1549,47 @@ function rendimiento(k){ const m=DB.marchas[k]; return (m&&m.gs>0&&m.rgs>0)?(m.r
 function gsActual(){ const g=gsEfectivo(DB.cfg.marcha||'media'); return g>0?g:NaN; }
 
 // ═══════════════════════════════════════════════════════════════
+// UNIDAD DEL ANOTADOR
+// ═══════════════════════════════════════════════════════════════
+let unidadAn='g';
+function setUnidadAn(u,btn){
+  const iI=document.getElementById('an-iso'), pI=document.getElementById('an-pol');
+  const iv=parseFloat(iI.value), pv=parseFloat(pI.value);
+  if(Number.isFinite(iv)&&iv>0){
+    const g=aGramosComp(iv,unidadAn,DB.producto.peIso);
+    iI.value=deGramosComp(g,u,DB.producto.peIso);
+  }
+  if(Number.isFinite(pv)&&pv>0){
+    const g=aGramosComp(pv,unidadAn,DB.producto.pePol);
+    pI.value=deGramosComp(g,u,DB.producto.pePol);
+  }
+  const step=u==='g'?'1':'0.001';
+  const etq=u==='l'?'litros':u;
+  iI.step=pI.step=step;
+  const hI=document.getElementById('hint-an-iso'), hP=document.getElementById('hint-an-pol');
+  if(hI) hI.textContent=etq; if(hP) hP.textContent=etq;
+  unidadAn=u;
+  document.querySelectorAll('.utab-an').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  actualizarRatioPreview();
+}
+
+// ═══════════════════════════════════════════════════════════════
 // CALIBRADOR
 // ═══════════════════════════════════════════════════════════════
 let unidad='g';
 function setUnidad(u,btn){
+  const inp=document.getElementById('poliol-val');
+  const v=parseFloat(inp.value);
+  if(Number.isFinite(v)&&v>0){
+    const enG=aGramos(v,unidad);
+    if(u==='g')       inp.value=Math.round(enG);
+    else if(u==='kg') inp.value=+(enG/1000).toFixed(3);
+    else               inp.value=+(enG/1000/DB.producto.pePol).toFixed(3);
+  }
+  if(u==='g')       { inp.step='1';     inp.placeholder='500'; }
+  else if(u==='kg') { inp.step='0.001'; inp.placeholder='0.500'; }
+  else               { inp.step='0.001'; inp.placeholder='0.460'; }
   unidad=u;
   document.querySelectorAll('.utab').forEach(b=>b.classList.remove('activo'));
   btn.classList.add('activo');
@@ -1555,6 +1597,8 @@ function setUnidad(u,btn){
   calcular();
 }
 function aGramos(v,u){ if(u==='g')return v; if(u==='kg')return v*1000; return v*1000*DB.producto.pePol; }
+function aGramosComp(v,u,pe){ if(u==='g')return v; if(u==='kg')return v*1000; return v*1000*pe; }
+function deGramosComp(vg,u,pe){ if(u==='g')return Math.round(vg); if(u==='kg')return +(vg/1000).toFixed(3); return +(vg/1000/pe).toFixed(3); }
 
 function calcular(){
   const seg=gv('segundos'), pv=gv('poliol-val');
@@ -1652,17 +1696,17 @@ function calcularInyeccion(){
   document.getElementById('r-mezcla').textContent=hay?f(d.mezclaKg,3)+' kg':'—';
   document.getElementById('r-mezcla-det').innerHTML=hay?f(d.mezclaKg*1000,0)+' g<br>volumen '+f(d.volL,2)+' L':'—';
   document.getElementById('r-segundos').textContent=Number.isFinite(d.segundos)?f(d.segundos,2)+' s':'—';
-  document.getElementById('r-segundos-det').textContent=d.gs>0?'marcha '+d.marcha+' · '+f(d.gs,1)+' g/s '+(esEstimado(d.marcha)?'(estimado)':'(real)'):'falta medir la marcha';
+  document.getElementById('r-segundos-det').textContent=d.gs>0?'caudal '+d.marcha+' · '+f(d.gs,1)+' g/s '+(esEstimado(d.marcha)?'(estimado)':'(real)'):'falta medir el caudal';
   document.getElementById('r-pol').textContent=hay?f(d.polKg*1000,0)+' g':'—';
   document.getElementById('r-pol-det').innerHTML=hay?f(d.polKg,3)+' kg<br>'+f(d.polKg/pePol,3)+' L':'—';
   document.getElementById('r-iso').textContent=hay?f(d.isoKg*1000,0)+' g':'—';
   document.getElementById('r-iso-det').innerHTML=hay?f(d.isoKg,3)+' kg<br>'+f(d.isoKg/peIso,3)+' L':'—';
 
   let al='';
-  if(hay&&!(d.gs>0)) al+='<div class="alerta naranja">⚠️ Todavía no cargaste la marcha '+d.marcha+'. Andá a Parámetros → Marchas y medí lo que sale del cabezal.</div>';
-  else if(hay&&esEstimado(d.marcha)) al+='<div class="alerta naranja">⚠️ La marcha '+d.marcha+' no tiene medición de cabezal: estos segundos y el descuento de tanque son un estimado. Medila y cargala en Parámetros.</div>';
+  if(hay&&!(d.gs>0)) al+='<div class="alerta naranja">⚠️ Todavía no cargaste el caudal '+d.marcha+'. Andá a Parámetros → Caudales de inyección y medí lo que sale del cabezal.</div>';
+  else if(hay&&esEstimado(d.marcha)) al+='<div class="alerta naranja">⚠️ El caudal '+d.marcha+' no tiene medición de cabezal: estos segundos y el descuento de tanque son un estimado. Medilo y cargalo en Parámetros.</div>';
   if(Number.isFinite(d.segundos)&&d.segundos>=R_CREMA[0])
-    al+='<div class="alerta roja">🔴 Este panel tarda '+f(d.segundos,1)+' s y la crema arranca a los '+R_CREMA[0]+' s. Pasá a una marcha más alta o dividí el disparo.</div>';
+    al+='<div class="alerta roja">🔴 Este panel tarda '+f(d.segundos,1)+' s y la crema arranca a los '+R_CREMA[0]+' s. Pasá a un caudal más alto o dividí el disparo.</div>';
   else if(Number.isFinite(d.segundos)&&d.segundos>R_CREMA[0]*0.7)
     al+='<div class="alerta naranja">⚠️ Este panel tarda '+f(d.segundos,1)+' s, cerca de los '+R_CREMA[0]+' s de crema.</div>';
   if(Number.isFinite(d.tmolde)&&(d.tmolde<R_MOLDE_T[0]||d.tmolde>R_MOLDE_T[1]))
@@ -1680,7 +1724,7 @@ function calcularInyeccion(){
 function agregarATanda(){
   const d=panelDelFormulario();
   if(!Number.isFinite(d.mezclaKg)||d.mezclaKg<=0){ alert('Completá largo, ancho, espesor y densidad.'); return; }
-  if(!(d.gs>0)){ alert('Elegí una marcha que tenga medición cargada.\n\nSe cargan en Ajustes → Marchas de la máquina.'); return; }
+  if(!(d.gs>0)){ alert('Elegí un caudal que tenga medición cargada.\n\nSe cargan en Parámetros → Caudales de inyección.'); return; }
   for(let i=0;i<d.n;i++){
     DB.tanda.push(Object.assign({},d,{uid:Date.now()+'-'+Math.random().toString(36).slice(2,7),n:1}));
   }
@@ -1725,7 +1769,7 @@ function renderTanda(){
     +'<div class="prueba-num">'+(i+1)+' · '+(p.nombre||'Panel sin nombre')+'</div>'
     +'<div class="prueba-fila">'
     + dato('Medida',f(p.largo,0)+'×'+f(p.ancho,0)+'×'+f(p.espesor,0))
-    + dato('Marcha',p.marcha)
+    + dato('Caudal',p.marcha)
     + dato('Mezcla',f(p.mezclaKg,3)+' kg')
     + dato('Segundos',f(p.segundos,2)+' s')
     + dato('Poliol',f(p.polKg,3)+' kg')
@@ -2128,21 +2172,28 @@ function setFechaHoraAhora(){
 }
 
 function actualizarRatioPreview(){
-  const iso=gv('an-iso'), pol=gv('an-pol');
+  const isoV=gv('an-iso'), polV=gv('an-pol');
   const prev=document.getElementById('ratio-preview'), corr=document.getElementById('ratio-correccion');
-  if(iso>0&&pol>0){
-    const r=iso/pol*100, nom=ratio(), tol=DB.producto.tol||2;
+  if(isoV>0&&polV>0){
+    // Convertir a gramos para todos los cálculos (ratio, caudal, Hz)
+    const isoG=aGramosComp(isoV,unidadAn,DB.producto.peIso);
+    const polG=aGramosComp(polV,unidadAn,DB.producto.pePol);
+    const r=+(isoG/polG*100).toFixed(2), nom=ratio(), tol=DB.producto.tol||2;
     const desv=(r-nom)/nom*100;
     document.getElementById('ratio-val').textContent=f(r,2)+' PBW  ('+(desv>0?'+':'')+f(desv,2)+' %)';
     document.getElementById('ratio-status').textContent=
       Math.abs(desv)<=tol?'✅ Dentro de tolerancia ('+nom+' PBW ± '+tol+' %)'
       :Math.abs(desv)<=tol*2?'⚠️ Fuera de tolerancia — ajuste fino'
       :'🔴 Fuera de rango — hay que corregir la bomba';
-    const isoObj=pol*factorIso(), dif=isoObj-iso;
-    let txt='<b>Corrección:</b> con '+f(pol,0)+' g de poliol, el ISO debería pesar <b>'+f(isoObj,1)+' g</b> ('+(dif>0?'faltan ':'sobran ')+f(Math.abs(dif),1)+' g).';
+    // Corrección en la unidad activa
+    const isoObjG=polG*factorIso();
+    const isoObjV=deGramosComp(isoObjG,unidadAn,DB.producto.peIso);
+    const difV=isoObjV-isoV;
+    const etq=unidadAn==='l'?'L':unidadAn, dec=unidadAn==='g'?0:3;
+    let txt='<b>Corrección:</b> con '+f(polV,dec)+' '+etq+' de poliol, el ISO debería pesar <b>'+f(isoObjV,dec)+' '+etq+'</b> ('+(difV>0?'faltan ':'sobran ')+f(Math.abs(difV),dec)+' '+etq+').';
     const hzIso=gv('an-hz-iso'), hzPol=gv('an-hz-pol');
-    if(Number.isFinite(hzIso)&&hzIso>0) txt+='<br>Bomba ISO: '+f(hzIso,1)+' → <b>'+f(hzIso*(isoObj/iso),1)+' Hz</b>';
-    if(Number.isFinite(hzPol)&&hzPol>0) txt+='<br>O bomba poliol: '+f(hzPol,1)+' → <b>'+f(hzPol*((iso/factorIso())/pol),1)+' Hz</b>';
+    if(Number.isFinite(hzIso)&&hzIso>0) txt+='<br>Bomba ISO: '+f(hzIso,1)+' → <b>'+f(hzIso*(isoObjG/isoG),1)+' Hz</b>';
+    if(Number.isFinite(hzPol)&&hzPol>0) txt+='<br>O bomba poliol: '+f(hzPol,1)+' → <b>'+f(hzPol*((isoG/factorIso())/polG),1)+' Hz</b>';
     txt+='<br><span style="color:var(--gris-4)">Estimación lineal: volvé a disparar y confirmá el peso real.</span>';
     corr.innerHTML=txt; corr.style.display='block';
     prev.style.display='block';
@@ -2171,18 +2222,18 @@ function pintarCajaMarchaCal(){
   if(!caja) return;
   const iso=gv('an-iso'), pol=gv('an-pol'), seg=gv('an-seg');
   if(!(iso>0&&pol>0&&seg>0)){
-    caja.innerHTML='<div class="hint" style="margin-top:8px">Cargá isocianato, poliol y segundos para poder volcar esta medición a una marcha.</div>';
+    caja.innerHTML='<div class="hint" style="margin-top:8px">Cargá isocianato, poliol y segundos para poder volcar esta medición a un caudal.</div>';
     return;
   }
   const gs=(iso+pol)/seg;
   const actual=DB.marchas[marchaCal].gs;
   caja.innerHTML='<div class="alerta azul" style="margin-top:10px">'
     +'Esta prueba tira <b>'+f(gs,2)+' g/s</b> ('+f(gs*60/1000,3)+' kg/min).'
-    +(actual>0?' La marcha '+marchaCal+' hoy tiene guardado '+f(actual,2)+' g/s.':' La marcha '+marchaCal+' todavía no tiene valor.')
+    +(actual>0?' El caudal '+marchaCal+' hoy tiene guardado '+f(actual,2)+' g/s.':' El caudal '+marchaCal+' todavía no tiene valor.')
     +'</div>'
-    +'<button class="btn-sec" onclick="volcarAMarcha()">⬆️ Guardar como mangueras libres de '+marchaCal+'</button>'
+    +'<button class="btn-sec" onclick="volcarAMarcha()">⬆️ Guardar como mangueras libres · caudal '+marchaCal+'</button>'
     +'<div class="hint" style="margin-top:6px">Esto es la suma de los dos componentes en mangueras libres. '
-    +'El caudal que usan los cálculos es el medido por cabezal, en Parámetros → Marchas.</div>';
+    +'El caudal que usan los cálculos es el medido por cabezal, en Parámetros → Caudales de inyección.</div>';
 }
 
 function volcarAMarcha(){
@@ -2220,9 +2271,12 @@ function renderChequeos(){
   document.getElementById(id).addEventListener('input',renderChequeos));
 
 function guardarPrueba(){
-  const iso=gv('an-iso'), pol=gv('an-pol');
+  const isoV=gv('an-iso'), polV=gv('an-pol');
   const fecha=sv('an-fecha'), hora=sv('an-hora');
-  if(!iso||!pol||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+  if(!isoV||!polV||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+  // Siempre guardamos en gramos, sin importar la unidad activa
+  const iso=aGramosComp(isoV,unidadAn,DB.producto.peIso);
+  const pol=aGramosComp(polV,unidadAn,DB.producto.pePol);
   const seg=gv('an-seg');
   const r=+(iso/pol*100).toFixed(2), nom=ratio(), tol=DB.producto.tol||2;
   const tIso=sv('an-temp-iso'), tPol=sv('an-temp-pol'), tAmb=sv('an-temp-amb');
@@ -2433,8 +2487,9 @@ function renderHistorial(){
       titulo='⚗️ Calibración · '+p.fecha+' '+p.hora;
       cuerpo=dato('ISO',p.iso+' g','iso')+dato('Poliol',p.pol+' g')
         +dato('Ratio',f(p.ratio,2)+' PBW',p.ok?'ratio':'mal');
+      if(p.seg!==''&&p.seg!==undefined) cuerpo+=dato('Segundos',f(p.seg,1)+' s');
       if(p.caudal) cuerpo+=dato('Caudal',p.caudal+' g/s');
-      if(p.marcha) cuerpo+=dato('Marcha',p.marcha);
+      if(p.marcha) cuerpo+=dato('Nivel',p.marcha);
       if(p.hzIso) cuerpo+=dato('Hz ISO',p.hzIso,'hz');
       if(p.hzPol) cuerpo+=dato('Hz Pol',p.hzPol,'hz');
       if(p.tempIso) cuerpo+=dato('🌡 ISO',p.tempIso,'temp');
@@ -2464,7 +2519,7 @@ function renderHistorial(){
           +dato('Medida',(p.largo||'?')+'×'+(p.ancho||'?')+'×'+(p.espesor||'?'))
           +dato('Mezcla c/u',f(p.mezclaKg,3)+' kg')
           +(p.segundos!==''?dato('Segundos',f(p.segundos,2)+' s'):'')
-          +(p.marcha?dato('Marcha',p.marcha):'')
+          +(p.marcha?dato('Caudal',p.marcha):'')
           +dato('Poliol',f(p.totPol,2)+' kg')
           +dato('ISO',f(p.totIso,2)+' kg','iso');
       }
@@ -2497,7 +2552,7 @@ const GUIA=[
 <ol>
 <li><b>El producto.</b> Parámetros → Producto. Nombre, ratio, tolerancia y los dos pesos específicos.</li>
 <li><b>La ficha.</b> Parámetros → Rangos de la ficha técnica. Son los números contra los que la app te marca verde o rojo.</li>
-<li><b>Las marchas.</b> Parámetros → Marchas. Cuánto tira la máquina en baja, media y alta, medido a la salida del cabezal.</li>
+<li><b>Los caudales de inyección.</b> Parámetros → Caudales de inyección. Cuánto tira la máquina en baja, media y alta, medido a la salida del cabezal.</li>
 <li><b>Los tanques.</b> Tanques → Cargar. Los kilos que tenés hoy en planta.</li>
 </ol>
 <p>Recién ahí empezás a registrar inyecciones. Si falta alguna, la app te va avisando en naranja.</p>`},
@@ -2506,13 +2561,13 @@ const GUIA=[
 <p><b>Para qué sirve.</b> Te dice cuánto isocianato le corresponde al poliol que recolectaste, según el ratio del producto.</p>
 <p><b>Cuándo se usa.</b> Cuando estás ajustando las bombas y querés saber a qué peso tenés que llegar.</p>
 <p><b>Cómo.</b> Ponés los segundos que disparaste y cuánto poliol juntaste. Abajo te muestra la tabla de ajuste: cada renglón es un ratio posible y cuánto ISO le toca. El renglón verde fuerte es el nominal; los verdes suaves están dentro de tolerancia; los apagados con el sello "fuera", no.</p>
-<p><b>Ojo.</b> El caudal que muestra acá es el teórico de las bombas. Para inyectar no se usa ese, se usa el de las marchas.</p>`},
+<p><b>Ojo.</b> El caudal que muestra acá es el teórico de las bombas. Para inyectar no se usa ese, se usa el de los caudales de inyección.</p>`},
 
 {t:'Anotador', i:'📋', c:`
 <p><b>Para qué sirve.</b> Es donde queda registrada cada prueba de calibración. El Calibrador calcula; el Anotador guarda.</p>
 <p><b>Cómo se hace la prueba.</b> Recolectás cada componente por separado en un balde tarado, los pesás, y cargás los dos pesos y los segundos.</p>
 <p><b>Qué te devuelve.</b> El ratio real, cuánto te desviaste del nominal, y la corrección: cuántos gramos le faltan o le sobran al ISO, y a qué Hz llevar cada bomba. Es una estimación: cambiás, disparás de nuevo y confirmás.</p>
-<p><b>La potencia.</b> Abajo elegís a qué marcha calibraste. Si querés, con un botón guardás esa medición como el caudal de mangueras libres de esa marcha.</p>`},
+<p><b>El caudal.</b> Abajo elegís con qué caudal calibraste. Si querés, con un botón guardás esa medición como el caudal de mangueras libres de ese caudal.</p>`},
 
 {t:'Densidad libre', i:'🥤', c:`
 <p><b>Para qué sirve.</b> Para saber si el material está reaccionando bien, aparte del ratio. Es la prueba del vaso.</p>
@@ -2522,8 +2577,8 @@ const GUIA=[
 
 {t:'Inyección', i:'🎯', c:`
 <p><b>Para qué sirve.</b> Calcula cuánta mezcla lleva cada panel y cuántos segundos hay que disparar. Es el corazón de la app.</p>
-<p><b>Cómo.</b> Cargás largo, ancho y espesor en centímetros, la densidad que aplicás y el sobreempaque. Elegís la potencia. Te da los gramos y los segundos.</p>
-<p><b>La tanda.</b> Tocás "Agregar a la tanda" y cargás el siguiente panel. Podés meter siete paneles distintos, cada uno con su medida y su potencia. Cuando están todos, "Registrar tanda" los guarda juntos y descuenta una sola vez del tanque.</p>
+<p><b>Cómo.</b> Cargás largo, ancho y espesor en centímetros, la densidad que aplicás y el sobreempaque. Elegís el caudal de inyección. Te da los gramos y los segundos.</p>
+<p><b>La tanda.</b> Tocás "Agregar a la tanda" y cargás el siguiente panel. Podés meter varios paneles distintos, cada uno con su medida y su caudal. Cuando están todos, "Registrar tanda" los guarda juntos y descuenta una sola vez del tanque.</p>
 <p><b>Modelos.</b> Si una medida se repite todos los días, guardala como modelo: después la cargás con un toque.</p>
 <p><b>Bien o falló.</b> Cada panel de la lista se puede marcar. Los dos descuentan del tanque, porque el material salió igual, pero queda registrado cuál falló.</p>
 <p><b>La hoja para la máquina.</b> Antes de inyectar podés bajar el PDF de la tanda: sale con cada panel numerado, sus segundos y una casilla para tildar.</p>`},
@@ -2539,7 +2594,7 @@ const GUIA=[
 <p><b>Cargar.</b> Cuando entra un tambor, ponés los kilos, el lote y la fecha de elaboración. La app calcula sola el vencimiento con los meses de la ficha.</p>
 <p><b>Purga.</b> Lo que sale sin hacer panel —limpieza, purga, lo que gotea— se descuenta con este botón. Si no lo cargás, el tanque te va a mentir de a poco.</p>
 <p><b>Fijar nivel.</b> Si pesás el tambor y no coincide, ponés el número real y la app lo corrige.</p>
-<p><b>La alarma.</b> Cuando un componente baja del mínimo, aparece una barra roja arriba de todo, en todas las pantallas. El mínimo lo ponés vos en kilos, en Tanques → Capacidad y alarma. El valor por defecto es 50 kg para poliol y 60 kg para ISO, que es aproximadamente un cuarto del tambor.</p>
+<p><b>La alarma.</b> Cuando un componente baja del mínimo, aparece una barra roja arriba de todo, en todas las pantallas. El mínimo lo ponés vos en kilos, en Tanques → Alarma de nivel bajo. El valor por defecto es 50 kg para poliol y 60 kg para ISO, que es aproximadamente un cuarto del tambor.</p>
 <p><b>La línea roja en el dibujo.</b> En el dibujo del tambor aparece una línea roja horizontal que muestra exactamente dónde está el umbral de alarma. Así podés ver de antemano a qué altura visual va a disparar la alerta y ajustar el valor si querés que avise antes o después.</p>`},
 
 {t:'Registros', i:'🖨', c:`
@@ -2554,7 +2609,7 @@ const GUIA=[
 <ol>
 <li><b>Parámetros → Producto.</b> Nombre nuevo, ratio nuevo, y los dos pesos específicos de la ficha nueva.</li>
 <li><b>Parámetros → Rangos de la ficha.</b> Temperaturas, crema, hilos, densidades y vida útil. Si no los cambiás, la app te va a marcar rojo cosas que están bien.</li>
-<li><b>Volvé a medir las tres marchas por cabezal.</b> La caída depende del producto: con material distinto, el caudal real cambia.</li>
+<li><b>Volvé a medir los tres caudales por cabezal.</b> La caída depende del producto: con material distinto, el caudal real cambia.</li>
 <li><b>Tanques.</b> Ajustá las capacidades si los envases son de otro tamaño.</li>
 </ol>
 <p>Si te equivocaste tocando algo, hay un botón para volver a los valores del ALKURAN de una.</p>`},
@@ -2570,7 +2625,7 @@ const GUIA=[
 <p><b>"Subí una versión nueva y sigo viendo la vieja."</b> Fijate el número de versión al pie o arriba en Parámetros. Si no cambió, tocá "Buscar la última versión" en Parámetros. No toca tus datos.</p>
 <p><b>"Me marca rojo algo que está bien."</b> Los rangos son los de la ficha cargada. Si cambiaste de producto y no actualizaste la ficha, va a marcar mal. Parámetros → Rangos de la ficha técnica.</p>
 <p><b>"El tanque no coincide con la realidad."</b> Puede ser purga sin cargar, o que se disparó distinta cantidad de segundos que la que dijo la app. Pesá el tambor y usá "Fijar nivel medido".</p>
-<p><b>"Los segundos me parecen pocos o muchos."</b> Revisá que la marcha tenga el caudal medido por cabezal y no solo el de mangueras. Si dice "estimado", ese es el problema.</p>
+<p><b>"Los segundos me parecen pocos o muchos."</b> Revisá que el caudal tenga la medición por cabezal y no solo el de mangueras. Si dice "estimado", ese es el problema.</p>
 <p><b>"No aparece el botón PDF."</b> Sale en cada registro guardado. Si no guardaste ninguno todavía, no hay nada para imprimir.</p>`}
 ];
 
@@ -2606,12 +2661,14 @@ function renderUltimasCal(){
   if(!lista.length){ cont.innerHTML=listaVacia('Todavía no guardaste ninguna calibración.'); return; }
   cont.innerHTML=lista.map(p=>
     '<div class="prueba-card">'+botonesRegistro('cal',p.id)
-    +'<div class="prueba-num">'+(p.ok?'✅':'🔴')+' '+p.fecha+' '+p.hora+(p.marcha?' · marcha '+p.marcha:'')+'</div>'
+    +'<div class="prueba-num">'+(p.ok?'✅':'🔴')+' '+p.fecha+' '+p.hora+(p.marcha?' · caudal '+p.marcha:'')+'</div>'
     +'<div class="prueba-fila">'
     + dato('Ratio',f(p.ratio,2),p.ok?'ratio':'mal')
     + dato('ISO',f(p.iso,0)+' g','iso')
     + dato('Poliol',f(p.pol,0)+' g')
+    + (p.seg!==''&&p.seg!==undefined?dato('Segundos',f(p.seg,1)+' s'):'')
     + (p.caudal?dato('Caudal',p.caudal+' g/s'):'')
+    + (p.marcha?dato('Nivel',p.marcha):'')
     +'</div>'
     +(p.nota?'<div class="prueba-nota">"'+p.nota+'"</div>':'')
     +'</div>').join('');
@@ -2704,7 +2761,7 @@ function hojaDe(p){
       +fila('Isocianato',f(p.iso,1)+' g')+fila('Poliol',f(p.pol,1)+' g')
       +fila('Segundos',p.seg!==''?f(p.seg,1)+' s':'')
       +fila('Caudal',p.caudal?f(p.caudal,2)+' g/s':'')
-      +fila('Marcha',p.marcha||'')
+      +fila('Nivel',p.marcha||'')
       +'</table>';
     if(p.hzIso||p.hzPol){
       s+='<h3>Bombas</h3><table>'+fila('Hz ISO',p.hzIso?f(p.hzIso,1)+' Hz':'')
@@ -2747,7 +2804,7 @@ function hojaDe(p){
       +'</table>';
     if(lista){
       s+='<h3>Detalle por panel</h3><table class="tabla-paneles">'
-        +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Marcha</th><th>Seg</th><th>Mezcla kg</th><th>Molde</th><th>Estado</th></tr>';
+        +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Caudal</th><th>Seg</th><th>Mezcla kg</th><th>Molde</th><th>Estado</th></tr>';
       lista.forEach((x,i)=>{
         s+='<tr><td>'+(i+1)+'</td><td>'+(x.nombre||'—')+'</td>'
           +'<td>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</td>'
@@ -2780,7 +2837,7 @@ function imprimirTandaBorrador(){
   s+=encabezadoHoja('Hoja de trabajo · tanda a inyectar',t.n+' paneles',
       hoy.toLocaleDateString('es-AR')+' '+hoy.toTimeString().slice(0,5));
   s+='<h3>Orden de inyección</h3><table class="tabla-paneles">'
-    +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Marcha</th><th>Segundos</th><th>Mezcla kg</th><th>Molde °C</th><th>Hecho</th></tr>';
+    +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Caudal</th><th>Segundos</th><th>Mezcla kg</th><th>Molde °C</th><th>Hecho</th></tr>';
   DB.tanda.forEach((x,i)=>{
     s+='<tr><td>'+(i+1)+'</td><td>'+(x.nombre||'—')+'</td>'
       +'<td>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</td>'
@@ -2905,10 +2962,10 @@ function exportarCSV(){
   const L=[];
   L.push('PRODUCTO,'+q(DB.producto.nombre)+',Ratio,'+DB.producto.ratio+',PE Poliol,'+DB.producto.pePol+',PE ISO,'+DB.producto.peIso);
   L.push('','CALIBRACIONES');
-  L.push('Fecha,Hora,Marcha,ISO (g),Poliol (g),Seg,Caudal (g/s),Ratio (PBW),En tolerancia,Hz ISO,Hz Poliol,Crema (s),Hilos (s),Temp ISO,Temp Poliol,Temp Amb,Notas');
+  L.push('Fecha,Hora,Caudal,ISO (g),Poliol (g),Seg,Caudal (g/s),Ratio (PBW),En tolerancia,Hz ISO,Hz Poliol,Crema (s),Hilos (s),Temp ISO,Temp Poliol,Temp Amb,Notas');
   DB.pruebas.forEach(p=>L.push([p.fecha,p.hora,p.marcha||'',p.iso,p.pol,p.seg,p.caudal,p.ratio,p.ok?'SI':'NO',p.hzIso,p.hzPol,p.crema,p.hilos,p.tempIso,p.tempPol,p.tempAmb,q(p.nota)].join(',')));
   L.push('','INYECCIONES (una fila por panel)');
-  L.push('Tanda,Fecha,Hora,Panel,Estado,Largo,Ancho,Espesor,Volumen (L),Densidad,Sobreempaque (%),Densidad real,Temp molde,Mezcla (kg),Segundos,Marcha,g/s,Poliol (kg),ISO (kg),Notas de la tanda');
+  L.push('Tanda,Fecha,Hora,Panel,Estado,Largo,Ancho,Espesor,Volumen (L),Densidad,Sobreempaque (%),Densidad real,Temp molde,Mezcla (kg),Segundos,Caudal,g/s,Poliol (kg),ISO (kg),Notas de la tanda');
   DB.inyecciones.forEach(t=>{
     const lista=Array.isArray(t.paneles)?t.paneles:null;
     if(lista){
@@ -2932,7 +2989,7 @@ function exportarCSV(){
   L.push('Fecha,Hora,Movimiento,Componente,Kilos,Lote,Elaboración,Vencimiento,Notas');
   DB.movimientos.forEach(p=>L.push([p.fecha,p.hora,p.mov,p.comp==='pol'?'Poliol':'ISO',p.kg,q(p.lote),p.elab,p.venc,q(p.nota)].join(',')));
   L.push('','MARCHAS');
-  L.push('Marcha,Mangueras libres (g/s),Cabezal real (g/s),Rendimiento (%),Caida manual (%),Usado en calculos (g/s)');
+  L.push('Caudal,Mangueras libres (g/s),Cabezal real (g/s),Rendimiento (%),Caida manual (%),Usado en calculos (g/s)');
   MARCHAS.forEach(([k,n])=>{ const m=DB.marchas[k]; const r=rendimiento(k);
     L.push([n,m.gs?m.gs.toFixed(2):'',m.rgs?m.rgs.toFixed(2):'',Number.isFinite(r)?r.toFixed(1):'',m.caida,(gsEfectivo(k)||0).toFixed(2)].join(',')); });
   L.push('','TANQUES AL EXPORTAR');
@@ -3131,7 +3188,7 @@ setTimeout(function(){
     if(ok){
       DB.producto=Object.assign({},FICHA_ALKURAN);
       guardarDB(); aplicarFicha(); pintarTodo();
-      alert('✅ Parámetros actualizados.\n\nOjo: recordá volver a medir las marchas por cabezal: la caída depende del producto.');
+      alert('✅ Parámetros actualizados.\n\nOjo: recordá volver a medir los caudales por cabezal: la caída depende del producto.');
     }
     DB.meta.migV14=true;
     guardarDB();
