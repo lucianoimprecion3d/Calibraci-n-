@@ -589,32 +589,43 @@
     </div>
 
     <div class="anotador-form">
-      <div class="form-titulo">⚙️ Capacidad y alarma</div>
+      <div class="form-titulo">⚙️ Capacidad del tambor</div>
       <div class="form-grid">
         <div class="form-field">
-          <label>Tambor de poliol</label>
+          <label>Poliol</label>
           <input type="number" id="tq-cap-pol" min="1" step="any">
-          <div class="hint">kg</div>
+          <div class="hint">kg por tambor</div>
         </div>
         <div class="form-field">
-          <label>Tambor de ISO</label>
+          <label>ISO</label>
           <input type="number" id="tq-cap-iso" min="1" step="any">
-          <div class="hint">kg</div>
+          <div class="hint">kg por tambor</div>
         </div>
+      </div>
+      <button class="btn-sec" onclick="guardarCapacidades()">Guardar capacidades</button>
+      <button class="btn-sec" onclick="reconciliarTanques()">🔄 Reconstruir nivel desde el historial</button>
+      <div class="hint" style="margin-top:8px">La reconstrucción toma la última corrección manual y le aplica todas las cargas e inyecciones posteriores.</div>
+    </div>
+
+    <div class="anotador-form">
+      <div class="form-titulo">🔔 Alarma de nivel bajo</div>
+      <div class="hint" style="margin-bottom:16px">
+        Cuando queden <b>menos kilos que este número</b>, aparece la alarma roja en todas las pantallas.
+        Ponés los kilos que te sirven como aviso para cada componente.
+      </div>
+      <div class="form-grid">
         <div class="form-field">
-          <label>Alarma poliol</label>
-          <input type="number" id="tq-alarma-pol" min="0" step="any">
+          <label>💧 Avisar cuando el poliol baje de</label>
+          <input type="number" id="tq-alarma-pol" min="0" step="any" placeholder="50">
           <div class="hint" id="hint-alarma-pol">kg</div>
         </div>
         <div class="form-field">
-          <label>Alarma ISO</label>
-          <input type="number" id="tq-alarma-iso" min="0" step="any">
+          <label>🧪 Avisar cuando el ISO baje de</label>
+          <input type="number" id="tq-alarma-iso" min="0" step="any" placeholder="60">
           <div class="hint" id="hint-alarma-iso">kg</div>
         </div>
       </div>
-      <button class="btn-sec" onclick="guardarCapacidades()">Guardar</button>
-      <button class="btn-sec" onclick="reconciliarTanques()">🔄 Reconstruir nivel desde el historial</button>
-      <div class="hint" style="margin-top:8px">La reconstrucción toma la última corrección manual y le aplica todas las cargas e inyecciones posteriores.</div>
+      <button class="btn-guardar" onclick="guardarCapacidades()">🔔 Guardar alarmas</button>
     </div>
 
     <div class="section-title">Últimos movimientos</div>
@@ -920,19 +931,19 @@
           <input type="number" id="pr-tol" min="0" step="any">
         </div>
         <div class="form-field">
-          <label>Ancho de la tabla de ajuste</label>
-          <input type="number" id="pr-tabla" min="1" max="15" step="1">
-          <div class="hint">± PBW alrededor del nominal</div>
-        </div>
-        <div class="form-field">
           <label>Peso específico poliol</label>
           <input type="number" id="pr-pe-pol" min="0" step="0.001">
-          <div class="hint">g/ml</div>
+          <div class="hint">g/ml — componente A</div>
         </div>
         <div class="form-field">
           <label>Peso específico ISO</label>
           <input type="number" id="pr-pe-iso" min="0" step="0.001">
-          <div class="hint">g/ml</div>
+          <div class="hint">g/ml — componente B</div>
+        </div>
+        <div class="form-field full">
+          <label>Ancho de la tabla de ajuste</label>
+          <input type="number" id="pr-tabla" min="1" max="15" step="1">
+          <div class="hint">± PBW alrededor del nominal</div>
         </div>
       </div>
       <button class="btn-guardar" onclick="guardarProducto()">💾 Guardar producto</button>
@@ -1449,8 +1460,8 @@ function pintarMarchasConfig(){
     } else {
       estado='<div class="hint">Marcha sin medir.</div>';
     }
-    return '<div style="border:2px solid var(--gris-2);border-radius:11px;padding:14px;margin-bottom:14px">'
-      +'<div style="font-size:16px;font-weight:800;color:var(--azul-dark);margin-bottom:12px">Marcha '+nom+'</div>'
+    return '<div style="border:2px solid rgba(26,158,110,.25);border-radius:11px;padding:14px;margin-bottom:14px">'
+      +'<div style="font-size:17.5px;font-weight:800;color:#0D5C40;background:rgba(26,158,110,.12);border-radius:8px;padding:10px 15px;margin-bottom:14px;letter-spacing:.2px">⚡ Marcha '+nom+'</div>'
 
       +'<div class="card-label" style="font-size:12.5px">1 · Mangueras libres (referencia)</div>'
       +'<div class="form-grid">'
