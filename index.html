@@ -363,7 +363,7 @@
       <div class="card">
         <div class="card-label">💧 Poliol recolectado</div>
         <div class="input-fila">
-          <input type="number" id="poliol-val" placeholder="500" min="0" step="1">
+          <input type="number" id="poliol-val" placeholder="0" min="0" step="1">
           <span class="input-unidad" id="unidad-display">g</span>
         </div>
         <div class="unidad-tabs">
@@ -452,17 +452,17 @@
         </div>
         <div class="form-field">
           <label>Densidad aplicada</label>
-          <input type="number" id="p-densidad" placeholder="40" min="0" step="any">
+          <input type="number" id="p-densidad" placeholder="0" min="0" step="any">
           <div class="hint">kg/m³ — 40, 42, la que uses</div>
         </div>
         <div class="form-field">
           <label>Sobreempaque</label>
-          <input type="number" id="p-sobre" placeholder="15" min="0" step="any">
+          <input type="number" id="p-sobre" placeholder="0" min="0" step="any">
           <div class="hint">% — 10, 15, 20, 30…</div>
         </div>
         <div class="form-field">
           <label>Temp. molde / prensa</label>
-          <input type="number" id="p-tmolde" placeholder="40" step="0.1">
+          <input type="number" id="p-tmolde" placeholder="0" step="0.1">
           <div class="hint" id="hint-tmolde">°C — ficha: 36 a 44</div>
         </div>
         <div class="form-field">
@@ -616,12 +616,12 @@
       <div class="form-grid">
         <div class="form-field">
           <label>💧 Avisar cuando el poliol baje de</label>
-          <input type="number" id="tq-alarma-pol" min="0" step="any" placeholder="50">
+          <input type="number" id="tq-alarma-pol" min="0" step="any" placeholder="0">
           <div class="hint" id="hint-alarma-pol">kg</div>
         </div>
         <div class="form-field">
           <label>🧪 Avisar cuando el ISO baje de</label>
-          <input type="number" id="tq-alarma-iso" min="0" step="any" placeholder="60">
+          <input type="number" id="tq-alarma-iso" min="0" step="any" placeholder="0">
           <div class="hint" id="hint-alarma-iso">kg</div>
         </div>
       </div>
@@ -650,12 +650,12 @@
       <div class="form-grid">
         <div class="form-field">
           <label>🧪 Isocianato</label>
-          <input type="number" id="an-iso" placeholder="500" min="0" step="1">
+          <input type="number" id="an-iso" placeholder="0" min="0" step="1">
           <div class="hint" id="hint-an-iso">gramos</div>
         </div>
         <div class="form-field">
           <label>💧 Poliol</label>
-          <input type="number" id="an-pol" placeholder="354" min="0" step="1">
+          <input type="number" id="an-pol" placeholder="0" min="0" step="1">
           <div class="hint" id="hint-an-pol">gramos</div>
         </div>
         <div class="form-field full">
@@ -783,17 +783,17 @@
       <div class="form-grid" style="margin-top:14px">
         <div class="form-field">
           <label>Volumen</label>
-          <input type="number" id="d-vol" placeholder="1" min="0" step="any" value="1">
+          <input type="number" id="d-vol" placeholder="0" min="0" step="any">
           <div class="hint">litros</div>
         </div>
         <div class="form-field">
           <label>Densidad buscada</label>
-          <input type="number" id="d-obj" placeholder="40" min="0" step="any" value="40">
+          <input type="number" id="d-obj" placeholder="0" min="0" step="any">
           <div class="hint" id="hint-dobj">kg/m³ — ficha: 27 a 32</div>
         </div>
         <div class="form-field full">
           <label>De más, para que rebalse</label>
-          <input type="number" id="d-margen" placeholder="20" min="0" step="any" value="20">
+          <input type="number" id="d-margen" placeholder="0" min="0" step="any">
           <div class="hint">%</div>
         </div>
       </div>
@@ -1563,7 +1563,7 @@ function setUnidadAn(u,btn){
     const g=aGramosComp(pv,unidadAn,DB.producto.pePol);
     pI.value=deGramosComp(g,u,DB.producto.pePol);
   }
-  const step=u==='g'?'1':'0.001';
+  const step=u==='g'?'1':(u==='kg'?'0.001':'0.0001');
   const etq=u==='l'?'litros':u;
   iI.step=pI.step=step;
   const hI=document.getElementById('hint-an-iso'), hP=document.getElementById('hint-an-pol');
@@ -1585,11 +1585,12 @@ function setUnidad(u,btn){
     const enG=aGramos(v,unidad);
     if(u==='g')       inp.value=Math.round(enG);
     else if(u==='kg') inp.value=+(enG/1000).toFixed(3);
-    else               inp.value=+(enG/1000/DB.producto.pePol).toFixed(3);
+    else               inp.value=+(enG/1000/DB.producto.pePol).toFixed(4);
   }
-  if(u==='g')       { inp.step='1';     inp.placeholder='500'; }
-  else if(u==='kg') { inp.step='0.001'; inp.placeholder='0.500'; }
-  else               { inp.step='0.001'; inp.placeholder='0.460'; }
+  if(u==='g')       inp.step='1';
+  else if(u==='kg') inp.step='0.001';
+  else              inp.step='0.0001';
+  inp.placeholder='0';
   unidad=u;
   document.querySelectorAll('.utab').forEach(b=>b.classList.remove('activo'));
   btn.classList.add('activo');
@@ -1598,7 +1599,7 @@ function setUnidad(u,btn){
 }
 function aGramos(v,u){ if(u==='g')return v; if(u==='kg')return v*1000; return v*1000*DB.producto.pePol; }
 function aGramosComp(v,u,pe){ if(u==='g')return v; if(u==='kg')return v*1000; return v*1000*pe; }
-function deGramosComp(vg,u,pe){ if(u==='g')return Math.round(vg); if(u==='kg')return +(vg/1000).toFixed(3); return +(vg/1000/pe).toFixed(3); }
+function deGramosComp(vg,u,pe){ if(u==='g')return Math.round(vg); if(u==='kg')return +(vg/1000).toFixed(3); return +(vg/1000/pe).toFixed(4); }
 
 function calcular(){
   const seg=gv('segundos'), pv=gv('poliol-val');
@@ -1655,12 +1656,10 @@ document.getElementById('poliol-val').addEventListener('input',calcular);
 // INYECCIÓN
 // ═══════════════════════════════════════════════════════════════
 function precargarInyeccion(){
-  const c=DB.cfg;
-  const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!==''&&v!==undefined&&v!==null) el.value=v; };
-  set('p-largo',c.largo); set('p-ancho',c.ancho); set('p-espesor',c.espesor);
-  document.getElementById('p-densidad').value=(c.densidad===''||c.densidad===undefined)?40:c.densidad;
-  document.getElementById('p-sobre').value=(c.sobre===''||c.sobre===undefined)?15:c.sobre;
-  set('p-pieza',c.pieza); set('p-tmolde',c.tmolde);
+  // Los campos arrancan vacíos: el operario carga los datos de la tanda del día.
+  // Las medidas que se repiten se recuperan con un toque desde Modelos guardados.
+  ['p-largo','p-ancho','p-espesor','p-densidad','p-sobre','p-pieza','p-tmolde']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
 }
 
 // ---------- cálculo de un panel ----------
@@ -2189,7 +2188,7 @@ function actualizarRatioPreview(){
     const isoObjG=polG*factorIso();
     const isoObjV=deGramosComp(isoObjG,unidadAn,DB.producto.peIso);
     const difV=isoObjV-isoV;
-    const etq=unidadAn==='l'?'L':unidadAn, dec=unidadAn==='g'?0:3;
+    const etq=unidadAn==='l'?'L':unidadAn, dec=unidadAn==='g'?0:(unidadAn==='kg'?3:4);
     let txt='<b>Corrección:</b> con '+f(polV,dec)+' '+etq+' de poliol, el ISO debería pesar <b>'+f(isoObjV,dec)+' '+etq+'</b> ('+(difV>0?'faltan ':'sobran ')+f(Math.abs(difV),dec)+' '+etq+').';
     const hzIso=gv('an-hz-iso'), hzPol=gv('an-hz-pol');
     if(Number.isFinite(hzIso)&&hzIso>0) txt+='<br>Bomba ISO: '+f(hzIso,1)+' → <b>'+f(hzIso*(isoObjG/isoG),1)+' Hz</b>';
