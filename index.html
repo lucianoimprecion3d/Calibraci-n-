@@ -1011,6 +1011,7 @@
       <button class="btn-guardar" style="margin-top:9px" onclick="enviarRespaldo()">📲 Enviar respaldo por WhatsApp o mail</button>
       <button class="btn-sec" onclick="document.getElementById('file-restore').click()">📂 Restaurar desde un respaldo</button>
       <input type="file" id="file-restore" accept=".json,application/json" style="display:none" onchange="importarRespaldo(event)">
+      <button class="btn-sec" style="margin-top:9px;background:var(--naranja-light);color:#7A420F" onclick="restaurarEmergencia()">🆘 Restaurar respaldo de emergencia (11-08)</button>
       <div class="logo-instrucciones">
         <div class="logo-instr-titulo">📌 Cómo no perder nada</div>
         <div class="logo-instr-item"><div class="logo-instr-num">1</div>Los datos se guardan por duplicado adentro del teléfono, en dos lugares distintos. Si uno se limpia, el otro los recupera.</div>
@@ -1345,6 +1346,24 @@ function leerLS(){
   }catch(e){}
   return null;
 }
+function restaurarEmergencia(){
+  if(typeof RESPALDO_EMBEBIDO==='undefined'){ alert('No hay respaldo de emergencia embebido en esta versión del archivo.'); return; }
+  if(!confirm('Se va a cargar el respaldo de emergencia del '+RESPALDO_EMBEBIDO_FECHA+'.\n\n'
+    +'Esto SUMA lo que traiga ese respaldo (calibraciones, inyecciones, movimientos) a lo que ya haya acá, '
+    +'y reemplaza producto, marchas y el nivel de tanques por los del respaldo.\n\n¿Seguimos?')) return;
+  try{
+    const d=normalizar(RESPALDO_EMBEBIDO);
+    DB.pruebas=unir(DB.pruebas,d.pruebas);
+    DB.inyecciones=unir(DB.inyecciones,d.inyecciones);
+    DB.movimientos=unir(DB.movimientos,d.movimientos);
+    DB.tanques=d.tanques; DB.producto=d.producto; DB.marchas=d.marchas; DB.cfg=d.cfg;
+    guardarDB(); pintarTodo(); renderHistorial();
+    alert('Listo. Se cargaron '+totalRegistros()+' registros en total.');
+  }catch(e){
+    alert('Se rompió algo al restaurar: '+e.message+'\n\nMandale esto a soporte tal cual aparece.');
+  }
+}
+
 function cargarTodo(){
   const desdeLS=leerLS();
   if(desdeLS) DB=desdeLS;
@@ -1355,22 +1374,37 @@ function cargarTodo(){
       DB=fusionar(DB, normalizar(desdeIDB));
       if(totalRegistros()>antes) console.log('Recuperados registros del respaldo interno');
     }
-    if(!desdeLS && !desdeIDB && typeof RESPALDO_EMBEBIDO!=='undefined'){
-      // Este navegador no tenía NADA guardado (ni LS ni IDB): probable vaciado del
-      // almacenamiento. Se restaura sola desde la foto de emergencia embebida en el código.
-      DB=normalizar(RESPALDO_EMBEBIDO);
-      LISTO=true;
-      guardarDB();
-      pintarTodo(); renderHistorial();
-      alert('⚠️ Este navegador se abrió sin datos guardados.\n\n'
-        +'Se restauró automáticamente el último respaldo conocido, del '+RESPALDO_EMBEBIDO_FECHA+' ('+totalRegistros()+' registros).\n\n'
-        +'Si cargaste tanques o inyectaste paneles después de esa fecha, hace falta agregarlos a mano — no están en esta foto.');
+    // "Vacío" se mide por CONTENIDO, no por si la clave existe: si el día del reseteo
+    // la app llegó a grabar una base vacía (0 registros, 0 kg en tanques) antes de que
+    // notáramos el problema, esa base vacía SÍ existe como clave — pero sigue siendo
+    // un vaciado real y hay que restaurar igual.
+    const sinRegistros = totalRegistros()===0;
+    const tanquesEnCero = !(DB.tanques.pol.kg>0) && !(DB.tanques.iso.kg>0);
+    const vacio = sinRegistros && tanquesEnCero;
+    if(vacio && typeof RESPALDO_EMBEBIDO!=='undefined'){
+      try{
+        DB=normalizar(RESPALDO_EMBEBIDO);
+        LISTO=true;
+        guardarDB();
+        pintarTodo(); renderHistorial();
+        alert('⚠️ Este navegador tenía 0 registros y los tanques en 0 kg.\n\n'
+          +'Se restauró automáticamente el último respaldo conocido, del '+RESPALDO_EMBEBIDO_FECHA+' ('+totalRegistros()+' registros).\n\n'
+          +'Si cargaste tanques o inyectaste paneles después de esa fecha, hace falta agregarlos a mano — no están en esta foto.');
+      }catch(e){
+        console.error('Fallo la restauración automática:',e);
+        alert('⚠️ Se detectó que no había datos, pero la restauración automática falló.\n\n'
+          +'Error: '+e.message+'\n\nUsá el botón "Restaurar respaldo de emergencia" en Parámetros → Respaldo de datos. Avisá a soporte con este mensaje de error.');
+        LISTO=true; guardarDB(); pintarTodo();
+      }
       return;
     }
     LISTO=true;
     guardarDB();
     pintarTodo();
-  }).catch(()=>{ LISTO=true; pintarTodo(); });
+  }).catch(e=>{
+    console.error('Fallo al leer IndexedDB:',e);
+    LISTO=true; pintarTodo();
+  });
 }
 
 // ---------- guardar ----------
