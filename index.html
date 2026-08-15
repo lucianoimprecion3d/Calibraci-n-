@@ -1016,9 +1016,18 @@
         <div class="logo-instr-titulo">📌 Cómo no perder nada</div>
         <div class="logo-instr-item"><div class="logo-instr-num">1</div>Los datos se guardan por duplicado adentro del teléfono, en dos lugares distintos. Si uno se limpia, el otro los recupera.</div>
         <div class="logo-instr-item"><div class="logo-instr-num">2</div>El nivel de los tanques se guarda como número propio: no depende de que el historial esté completo.</div>
-        <div class="logo-instr-item"><div class="logo-instr-num">3</div>Descargá el respaldo al terminar el turno y mandátelo por mail o WhatsApp. Es lo único que sobrevive a un cambio de teléfono.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">3</div>La app descarga sola un respaldo .json la primera vez que la abrís cada día — buscalo en Descargas.</div>
         <div class="logo-instr-item"><div class="logo-instr-num">4</div>Cuando te pase una versión nueva, abrila y usá "Restaurar desde un respaldo" antes de cargar nada.</div>
       </div>
+    </div>
+
+    <div class="logo-panel">
+      <div class="form-titulo">🗄️ Copias internas por fecha</div>
+      <div class="hint" style="margin-bottom:12px">
+        Guardadas automáticamente, una por día, separadas de los datos en uso — quedan los últimos 10 días.
+        Sirven para volver atrás si algo se corrompió, sin depender de un archivo .json guardado a mano.
+      </div>
+      <div id="lista-snapshots" class="hint">Cargando…</div>
     </div>
 
     <div class="logo-panel">
@@ -1259,7 +1268,7 @@ function dbVacia(){
     pruebas:[], inyecciones:[], movimientos:[],
     modelos:[], tanda:[],
     cfg:{ largo:'', ancho:'', espesor:'', densidad:40, sobre:15, marcha:'media', pieza:'', tmolde:'' },
-    meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now(), pin:'' }
+    meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now(), pin:'', autoRespaldoDia:'', snapshotDia:'' }
   };
 }
 let DB = dbVacia();
@@ -1408,14 +1417,77 @@ function cargarTodo(){
 }
 
 // ---------- guardar ----------
+let IDB_FALLOS_SEGUIDOS=0;
 function guardarDB(){
   if(!LISTO) return;
   DB.meta.guardadoEn=Date.now();
   const txt=JSON.stringify(DB);
   try{ localStorage.setItem(LS_KEY,txt); }
   catch(e){ alert('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Parámetros ya mismo.'); }
-  idbEscribir(JSON.parse(txt));
+  idbEscribir(JSON.parse(txt)).then(ok=>{
+    if(ok){ IDB_FALLOS_SEGUIDOS=0; }
+    else{
+      IDB_FALLOS_SEGUIDOS++;
+      if(IDB_FALLOS_SEGUIDOS===3){
+        alert('⚠️ El guardado interno de respaldo (IndexedDB) lleva varios intentos fallando en este navegador.\n\n'
+          +'El guardado principal sigue funcionando, pero perdiste la copia de seguridad de adentro del teléfono.\n\n'
+          +'Descargá un respaldo (.json) ya mismo y avisá a soporte.');
+      }
+    }
+  });
+  guardarSnapshotDiario(txt);
   actualizarContadores();
+}
+
+// ---------- cajón de snapshots diarios (redundancia extra, independiente del respaldo activo) ----------
+// Guarda una copia fechada cada día, separada de la clave 'db' que usa la app en uso.
+// Si algún día la base activa aparece corrompida o vacía, hay de dónde rescatar sin
+// depender de que alguien haya descargado el .json a mano ese día puntual.
+function guardarSnapshotDiario(txt){
+  const hoy=new Date().toISOString().slice(0,10);
+  if(DB.meta.snapshotDia===hoy) return; // ya se guardó uno hoy
+  idbAbrir().then(db=>{
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    const store=tx.objectStore(IDB_STORE);
+    store.put(JSON.parse(txt),'snap-'+hoy);
+    // limpieza: conservar solo los últimos 10 días
+    store.getAllKeys().onsuccess=function(ev){
+      const claves=(ev.target.result||[]).filter(k=>String(k).startsWith('snap-')).sort();
+      while(claves.length>10){ store.delete(claves.shift()); }
+    };
+  }).catch(()=>{});
+  DB.meta.snapshotDia=hoy;
+}
+function listarSnapshots(){
+  return idbAbrir().then(db=>new Promise((res)=>{
+    const store=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE);
+    const req=store.getAllKeys();
+    req.onsuccess=()=>res((req.result||[]).filter(k=>String(k).startsWith('snap-')).sort().reverse());
+    req.onerror=()=>res([]);
+  })).catch(()=>[]);
+}
+function restaurarSnapshot(fecha){
+  idbAbrir().then(db=>new Promise((res,rej)=>{
+    const t=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get('snap-'+fecha);
+    t.onsuccess=()=>res(t.result); t.onerror=()=>rej(t.error);
+  })).then(obj=>{
+    if(!obj){ alert('No se encontró ese snapshot.'); return; }
+    if(!confirm('Se va a REEMPLAZAR todo lo que hay ahora por la copia interna del '+fecha+'.\n\nEsto no se puede deshacer. ¿Seguimos?')) return;
+    DB=normalizar(obj);
+    LISTO=true; guardarDB(); pintarTodo(); renderHistorial();
+    alert('Restaurado desde la copia interna del '+fecha+'.');
+  }).catch(e=>alert('No se pudo leer ese snapshot: '+e.message));
+}
+
+// ---------- respaldo automático diario (descarga el .json solo, una vez por día) ----------
+function chequearRespaldoDiario(){
+  if(totalRegistros()===0) return; // nada que respaldar todavía
+  const hoy=new Date().toISOString().slice(0,10);
+  if(DB.meta.autoRespaldoDia===hoy) return; // ya se descargó hoy
+  DB.meta.autoRespaldoDia=hoy;
+  DB.meta.ultimoRespaldo=Date.now();
+  guardarDB();
+  descargarArchivo('giovannetti_respaldo_auto_'+hoy+'.json', JSON.stringify(DB,null,2), 'application/json');
 }
 let ALMACEN_PERSISTENTE=null; // null=no se pudo chequear, true/false=resultado real
 if(navigator.storage && navigator.storage.persist){
@@ -1489,7 +1561,7 @@ function pintarTodo(){
   precargarInyeccion();
   renderModelos(); renderTanques(); renderChequeos(); pintarMarchasCal(); calcularDensidad(); renderDensidades();
   renderUltimasCal(); renderUltimosMov(); renderUltimasTandas(); renderConteo(); calcularInyeccion(); renderTanda(); calcular();
-  actualizarContadores(); revisarAlarma();
+  actualizarContadores(); revisarAlarma(); pintarSnapshots();
 }
 
 function actualizarContadores(){
@@ -1531,6 +1603,21 @@ function revisarRespaldo(){
       : 'Tenés '+n+' registros y todavía no hiciste ningún respaldo.';
     aviso.classList.add('visible');
   } else aviso.classList.remove('visible');
+}
+
+function pintarSnapshots(){
+  const cont=document.getElementById('lista-snapshots');
+  if(!cont) return;
+  listarSnapshots().then(claves=>{
+    if(!claves.length){ cont.textContent='Todavía no hay copias internas (se crea la primera hoy al guardar algo).'; return; }
+    cont.innerHTML=claves.map(k=>{
+      const fecha=k.replace('snap-','');
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gris-2)">'
+        +'<span>📅 '+fecha+'</span>'
+        +'<button class="btn-sec" style="padding:6px 12px;font-size:13px" onclick="restaurarSnapshot(\''+fecha+'\')">Restaurar esta</button>'
+        +'</div>';
+    }).join('');
+  });
 }
 
 function pintarEstadoDatos(){
@@ -3380,6 +3467,9 @@ setTimeout(function(){
     guardarDB();
   }
 },800);
+
+// ── Respaldo automático diario: se dispara solo la primera vez que se abre la app cada día ──
+setTimeout(function(){ chequearRespaldoDiario(); },2000);
 </script>
 </body>
 </html>
