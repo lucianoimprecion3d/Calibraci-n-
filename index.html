@@ -1161,6 +1161,80 @@ function fichaFilas(){
 }
 
 
+// ---------- Respaldo de emergencia embebido ----------
+// Si la app se abre sin NADA guardado en este navegador (ni localStorage ni
+// IndexedDB), en vez de arrancar vacía se auto-restaura con el último respaldo
+// conocido. Es una red de emergencia, no reemplaza los respaldos .json regulares:
+// esta foto queda fija en la fecha de abajo y no se actualiza sola.
+const RESPALDO_EMBEBIDO_FECHA='11-08-2026';
+const RESPALDO_EMBEBIDO={
+  "producto": {
+    "nombre": "ALKURAN RF-30 H4 / ISO-200",
+    "ratio": 141,
+    "tol": 2,
+    "tabla": 4,
+    "pePol": 1.09,
+    "peIso": 1.235,
+    "temp": [20, 23],
+    "crema": [27, 33],
+    "hilos": [120, 160],
+    "libre": [27, 32],
+    "moldeT": [36, 44],
+    "moldeD": [38, 42],
+    "nucleo": [36, 38],
+    "vidaPol": 4,
+    "vidaIso": 6,
+    "visc": "250 / 150–250 cps",
+    "nco": "30,2 – 32,0 %",
+    "cond": "0,022 – 0,023 W/m·K",
+    "estab": "< 3 %Vol",
+    "almac": "15–25 / 15–35 °C",
+    "envases": "220 (o IBC) / 250 kg"
+  },
+  "marchas": {
+    "baja": {"g":50,"seg":1,"gs":50,"rg":50,"rseg":1,"rgs":50,"caida":""},
+    "media": {"g":384,"seg":1,"gs":384,"rg":380,"rseg":1,"rgs":380,"caida":""},
+    "alta": {"g":750,"seg":1,"gs":750,"rg":700,"rseg":1,"rgs":700,"caida":""}
+  },
+  "densidades": [],
+  "tanques": {
+    "pol": {"cap":220,"kg":202.68001161825725,"lote":"1","elab":"2026-08-01","venc":"2026-12-01","alarma":60},
+    "iso": {"cap":250,"kg":225.57881638174266,"lote":"1","elab":"2026-08-01","venc":"2027-02-01","alarma":80}
+  },
+  "pruebas": [
+    {"id":1785775441961,"tipo":"cal","iso":320,"pol":225,"seg":10.5,"hzIso":1.6,"hzPol":1.3,"caudal":51.9,"tempIso":"25°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"baja","fecha":"2026-08-03","hora":"13:39","nota":"LISTO BAJA","ratio":142.22,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785774081043,"tipo":"cal","iso":335,"pol":225,"seg":10.2,"hzIso":1.7,"hzPol":1.3,"caudal":54.9,"tempIso":"25.4°C","tempPol":"23.7°C","tempAmb":"14°C","marcha":"baja","fecha":"2026-08-03","hora":"13:20","nota":"","ratio":148.89,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785773703107,"tipo":"cal","iso":315,"pol":230,"seg":10.2,"hzIso":1.3,"hzPol":1.3,"caudal":53.43,"tempIso":"25.6°C","tempPol":"23.7°C","tempAmb":"14°C","marcha":"baja","fecha":"2026-08-03","hora":"13:13","nota":"","ratio":136.96,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785772657254,"tipo":"cal","iso":315,"pol":215,"seg":10.2,"hzIso":1.6,"hzPol":1.2,"caudal":51.96,"tempIso":"26°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"baja","fecha":"2026-08-03","hora":"12:55","nota":"","ratio":146.51,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785772162256,"tipo":"cal","iso":225,"pol":175,"seg":9.8,"hzIso":1.3,"hzPol":1,"caudal":40.82,"tempIso":"","tempPol":"","tempAmb":"","marcha":"baja","fecha":"2026-08-03","hora":"12:41","nota":"","ratio":128.57,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785771459960,"tipo":"cal","iso":6770,"pol":4785,"seg":15.2,"hzIso":26,"hzPol":20.6,"caudal":760.2,"tempIso":"25.8°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"alta","fecha":"2026-08-03","hora":"12:35","nota":"","ratio":141.48,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785769351629,"tipo":"cal","iso":6720,"pol":4765,"seg":15.2,"hzIso":26,"hzPol":20.6,"caudal":755.59,"tempIso":"25.2°C","tempPol":"23.5°C","tempAmb":"14.2°C","marcha":"alta","fecha":"2026-08-03","hora":"11:59","nota":"","ratio":141.03,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785768048829,"tipo":"cal","iso":4580,"pol":3255,"seg":10.2,"hzIso":26,"hzPol":20.6,"caudal":768.14,"tempIso":"24.2°C","tempPol":"23.1°C","tempAmb":"12.7°C","marcha":"alta","fecha":"2026-08-03","hora":"11:22","nota":"","ratio":140.71,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
+    {"id":1785764856303,"tipo":"cal","iso":3360,"pol":2400,"seg":15,"hzIso":13,"hzPol":10.3,"caudal":384,"tempIso":"24.1°C","tempPol":"23.1°C","tempAmb":"12.7°C","marcha":"media","fecha":"2026-08-03","hora":"10:46","nota":"","ratio":140,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141}
+  ],
+  "inyecciones": [
+    {"id":1786382747305,"tipo":"iny","fecha":"2026-08-10","hora":"14:25","nPaneles":1,"segTotal":2.64,"mezclaKg":1.848,"totPol":0.7668,"totIso":1.0812,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":21,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":46.2,"densReal":40,"mezclaKg":1.848,"segundos":2.64,"polKg":0.7668,"isoKg":1.0812,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1786213893765,"tipo":"iny","fecha":"2026-08-08","hora":"15:31","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"TECHO CANAPARO","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1786201345166,"tipo":"iny","fecha":"2026-08-08","hora":"12:02","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"PANEL TECHO CANAPARO","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1786127403799,"tipo":"iny","fecha":"2026-08-07","hora":"15:30","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1786039185964,"tipo":"iny","fecha":"2026-08-06","hora":"14:59","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1785953172780,"tipo":"iny","fecha":"2026-08-05","hora":"15:06","nPaneles":1,"segTotal":2.24,"mezclaKg":1.5708,"totPol":0.6518,"totIso":0.919,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":21,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":39.27,"densReal":40,"mezclaKg":1.5708,"segundos":2.24,"polKg":0.6518,"isoKg":0.919,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1785948411549,"tipo":"iny","fecha":"2026-08-05","hora":"13:46","nPaneles":1,"segTotal":5.96,"mezclaKg":4.1738,"totPol":1.7319,"totIso":2.442,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":45,"estimado":false,"volL":104.346,"densReal":40,"mezclaKg":4.1738,"segundos":5.96,"polKg":1.7319,"isoKg":2.442,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1785866905612,"tipo":"iny","fecha":"2026-08-04","hora":"15:08","nPaneles":1,"segTotal":5.96,"mezclaKg":4.1738,"totPol":1.7319,"totIso":2.442,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":104.346,"densReal":40,"mezclaKg":4.1738,"segundos":5.96,"polKg":1.7319,"isoKg":2.442,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1785858535211,"tipo":"iny","fecha":"2026-08-04","hora":"12:48","nPaneles":1,"segTotal":6.26,"mezclaKg":4.3825,"totPol":1.8185,"totIso":2.5641,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":5,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":104.346,"densReal":42,"mezclaKg":4.3825,"segundos":6.26,"polKg":1.8185,"isoKg":2.5641,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
+    {"id":1785849361659,"tipo":"iny","fecha":"2026-08-04","hora":"10:16","nPaneles":1,"segTotal":8.5,"mezclaKg":5.9506,"totPol":2.4691,"totIso":3.4814,"fallados":0,"paneles":[{"nombre":"PISO CANAPARO","largo":220,"ancho":58.8,"espesor":10,"densidad":40,"sobre":15,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":129.36,"densReal":46,"mezclaKg":5.9506,"segundos":8.5,"polKg":2.4691,"isoKg":3.4814,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141}
+  ],
+  "movimientos": [
+    {"id":1785849275091,"tipo":"tq","mov":"carga","comp":"iso","fecha":"2026-08-04","hora":"10:14","kg":250,"lote":"","elab":"","venc":"","nota":""},
+    {"id":1785849270651,"tipo":"tq","mov":"carga","comp":"pol","fecha":"2026-08-04","hora":"10:14","kg":220,"lote":"","elab":"","venc":"","nota":""}
+  ],
+  "modelos": [],
+  "tanda": [],
+  "cfg": {"largo":"","ancho":"","espesor":"","densidad":"","sobre":"","marcha":"alta","pieza":"","tmolde":""},
+  "meta": {"ultimoRespaldo":1786461411202,"guardadoEn":1786461411202,"creado":1785618503253}
+};
+
+
 // ═══════════════════════════════════════════════════════════════
 // BASE DE DATOS
 // ═══════════════════════════════════════════════════════════════
@@ -1280,6 +1354,18 @@ function cargarTodo(){
       const antes=totalRegistros();
       DB=fusionar(DB, normalizar(desdeIDB));
       if(totalRegistros()>antes) console.log('Recuperados registros del respaldo interno');
+    }
+    if(!desdeLS && !desdeIDB && typeof RESPALDO_EMBEBIDO!=='undefined'){
+      // Este navegador no tenía NADA guardado (ni LS ni IDB): probable vaciado del
+      // almacenamiento. Se restaura sola desde la foto de emergencia embebida en el código.
+      DB=normalizar(RESPALDO_EMBEBIDO);
+      LISTO=true;
+      guardarDB();
+      pintarTodo(); renderHistorial();
+      alert('⚠️ Este navegador se abrió sin datos guardados.\n\n'
+        +'Se restauró automáticamente el último respaldo conocido, del '+RESPALDO_EMBEBIDO_FECHA+' ('+totalRegistros()+' registros).\n\n'
+        +'Si cargaste tanques o inyectaste paneles después de esa fecha, hace falta agregarlos a mano — no están en esta foto.');
+      return;
     }
     LISTO=true;
     guardarDB();
