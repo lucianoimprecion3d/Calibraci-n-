@@ -1942,7 +1942,7 @@ function renderTanda(){
     +'<button class="btn-del" onclick="quitarDeTanda(\''+p.uid+'\')" title="Sacar de la tanda">✕</button>'
     +'<div class="prueba-num">'+(i+1)+' · '+(p.nombre||'Panel sin nombre')+'</div>'
     +'<div class="prueba-fila">'
-    + dato('Medida',f(p.largo,0)+'×'+f(p.ancho,0)+'×'+f(p.espesor,0))
+    + dato('Medida',f(p.largo,1)+'×'+f(p.ancho,1)+'×'+f(p.espesor,1))
     + dato('Caudal',p.marcha)
     + dato('Mezcla',f(p.mezclaKg,3)+' kg')
     + dato('Segundos',f(p.segundos,2)+' s')
@@ -2008,9 +2008,13 @@ function registrarTanda(){
   DB.tanques.pol.kg=Math.max(0,DB.tanques.pol.kg-t.pol);
   DB.tanques.iso.kg=Math.max(0,DB.tanques.iso.kg-t.iso);
   DB.tanda=[];
+  DB.cfg.largo=''; DB.cfg.ancho=''; DB.cfg.espesor=''; DB.cfg.densidad='';
+  DB.cfg.sobre=''; DB.cfg.pieza=''; DB.cfg.tmolde='';
   guardarDB();
   document.getElementById('p-nota').value='';
-  renderTanda(); renderTanques(); revisarAlarma(); renderUltimasTandas(); renderConteo();
+  ['p-largo','p-ancho','p-espesor','p-densidad','p-sobre','p-pieza','p-tmolde']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  renderTanda(); renderTanques(); revisarAlarma(); renderUltimasTandas(); renderConteo(); calcularInyeccion();
   alert('Tanda registrada: '+t.n+' paneles.\n\nPoliol: −'+f(t.pol,2)+' kg  (quedan '+f(DB.tanques.pol.kg,1)+')\nISO: −'+f(t.iso,2)+' kg  (quedan '+f(DB.tanques.iso.kg,1)+')');
 }
 
@@ -2065,7 +2069,7 @@ function renderModelos(){
     '<button class="modelo-chip" onclick="usarModelo('+m.id+')">'
     +'<span class="mch-x" onclick="borrarModelo('+m.id+',event)">✕</span>'
     +'<span class="mch-n">'+m.nombre+'</span>'
-    +'<span class="mch-m">'+f(m.largo,0)+'×'+f(m.ancho,0)+'×'+f(m.espesor,0)+' cm</span>'
+    +'<span class="mch-m">'+f(m.largo,1)+'×'+f(m.ancho,1)+'×'+f(m.espesor,1)+' cm</span>'
     +'</button>').join('')+'</div>';
 }
 
@@ -2120,7 +2124,7 @@ function renderConteo(){
     if(paneles){
       cuerpo+='</div><div class="panel-mini">'+paneles.map(x=>
         '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
-        +' · <b>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</b>'
+        +' · <b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
         +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b>'
         +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
     }
@@ -2687,7 +2691,7 @@ function renderHistorial(){
           +(p.fallados?dato('Fallados',p.fallados,'mal'):'');
         cuerpo+='</div><div class="panel-mini">'+lista.map(x=>
           '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
-          +' · <b>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</b>'
+          +' · <b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
           +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b> · <b>'+f(x.mezclaKg,3)+'kg</b>'
           +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
       } else {
@@ -2984,7 +2988,7 @@ function hojaDe(p){
         +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Caudal</th><th>Seg</th><th>Mezcla kg</th><th>Molde</th><th>Estado</th></tr>';
       lista.forEach((x,i)=>{
         s+='<tr><td>'+(i+1)+'</td><td>'+(x.nombre||'—')+'</td>'
-          +'<td>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</td>'
+          +'<td>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</td>'
           +'<td>'+x.marcha+'</td><td>'+f(x.segundos,2)+'</td><td>'+f(x.mezclaKg,3)+'</td>'
           +'<td>'+(x.tmolde!==''&&x.tmolde!==undefined?f(x.tmolde,0)+'°':'—')+'</td>'
           +'<td class="'+(x.ok?'ok':'mal')+'">'+(x.ok?'BIEN':'FALLÓ')+'</td></tr>';
@@ -3017,7 +3021,7 @@ function imprimirTandaBorrador(){
     +'<tr><th>#</th><th>Panel</th><th>Medida cm</th><th>Caudal</th><th>Segundos</th><th>Mezcla kg</th><th>Molde °C</th><th>Hecho</th></tr>';
   DB.tanda.forEach((x,i)=>{
     s+='<tr><td>'+(i+1)+'</td><td>'+(x.nombre||'—')+'</td>'
-      +'<td>'+f(x.largo,0)+'×'+f(x.ancho,0)+'×'+f(x.espesor,0)+'</td>'
+      +'<td>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</td>'
       +'<td>'+x.marcha+'</td><td><b>'+f(x.segundos,2)+'</b></td><td>'+f(x.mezclaKg,3)+'</td>'
       +'<td>'+(Number.isFinite(x.tmolde)?f(x.tmolde,0):'—')+'</td><td>☐</td></tr>';
   });
