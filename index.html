@@ -1133,7 +1133,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v18 · 05-09-2026';
+const VERSION='v19 · 05-09-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -1612,22 +1612,59 @@ function chequearRespaldoDiario(){
   descargarArchivo('giovannetti_respaldo_auto_'+hoy+'.json', JSON.stringify(DB,null,2), 'application/json');
 }
 
-// ---------- respaldo frecuente a Descargas (v17 — independiente de localStorage/IndexedDB) ----------
+// ---------- respaldo frecuente a Descargas (v19 — con varias trabas independientes) ----------
 // El respaldo diario de arriba solo se descarga UNA VEZ, con los datos que había en ese momento.
 // Si el navegador vacía su almacenamiento interno (localStorage + IndexedDB juntos, algo que puede
 // pasar sin aviso por limpieza de espacio en disco), la ÚNICA copia que sobrevive es la que está
-// afuera del navegador, en la carpeta Descargas. Por eso esta copia se actualiza sola cada vez que
-// se guarda algo importante, no una vez al día — con un margen de minutos para no llenar la carpeta
-// de archivos. El nombre incluye fecha y hora para no pisar respaldos anteriores.
+// afuera del navegador, en la carpeta Descargas. Por eso esta copia se actualiza sola cada tanto
+// mientras se trabaja — pero con VARIAS trabas independientes entre sí, para que un problema en
+// una sola de ellas no pueda nunca hacer que esto se dispare sin control:
+//   1. Freno en memoria de esta pestaña (SESION_*): no depende de leer/escribir nada en el
+//      navegador, así que no puede fallar por lo mismo que estamos tratando de evitar.
+//   2. No se descarga si el contenido es idéntico al del último respaldo (nada nuevo que guardar).
+//   3. Tope duro de como máximo 8 descargas por día, pase lo que pase — un límite absoluto,
+//      no una expectativa.
 const RESPALDO_DESCARGAS_INTERVALO_MS = 20*60*1000; // cada 20 minutos como máximo, mientras se trabaja
+const RESPALDO_DESCARGAS_TOPE_DIARIO = 8; // freno duro: nunca más que esto en un mismo día, bajo ningún escenario
+let SESION_RESPALDO_TS = 0;        // en memoria de esta pestaña — se reinicia solo si se cierra la pestaña
+let SESION_RESPALDO_HUELLA = '';   // para no repetir si no cambió ningún dato real
+let SESION_RESPALDO_CONTADOR_DIA = ''; // 'YYYY-MM-DD:N' — tope duro por día, también en memoria
+function huellaDatos(){
+  // A propósito NO incluye DB.meta.guardadoEn (cambia en cada guardado, aunque no haya
+  // datos nuevos) — solo lo que realmente importa respaldar.
+  return [
+    DB.pruebas.length, DB.inyecciones.length, DB.movimientos.length, (DB.densidades||[]).length,
+    DB.pruebas[0]&&DB.pruebas[0].id, DB.inyecciones[0]&&DB.inyecciones[0].id, DB.movimientos[0]&&DB.movimientos[0].id,
+    DB.tanques.pol.kg, DB.tanques.iso.kg
+  ].join('|');
+}
 function chequearRespaldoFrecuenteDescargas(){
   if(totalRegistros()===0) return; // nada que respaldar todavía
   const ahora=Date.now();
-  if(DB.meta.respaldoDescargasTs && (ahora-DB.meta.respaldoDescargasTs)<RESPALDO_DESCARGAS_INTERVALO_MS) return;
+
+  // Traba 1: freno en memoria de esta pestaña. Es la traba principal — no depende de que
+  // localStorage/IndexedDB lean o escriban bien, así que funciona pase lo que pase con eso.
+  if(SESION_RESPALDO_TS && (ahora-SESION_RESPALDO_TS)<RESPALDO_DESCARGAS_INTERVALO_MS) return;
+
+  // Traba 2: si no cambió ningún dato real desde el último respaldo (por ejemplo, se guardó
+  // por tocar un campo que todavía no es un registro), no tiene sentido descargar de nuevo.
+  const huella=huellaDatos();
+  if(huella===SESION_RESPALDO_HUELLA) return;
+
+  // Traba 3: tope duro por día, en memoria, para que ni un error de programación pueda
+  // hacer que esto se dispare sin límite.
+  const hoy=new Date().toISOString().slice(0,10);
+  const partes=(SESION_RESPALDO_CONTADOR_DIA||'').split(':');
+  let n = partes[0]===hoy ? (parseInt(partes[1],10)||0) : 0;
+  if(n>=RESPALDO_DESCARGAS_TOPE_DIARIO) return;
+
+  SESION_RESPALDO_TS=ahora;
+  SESION_RESPALDO_HUELLA=huella;
+  SESION_RESPALDO_CONTADOR_DIA=hoy+':'+(n+1);
   DB.meta.respaldoDescargasTs=ahora;
   DB.meta.ultimoRespaldo=ahora;
   const f=new Date(ahora);
-  const pad=n=>String(n).padStart(2,'0');
+  const pad=n2=>String(n2).padStart(2,'0');
   const nombre='giovannetti_respaldo_'+f.getFullYear()+'-'+pad(f.getMonth()+1)+'-'+pad(f.getDate())+'_'+pad(f.getHours())+'h'+pad(f.getMinutes())+'.json';
   descargarArchivo(nombre, JSON.stringify(DB,null,2), 'application/json');
 }
@@ -3626,7 +3663,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v18';"
+      const sw="const CACHE='giovannetti-v19';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
