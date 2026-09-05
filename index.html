@@ -1121,7 +1121,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v16 · 16-08-2026';
+const VERSION='v17 · 05-09-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -1276,7 +1276,7 @@ function dbVacia(){
     pruebas:[], inyecciones:[], movimientos:[],
     modelos:[], tanda:[],
     cfg:{ largo:'', ancho:'', espesor:'', densidad:40, sobre:15, marcha:'media', pieza:'', tmolde:'' },
-    meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now(), pin:'', autoRespaldoDia:'', snapshotDia:'', snapshot5Ts:0 }
+    meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now(), pin:'', autoRespaldoDia:'', snapshotDia:'', snapshot5Ts:0, respaldoDescargasTs:0, avisoPersistenciaDia:'' }
   };
 }
 let DB = dbVacia();
@@ -1464,6 +1464,7 @@ function guardarDB(){
   });
   guardarSnapshotDiario(txt);
   guardarSnapshotFrecuente(txt);
+  chequearRespaldoFrecuenteDescargas();
   actualizarContadores();
 }
 
@@ -1598,11 +1599,47 @@ function chequearRespaldoDiario(){
   guardarDB();
   descargarArchivo('giovannetti_respaldo_auto_'+hoy+'.json', JSON.stringify(DB,null,2), 'application/json');
 }
+
+// ---------- respaldo frecuente a Descargas (v17 — independiente de localStorage/IndexedDB) ----------
+// El respaldo diario de arriba solo se descarga UNA VEZ, con los datos que había en ese momento.
+// Si el navegador vacía su almacenamiento interno (localStorage + IndexedDB juntos, algo que puede
+// pasar sin aviso por limpieza de espacio en disco), la ÚNICA copia que sobrevive es la que está
+// afuera del navegador, en la carpeta Descargas. Por eso esta copia se actualiza sola cada vez que
+// se guarda algo importante, no una vez al día — con un margen de minutos para no llenar la carpeta
+// de archivos. El nombre incluye fecha y hora para no pisar respaldos anteriores.
+const RESPALDO_DESCARGAS_INTERVALO_MS = 20*60*1000; // cada 20 minutos como máximo, mientras se trabaja
+function chequearRespaldoFrecuenteDescargas(){
+  if(totalRegistros()===0) return; // nada que respaldar todavía
+  const ahora=Date.now();
+  if(DB.meta.respaldoDescargasTs && (ahora-DB.meta.respaldoDescargasTs)<RESPALDO_DESCARGAS_INTERVALO_MS) return;
+  DB.meta.respaldoDescargasTs=ahora;
+  DB.meta.ultimoRespaldo=ahora;
+  const f=new Date(ahora);
+  const pad=n=>String(n).padStart(2,'0');
+  const nombre='giovannetti_respaldo_'+f.getFullYear()+'-'+pad(f.getMonth()+1)+'-'+pad(f.getDate())+'_'+pad(f.getHours())+'h'+pad(f.getMinutes())+'.json';
+  descargarArchivo(nombre, JSON.stringify(DB,null,2), 'application/json');
+}
 let ALMACEN_PERSISTENTE=null; // null=no se pudo chequear, true/false=resultado real
+function avisarPersistenciaSiCorresponde(){
+  // Antes este aviso solo se veía si alguien entraba a Parámetros por su cuenta. Se muestra
+  // ahora como alerta al abrir la app (una vez por día, para no ser molesto) porque es la
+  // única señal de que el navegador podría vaciar los datos sin avisar.
+  if(ALMACEN_PERSISTENTE!==false) return;
+  const hoy=new Date().toISOString().slice(0,10);
+  if(DB.meta.avisoPersistenciaDia===hoy) return;
+  DB.meta.avisoPersistenciaDia=hoy;
+  guardarDB();
+  alert('🚨 IMPORTANTE — este navegador NO garantizó guardado permanente para esta app.\n\n'
+    +'Esto quiere decir que el navegador podría vaciar los datos guardados acá adentro sin avisar, '
+    +'por ejemplo si el disco de la computadora anda escaso de espacio.\n\n'
+    +'La app ya descarga respaldos .json a la carpeta Descargas de forma automática mientras trabajás, '
+    +'como red de seguridad — no depende de esta memoria interna. Evitá usar limpiadores de disco o '
+    +'"borrar datos de navegación" en este navegador.');
+}
 if(navigator.storage && navigator.storage.persist){
-  navigator.storage.persist().then(ok=>{ ALMACEN_PERSISTENTE=ok; pintarEstadoDatos(); }).catch(()=>{});
+  navigator.storage.persist().then(ok=>{ ALMACEN_PERSISTENTE=ok; pintarEstadoDatos(); if(LISTO) avisarPersistenciaSiCorresponde(); else setTimeout(avisarPersistenciaSiCorresponde,2500); }).catch(()=>{});
 } else if(navigator.storage && navigator.storage.persisted){
-  navigator.storage.persisted().then(ok=>{ ALMACEN_PERSISTENTE=ok; pintarEstadoDatos(); }).catch(()=>{});
+  navigator.storage.persisted().then(ok=>{ ALMACEN_PERSISTENTE=ok; pintarEstadoDatos(); if(LISTO) avisarPersistenciaSiCorresponde(); else setTimeout(avisarPersistenciaSiCorresponde,2500); }).catch(()=>{});
 }
 actualizarUsoAlmacenamiento();
 
@@ -3547,7 +3584,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v16';"
+      const sw="const CACHE='giovannetti-v17';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
