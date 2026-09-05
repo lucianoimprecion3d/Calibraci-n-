@@ -1133,7 +1133,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v17 · 05-09-2026';
+const VERSION='v18 · 05-09-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
@@ -3626,7 +3626,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v17';"
+      const sw="const CACHE='giovannetti-v18';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
