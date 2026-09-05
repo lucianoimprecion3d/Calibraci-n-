@@ -192,6 +192,17 @@
   .prueba-card.tipo-iny{border-left-color:var(--naranja)}
   .prueba-card.tipo-tq{border-left-color:var(--verde)}
   .prueba-num{font-size:13px;font-weight:800;color:var(--gris-5);margin-bottom:10px;padding-right:96px}
+  /* ---- Encabezados legibles de tarjetas de registro (v18): fecha, hora y datos extra
+     separados en piezas visuales distintas, en vez de una sola línea corrida con puntos. ---- */
+  .cq-encabezado{display:flex;align-items:center;flex-wrap:wrap;gap:7px 10px;row-gap:7px}
+  .cq-titulo,.cq-fecha,.cq-hora,.cq-badge{margin-right:8px;margin-bottom:4px;display:inline-block}
+  .cq-titulo:last-child,.cq-fecha:last-child,.cq-hora:last-child,.cq-badge:last-child{margin-right:0}
+  .cq-titulo{font-weight:800;color:var(--gris-5)}
+  .cq-fecha{font-weight:800;color:var(--gris-5)}
+  .cq-hora{font-family:'JetBrains Mono',monospace;color:var(--gris-4);background:var(--gris-1);border-radius:6px;padding:2px 8px;font-size:12px}
+  .cq-badge{background:var(--azul-light);color:var(--azul-dark);border-radius:20px;padding:3px 12px;font-weight:800;font-size:12px}
+  .cq-badge-mal{background:#FDEAEA;color:var(--rojo)}
+  .cq-badge-ok{background:#E8F7EE;color:var(--verde)}
   .prueba-fila{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
   .prueba-dato{display:flex;flex-direction:column;gap:3px;background:var(--gris-1);border-radius:8px;padding:8px 11px;min-width:78px}
   .prueba-dato-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--gris-4)}
@@ -296,10 +307,11 @@
     padding:9px 14px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer}
   .btn-estado.ok{border-color:#A8E0C9;background:var(--verde-light);color:#0D5C40}
   .btn-estado.mal{border-color:#FBC5C5;background:var(--rojo-light);color:#8F1717}
-  .panel-mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--gris-2)}
-  .panel-mini .pm{background:var(--gris-1);border-radius:7px;padding:6px 10px;font-size:12.5px;font-weight:600;color:var(--gris-5)}
+  .panel-mini{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--gris-2)}
+  .panel-mini .pm{background:var(--gris-1);border-radius:7px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--gris-5);line-height:1.6}
   .panel-mini .pm.mal{background:var(--rojo-light);color:#8F1717}
   .panel-mini .pm b{font-family:'JetBrains Mono',monospace}
+  .panel-mini .pm-sep{margin:0 6px;color:var(--gris-3)}
 
   footer{text-align:center;padding:22px 16px;font-size:12.5px;color:var(--gris-4);letter-spacing:.3px;line-height:1.9}
 
@@ -2204,7 +2216,7 @@ function renderTanda(){
   cont.innerHTML=DB.tanda.map((p,i)=>
     '<div class="prueba-card tipo-iny'+(p.ok?'':' fallo')+'">'
     +'<button class="btn-del" onclick="quitarDeTanda(\''+p.uid+'\')" title="Sacar de la tanda">✕</button>'
-    +'<div class="prueba-num">'+(i+1)+' · '+(p.nombre||'Panel sin nombre')+'</div>'
+    +encCard({titulo:(p.nombre||'Panel sin nombre'), badges:[{texto:'Panel '+(i+1)}]})
     +'<div class="prueba-fila">'
     + dato('Medida',f(p.largo,1)+'×'+f(p.ancho,1)+'×'+f(p.espesor,1))
     + dato('Caudal',p.marcha)
@@ -2387,15 +2399,17 @@ function renderConteo(){
       +(p.fallados?dato('Fallados',p.fallados,'mal'):'');
     if(paneles){
       cuerpo+='</div><div class="panel-mini">'+paneles.map(x=>
-        '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
-        +' · <b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
-        +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b>'
-        +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
+        '<span class="pm'+(x.ok?'':' mal')+'"><b>'+(x.ok?'':'🔴 ')+(x.nombre||'panel')+'</b>'
+        +'<span class="pm-sep">·</span><b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
+        +'<span class="pm-sep">·</span>'+x.marcha+'<span class="pm-sep">·</span><b>'+f(x.segundos,1)+'s</b>'
+        +(x.tmolde!==''&&x.tmolde!==undefined?'<span class="pm-sep">·</span>molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
     }
     return '<div class="prueba-card tipo-iny">'
       +botonesRegistro('iny',p.id)
-      +'<div class="prueba-num">🎯 '+p.fecha+' '+p.hora+' · '+nPan+' panel'+(nPan>1?'es':'')
-      +(p.fallados?' · <span style="color:var(--rojo)">'+p.fallados+' fallado'+(p.fallados>1?'s':'')+'</span>':'')+'</div>'
+      +encCard({icono:'🎯', fecha:p.fecha, hora:p.hora, badges:[
+        {texto:nPan+' panel'+(nPan>1?'es':'')},
+        p.fallados?{texto:p.fallados+' fallado'+(p.fallados>1?'s':''),tipo:'mal'}:null
+      ]})
       +'<div class="prueba-fila">'+cuerpo+'</div>'
       +(p.nota?'<div class="prueba-nota">"'+p.nota+'"</div>':'')
       +'</div>';
@@ -2864,7 +2878,7 @@ function renderDensidades(){
   cont.innerHTML=lista.map(x=>
     '<div class="prueba-card'+(x.ok?'':' fallo')+'">'
     +botonesRegistro('den',x.id)
-    +'<div class="prueba-num">'+(x.ok?'✅':'🔴')+' '+x.fecha+' '+x.hora+'</div>'
+    +encCard({icono:(x.ok?'✅':'🔴'), fecha:x.fecha, hora:x.hora})
     +'<div class="prueba-fila">'
     + dato('Densidad',f(x.dens,1),x.ok?'iso':'mal')
     + dato('Espuma',f(x.neto,1)+' g')
@@ -2908,6 +2922,27 @@ function botonesRegistro(tipo,id){
 
 function dato(l,v,c){ return '<div class="prueba-dato"><span class="prueba-dato-label">'+l+'</span><span class="prueba-dato-val '+(c||'')+'">'+v+'</span></div>'; }
 
+// ---------- Encabezado legible y parejo para tarjetas de registro (v18) ----------
+// Antes cada pantalla armaba su propio texto tipo "🎯 2026-08-10 14:25 · 3 paneles",
+// todo pegado en una sola línea. Esta función arma lo mismo pero en piezas separadas
+// (fecha en negrita, hora en su propio recuadro, extras como "píldoras" de color), para
+// que se lea de un vistazo sin tener que descifrar los puntos. No cambia ningún dato,
+// solo cómo se acomoda en pantalla — se usa en todas las pestañas por igual.
+function encCard(partes){
+  partes = partes || {};
+  let html = '<div class="prueba-num cq-encabezado">';
+  if(partes.icono) html += partes.icono+' ';
+  if(partes.titulo) html += '<span class="cq-titulo">'+partes.titulo+'</span>';
+  if(partes.fecha) html += '<span class="cq-fecha">'+partes.fecha+'</span>';
+  if(partes.hora) html += '<span class="cq-hora">'+partes.hora+'</span>';
+  (partes.badges||[]).forEach(function(b){
+    if(!b) return;
+    html += '<span class="cq-badge'+(b.tipo?' cq-badge-'+b.tipo:'')+'">'+b.texto+'</span>';
+  });
+  html += '</div>';
+  return html;
+}
+
 function itemsHistorial(){
   let items=[];
   if(filtroActual==='todo'||filtroActual==='cal') items=items.concat(DB.pruebas.map(p=>Object.assign({},p,{tipo:'cal'})));
@@ -2927,9 +2962,10 @@ function renderHistorial(){
     return;
   }
   cont.innerHTML=items.map(p=>{
-    let cuerpo='', titulo='', clase='';
+    let cuerpo='', enc='', clase='';
     if(p.tipo==='cal'){
-      titulo='⚗️ Calibración · '+p.fecha+' '+p.hora;
+      enc=encCard({icono:'⚗️', titulo:'Calibración', fecha:p.fecha, hora:p.hora,
+        badges:[p.marcha?{texto:'Caudal '+p.marcha}:null]});
       cuerpo=dato('ISO',p.iso+' g','iso')+dato('Poliol',p.pol+' g')
         +dato('Ratio',f(p.ratio,2)+' PBW',p.ok?'ratio':'mal');
       if(p.seg!==''&&p.seg!==undefined) cuerpo+=dato('Segundos',f(p.seg,1)+' s');
@@ -2946,7 +2982,10 @@ function renderHistorial(){
       clase='tipo-iny';
       const lista=Array.isArray(p.paneles)?p.paneles:null;
       if(lista){
-        titulo='🎯 Tanda de '+p.nPaneles+' panel'+(p.nPaneles>1?'es':'')+' · '+p.fecha+' '+p.hora;
+        enc=encCard({icono:'🎯', titulo:'Tanda', fecha:p.fecha, hora:p.hora, badges:[
+          {texto:p.nPaneles+' panel'+(p.nPaneles>1?'es':'')},
+          p.fallados?{texto:p.fallados+' fallado'+(p.fallados>1?'s':''),tipo:'mal'}:null
+        ]});
         cuerpo=dato('Paneles',p.nPaneles)
           +dato('Mezcla total',f(p.mezclaKg,3)+' kg')
           +dato('Tiempo',f(p.segTotal,1)+' s')
@@ -2954,12 +2993,12 @@ function renderHistorial(){
           +dato('ISO',f(p.totIso,2)+' kg','iso')
           +(p.fallados?dato('Fallados',p.fallados,'mal'):'');
         cuerpo+='</div><div class="panel-mini">'+lista.map(x=>
-          '<span class="pm'+(x.ok?'':' mal')+'">'+(x.ok?'':'🔴 ')+(x.nombre||'panel')
-          +' · <b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
-          +' · '+x.marcha+' · <b>'+f(x.segundos,1)+'s</b> · <b>'+f(x.mezclaKg,3)+'kg</b>'
-          +(x.tmolde!==''&&x.tmolde!==undefined?' · molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
+          '<span class="pm'+(x.ok?'':' mal')+'"><b>'+(x.ok?'':'🔴 ')+(x.nombre||'panel')+'</b>'
+          +'<span class="pm-sep">·</span><b>'+f(x.largo,1)+'×'+f(x.ancho,1)+'×'+f(x.espesor,1)+'</b>'
+          +'<span class="pm-sep">·</span>'+x.marcha+'<span class="pm-sep">·</span><b>'+f(x.segundos,1)+'s</b><span class="pm-sep">·</span><b>'+f(x.mezclaKg,3)+'kg</b>'
+          +(x.tmolde!==''&&x.tmolde!==undefined?'<span class="pm-sep">·</span>molde <b>'+f(x.tmolde,0)+'°</b>':'')+'</span>').join('');
       } else {
-        titulo='🎯 Inyección · '+p.fecha+' '+p.hora+(p.pieza?' · '+p.pieza:'');
+        enc=encCard({icono:'🎯', titulo:'Inyección'+(p.pieza?' — '+p.pieza:''), fecha:p.fecha, hora:p.hora});
         cuerpo=dato('Paneles',p.n)
           +dato('Medida',(p.largo||'?')+'×'+(p.ancho||'?')+'×'+(p.espesor||'?'))
           +dato('Mezcla c/u',f(p.mezclaKg,3)+' kg')
@@ -2970,12 +3009,12 @@ function renderHistorial(){
       }
     } else if(p.tipo==='den'){
       clase=p.ok?'':'fallo';
-      titulo='🥤 Densidad libre · '+p.fecha+' '+p.hora;
+      enc=encCard({icono:'🥤', titulo:'Densidad libre', fecha:p.fecha, hora:p.hora});
       cuerpo=dato('Densidad',f(p.dens,1),p.ok?'iso':'mal')+dato('Espuma',f(p.neto,1)+' g')+dato('Recipiente',f(p.vol,2)+' L')
         +(p.crema?dato('Crema',p.crema+' s'):'')+(p.hilos?dato('Hilos',p.hilos+' s'):'');
     } else {
       clase='tipo-tq';
-      titulo='🛢️ '+(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel')+' · '+p.fecha+' '+p.hora;
+      enc=encCard({icono:'🛢️', titulo:(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel'), fecha:p.fecha, hora:p.hora});
       cuerpo=dato('Componente',p.comp==='pol'?'Poliol':'ISO')+dato('Kilos',f(p.kg,1)+' kg');
       if(p.mov==='ajuste'&&p.antes!==undefined) cuerpo+=dato('Antes',f(p.antes,1)+' kg');
       if(p.lote) cuerpo+=dato('Lote',p.lote);
@@ -2984,7 +3023,7 @@ function renderHistorial(){
     return '<div class="prueba-card '+clase+'">'
       +'<button class="btn-print" onclick="imprimirRegistro(\''+p.tipo+'\','+p.id+')" title="Descargar esta hoja en PDF">PDF</button>'
       +'<button class="btn-del" onclick="eliminarRegistro(\''+p.tipo+'\','+p.id+')" title="Eliminar">🗑</button>'
-      +'<div class="prueba-num">'+titulo+'</div>'
+      +enc
       +'<div class="prueba-fila">'+cuerpo+'</div>'
       +(p.nota?'<div class="prueba-nota">"'+p.nota+'"</div>':'')
       +'</div>';
@@ -3106,7 +3145,7 @@ function renderUltimasCal(){
   if(!lista.length){ cont.innerHTML=listaVacia('Todavía no guardaste ninguna calibración.'); return; }
   cont.innerHTML=lista.map(p=>
     '<div class="prueba-card">'+botonesRegistro('cal',p.id)
-    +'<div class="prueba-num">'+(p.ok?'✅':'🔴')+' '+p.fecha+' '+p.hora+(p.marcha?' · caudal '+p.marcha:'')+'</div>'
+    +encCard({icono:(p.ok?'✅':'🔴'), fecha:p.fecha, hora:p.hora, badges:[p.marcha?{texto:'Caudal '+p.marcha}:null]})
     +'<div class="prueba-fila">'
     + dato('Ratio',f(p.ratio,2),p.ok?'ratio':'mal')
     + dato('ISO',f(p.iso,0)+' g','iso')
@@ -3126,7 +3165,7 @@ function renderUltimosMov(){
   if(!lista.length){ cont.innerHTML=listaVacia('Todavía no hay movimientos de tanque.'); return; }
   cont.innerHTML=lista.map(p=>
     '<div class="prueba-card tipo-tq">'+botonesRegistro('tq',p.id)
-    +'<div class="prueba-num">'+(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel')+' · '+p.fecha+' '+p.hora+'</div>'
+    +encCard({icono:'🛢️', titulo:(p.mov==='carga'?'Carga':p.mov==='purga'?'Purga / limpieza':'Corrección de nivel'), fecha:p.fecha, hora:p.hora})
     +'<div class="prueba-fila">'
     + dato('Componente',p.comp==='pol'?'Poliol':'ISO')
     + dato('Kilos',f(p.kg,1)+' kg')
@@ -3144,7 +3183,10 @@ function renderUltimasTandas(){
   if(!lista.length){ cont.innerHTML=listaVacia('Todavía no registraste ninguna tanda.'); return; }
   cont.innerHTML=lista.map(p=>
     '<div class="prueba-card tipo-iny">'+botonesRegistro('iny',p.id)
-    +'<div class="prueba-num">'+p.fecha+' '+p.hora+' · '+(p.nPaneles||p.n||1)+' panel'+((p.nPaneles||p.n||1)>1?'es':'')+'</div>'
+    +encCard({icono:'🎯', fecha:p.fecha, hora:p.hora, badges:[
+      {texto:(p.nPaneles||p.n||1)+' panel'+((p.nPaneles||p.n||1)>1?'es':'')},
+      p.fallados?{texto:p.fallados+' fallado'+(p.fallados>1?'s':''),tipo:'mal'}:null
+    ]})
     +'<div class="prueba-fila">'
     + dato('Mezcla',f(p.mezclaKg,3)+' kg')
     + dato('Poliol',f(p.totPol,2)+' kg')
