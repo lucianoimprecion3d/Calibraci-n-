@@ -801,7 +801,7 @@
         <div class="form-field">
           <label>Densidad buscada</label>
           <input type="number" id="d-obj" placeholder="0" min="0" step="any">
-          <div class="hint" id="hint-dobj">kg/m³ — ficha: 27 a 32</div>
+          <div class="hint" id="hint-dobj">kg/m³ — ficha: 40 a 45</div>
         </div>
         <div class="form-field full">
           <label>De más, para que rebalse</label>
@@ -936,7 +936,7 @@
       <div class="form-grid">
         <div class="form-field full">
           <label>Nombre del producto</label>
-          <input type="text" id="pr-nombre" placeholder="Ej: ALKURAN RF-30 H4 / ISO-200">
+          <input type="text" id="pr-nombre" placeholder="Ej: ALKURAN RI-2145_H3 / ISO-200">
         </div>
         <div class="form-field">
           <label>Ratio ISO (PBW)</label>
@@ -1002,7 +1002,7 @@
       </div>
 
       <button class="btn-guardar" onclick="guardarFicha()">💾 Guardar ficha</button>
-      <button class="btn-sec" onclick="restaurarAlkuran()">↩️ Volver a los valores del ALKURAN RF-30 H4</button>
+      <button class="btn-sec" onclick="restaurarAlkuran()">↩️ Cargar la ficha del ALKURAN RI-2145_H3</button>
     </div>
 
     <div class="anotador-form">
@@ -1133,32 +1133,40 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v19 · 05-09-2026';
+const VERSION='v21 · 22-09-2026';
 
 // ═══════════════════════════════════════════════════════════════
-// RANGOS DE LA FICHA TÉCNICA — ALKURAN RF-30 H4 / ISO-200 Rev. Sept 2025
+// RANGOS DE LA FICHA TÉCNICA — ALKURAN RI-2145_H3 / ISO-200 Rev. mayo 2024
 // ═══════════════════════════════════════════════════════════════
-// Estos rangos ya no son fijos: se llenan desde la ficha cargada en Parámetros.
-let R_TEMP=[20,23], R_CREMA=[27,33], R_HILOS=[120,160];
-let R_LIBRE=[27,32], R_MOLDE_T=[36,44], R_MOLDE_D=[38,42], R_NUCLEO=[36,38];
-let VIDA_POL=4, VIDA_ISO=6;
+// Estos rangos no son fijos: se llenan desde la ficha cargada en Parámetros.
+let R_TEMP=[20,22], R_CREMA=[17,21], R_HILOS=[70,90];
+let R_LIBRE=[40,45], R_MOLDE_T=[36,44], R_MOLDE_D=[45,50], R_NUCLEO=[40,45];
+let VIDA_POL=6, VIDA_ISO=6;
 
-// FICHA_ALKURAN — Rev. 07-01-2026 (ratio 141, densidad libre 27-32, molde 40 °C)
+// FICHA_ALKURAN — ALKURAN RI-2145_H3 / ISO-200, Rev. mayo 2024 (v20, reemplaza al RF-30 H4)
+// La ficha da la relación 1:1 EN VOLUMEN. La app trabaja en peso (PBW), así que:
+//   ratio PBW = 100 × peIso / pePol = 100 × 1,235 / 1,12 ≈ 110
+// usando el centro de los rangos de densidad de la ficha (poliol 1,07–1,17; ISO 1,22–1,25).
+// Con los extremos de esos rangos el ratio va de ~104 a ~117: confirmar con la densidad
+// real del lote (certificado de calidad) y corregir ratio + pesos específicos en Parámetros.
+// NO figuran en la ficha (criterio propio, provisorio): tolerancia ±2 %, temperatura de
+// molde 36–44 °C, densidad de molde 45–50 kg/m³, densidad de núcleo 40–45 kg/m³.
 const FICHA_ALKURAN={
-  nombre:'ALKURAN RF-30 H4 / ISO-200', ratio:141, tol:2, tabla:4, pePol:1.09, peIso:1.235,
-  temp:[20,23], crema:[27,33], hilos:[120,160], libre:[27,32],
-  moldeT:[36,44], moldeD:[38,42], nucleo:[36,38], vidaPol:4, vidaIso:6,
-  visc:'250 / 150–250 cps', nco:'30,2 – 32,0 %', cond:'0,022 – 0,023 W/m·K',
-  estab:'< 3 %Vol', almac:'15–25 / 15–35 °C', envases:'220 (o IBC) / 250 kg'
+  nombre:'ALKURAN RI-2145_H3 / ISO-200', ratio:110, tol:2, tabla:4, pePol:1.12, peIso:1.235,
+  temp:[20,22], crema:[17,21], hilos:[70,90], libre:[40,45],
+  moldeT:[36,44], moldeD:[45,50], nucleo:[40,45], vidaPol:6, vidaIso:6,
+  visc:'300–600 / 150–250 cps (a 25 °C)', nco:'30,2 – 32 %', cond:'No figura en la ficha',
+  estab:'< 3 %Vol (14 días a −21 °C y 70 °C)', almac:'15–35 / 15–35 °C', envases:'220 / 250 kg',
+  relVol:'1 : 1 en volumen (ficha)', densEspuma:'> 40 kg/m³'
 };
 
 function aplicarFicha(){
   const p=DB.producto;
   const par=(v,d)=>(Array.isArray(v)&&v.length===2&&Number.isFinite(+v[0])&&Number.isFinite(+v[1]))?[+v[0],+v[1]]:d;
-  R_TEMP=par(p.temp,[20,23]); R_CREMA=par(p.crema,[27,33]); R_HILOS=par(p.hilos,[120,160]);
-  R_LIBRE=par(p.libre,[27,32]); R_MOLDE_T=par(p.moldeT,[36,44]);
-  R_MOLDE_D=par(p.moldeD,[38,42]); R_NUCLEO=par(p.nucleo,[36,38]);
-  VIDA_POL=Number.isFinite(+p.vidaPol)?+p.vidaPol:4;
+  R_TEMP=par(p.temp,[20,22]); R_CREMA=par(p.crema,[17,21]); R_HILOS=par(p.hilos,[70,90]);
+  R_LIBRE=par(p.libre,[40,45]); R_MOLDE_T=par(p.moldeT,[36,44]);
+  R_MOLDE_D=par(p.moldeD,[45,50]); R_NUCLEO=par(p.nucleo,[40,45]);
+  VIDA_POL=Number.isFinite(+p.vidaPol)?+p.vidaPol:6;
   VIDA_ISO=Number.isFinite(+p.vidaIso)?+p.vidaIso:6;
   // Actualizar hints dinámicos según la ficha cargada
   const hTmolde=document.getElementById('hint-tmolde');
@@ -1171,6 +1179,7 @@ function fichaFilas(){
   const p=DB.producto, r=(a,u)=>a[0]+' – '+a[1]+(u?' '+u:'');
   return [
     ['Relación A/B en peso','100 : '+p.ratio],
+    ...(p.relVol?[['Relación A/B según ficha',p.relVol]]:[]),
     ['Tolerancia del ratio','± '+p.tol+' %'],
     ['Temperatura A / B',r(R_TEMP,'°C')],
     ['Tiempo de crema',r(R_CREMA,'seg')],
@@ -1180,10 +1189,11 @@ function fichaFilas(){
     ['Densidad de molde',r(R_MOLDE_D,'kg/m³')],
     ['Densidad de núcleo',r(R_NUCLEO,'kg/m³')],
     ['Peso específico A / B',f(p.pePol,3)+' / '+f(p.peIso,3)+' g/ml'],
-    ['Viscosidad 20 °C A / B',p.visc||'—'],
+    ['Viscosidad A / B',p.visc||'—'],
     ['NCO libre (B)',p.nco||'—'],
     ['Conductividad térmica',p.cond||'—'],
     ['Estabilidad dimensional',p.estab||'—'],
+    ...(p.densEspuma?[['Densidad de espuma (ficha)',p.densEspuma]]:[]),
     ['Almacenamiento poliol / ISO',p.almac||'—'],
     ['Vida útil poliol / ISO',VIDA_POL+' / '+VIDA_ISO+' meses'],
     ['Envases',p.envases||'—']
@@ -1287,7 +1297,7 @@ function dbVacia(){
     },
     pruebas:[], inyecciones:[], movimientos:[],
     modelos:[], tanda:[],
-    cfg:{ largo:'', ancho:'', espesor:'', densidad:40, sobre:15, marcha:'media', pieza:'', tmolde:'' },
+    cfg:{ largo:'', ancho:'', espesor:'', densidad:45, sobre:15, marcha:'media', pieza:'', tmolde:'' },
     meta:{ ultimoRespaldo:null, guardadoEn:0, creado:Date.now(), pin:'', autoRespaldoDia:'', snapshotDia:'', snapshot5Ts:0, respaldoDescargasTs:0, avisoPersistenciaDia:'' }
   };
 }
@@ -1322,6 +1332,11 @@ function normalizar(d){
   const base=dbVacia();
   if(!d||typeof d!=='object') return base;
   base.producto=Object.assign({},FICHA_ALKURAN,base.producto,d.producto||{});
+  // relVol y densEspuma son datos propios de la ficha RI-2145_H3: no se le pegan a otro producto guardado.
+  if(d.producto&&d.producto.nombre&&d.producto.nombre!==FICHA_ALKURAN.nombre){
+    if(!('relVol' in d.producto)) delete base.producto.relVol;
+    if(!('densEspuma' in d.producto)) delete base.producto.densEspuma;
+  }
   base.marchas=Object.assign(base.marchas,d.marchas||{});
   ['baja','media','alta'].forEach(m=>{ base.marchas[m]=Object.assign({g:'',seg:'',gs:0,rg:'',rseg:'',rgs:0,caida:''},(d.marchas||{})[m]||{}); });
   base.tanques.pol=Object.assign(base.tanques.pol,(d.tanques||{}).pol||{});
@@ -1379,14 +1394,16 @@ function restaurarEmergencia(){
   if(typeof RESPALDO_EMBEBIDO==='undefined'){ alert('No hay respaldo de emergencia embebido en esta versión del archivo.'); return; }
   if(!confirm('Se va a cargar el respaldo de emergencia del '+RESPALDO_EMBEBIDO_FECHA+'.\n\n'
     +'Esto SUMA lo que traiga ese respaldo (calibraciones, inyecciones, movimientos) a lo que ya haya acá, '
-    +'y reemplaza producto, marchas y el nivel de tanques por los del respaldo.\n\n¿Seguimos?')) return;
+    +'y reemplaza el nivel de tanques por el del respaldo. El producto y los caudales cargados NO se tocan '
+    +'(la foto es de cuando se usaba el RF-30 H4).\n\n¿Seguimos?')) return;
   try{
     const d=normalizar(RESPALDO_EMBEBIDO);
     DB.pruebas=unir(DB.pruebas,d.pruebas);
     DB.inyecciones=unir(DB.inyecciones,d.inyecciones);
     DB.movimientos=unir(DB.movimientos,d.movimientos);
-    DB.tanques=d.tanques; DB.producto=d.producto; DB.marchas=d.marchas; DB.cfg=d.cfg;
-    guardarDB(); pintarTodo(); renderHistorial();
+    const marchaSel=DB.cfg.marcha;
+    DB.tanques=d.tanques; DB.cfg=d.cfg; DB.cfg.marcha=marchaSel||DB.cfg.marcha;
+    guardarDB(); aplicarFicha(); pintarTodo(); renderHistorial();
     alert('Listo. Se cargaron '+totalRegistros()+' registros en total.');
   }catch(e){
     alert('Se rompió algo al restaurar: '+e.message+'\n\nMandale esto a soporte tal cual aparece.');
@@ -1909,11 +1926,13 @@ function guardarFicha(){
 }
 
 function restaurarAlkuran(){
-  if(!pedirPin('restaurar la ficha del ALKURAN')) return;
-  if(!confirm('Se vuelven a cargar todos los valores de la ficha ALKURAN RF-30 H4 / ISO-200, incluidos nombre, ratio y pesos específicos.\n\n¿Seguimos?')) return;
+  if(!pedirPin('cargar la ficha del ALKURAN')) return;
+  if(!confirm('Se cargan todos los valores de la ficha ALKURAN RI-2145_H3 / ISO-200, incluidos nombre, ratio (110 PBW) y pesos específicos.\n\n'
+    +'Los caudales de baja, media y alta quedan en CERO hasta que los vuelvas a medir con este producto.\n\n¿Seguimos?')) return;
   DB.producto=Object.assign({},FICHA_ALKURAN);
+  marchasEnCero();
   guardarDB(); aplicarFicha(); pintarTodo();
-  alert('Listo. Ficha del ALKURAN restaurada.');
+  alert('Listo. Ficha del ALKURAN RI-2145_H3 cargada y caudales en cero.\n\nAntes de inyectar, medí baja, media y alta en Parámetros → Caudales de inyección.');
 }
 
 function guardarProducto(){
@@ -1926,9 +1945,13 @@ function guardarProducto(){
   let anchoT=gv('pr-tabla');
   if(!Number.isFinite(anchoT)||anchoT<1) anchoT=4;
   anchoT=Math.min(15,Math.round(anchoT));
+  const cambioNombre=(nom!==(DB.producto.nombre||''));
   DB.producto=Object.assign({},DB.producto,{ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi });
+  if(cambioNombre){ delete DB.producto.relVol; delete DB.producto.densEspuma; marchasEnCero(); }
   guardarDB(); pintarTodo();
-  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.\n\nIMPORTANTE: la caída del cabezal depende del producto. Volvé a medir los tres caudales por cabezal antes de inyectar.');
+  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.'
+    +(cambioNombre?'\n\nComo cambió el producto, los caudales de baja, media y alta quedaron en CERO. Medilos de nuevo antes de inyectar.'
+                  :'\n\nIMPORTANTE: la caída del cabezal depende del producto. Si cambiaste de material, volvé a medir los tres caudales.'));
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2001,6 +2024,7 @@ function guardarMarchas(){
       caida:Number.isFinite(c)?c:''
     };
   });
+  DB.meta.marchasProducto=DB.producto.nombre||'';
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
   const sinCabezal=MARCHAS.filter(([k])=>esEstimado(k)).map(([,n])=>n);
   alert('Caudales de inyección guardados.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
@@ -2031,6 +2055,12 @@ function gsEfectivo(k){
   const caida=parseFloat(m.caida);
   if(m.gs>0 && Number.isFinite(caida) && caida>0) return m.gs*(1-caida/100);   // estimado
   return m.gs>0?m.gs:NaN;                                     // sin corregir
+}
+// v21: los caudales dependen del producto. Al cambiar de producto quedan en cero
+// hasta que se vuelvan a medir con el material nuevo.
+function marchasEnCero(){
+  DB.marchas=dbVacia().marchas;
+  DB.meta.marchasProducto=DB.producto.nombre||'';
 }
 function esEstimado(k){ const m=DB.marchas[k]; return !!(m && !(m.rgs>0) && m.gs>0); }
 function rendimiento(k){ const m=DB.marchas[k]; return (m&&m.gs>0&&m.rgs>0)?(m.rgs/m.gs*100):NaN; }
@@ -2197,7 +2227,11 @@ function calcularInyeccion(){
   else if(Number.isFinite(d.segundos)&&d.segundos>R_CREMA[0]*0.7)
     al+='<div class="alerta naranja">⚠️ Este panel tarda '+f(d.segundos,1)+' s, cerca de los '+R_CREMA[0]+' s de crema.</div>';
   if(Number.isFinite(d.tmolde)&&(d.tmolde<R_MOLDE_T[0]||d.tmolde>R_MOLDE_T[1]))
-    al+='<div class="alerta naranja">⚠️ Molde a '+f(d.tmolde,1)+' °C. La ficha pide 43 ± 4 (entre '+R_MOLDE_T[0]+' y '+R_MOLDE_T[1]+').</div>';
+    al+='<div class="alerta naranja">⚠️ Molde a '+f(d.tmolde,1)+' °C. Rango cargado: entre '+R_MOLDE_T[0]+' y '+R_MOLDE_T[1]+' °C.</div>';
+  if(Number.isFinite(d.densReal)&&d.densReal<R_LIBRE[0])
+    al+='<div class="alerta roja">🔴 Densidad real '+f(d.densReal,1)+' kg/m³: está por debajo de la densidad LIBRE del producto ('+R_LIBRE[0]+'–'+R_LIBRE[1]+'). Con esta cantidad el panel no se llena. Subí la densidad o el sobreempaque.</div>';
+  else if(Number.isFinite(d.densReal)&&d.densReal<R_MOLDE_D[0])
+    al+='<div class="alerta naranja">⚠️ Densidad real '+f(d.densReal,1)+' kg/m³, por debajo del rango de molde cargado ('+R_MOLDE_D[0]+'–'+R_MOLDE_D[1]+'). Puede quedar con huecos o blando en las puntas.</div>';
   if(Number.isFinite(d.densReal))
     al+='<div class="alerta azul">📌 Densidad real con '+f(d.sobre,0)+' % de sobreempaque: <b>'+f(d.densReal,1)+' kg/m³</b> (teórica '+f(d.densidad,0)+').</div>';
   document.getElementById('iny-alertas').innerHTML=al;
@@ -2737,6 +2771,7 @@ function volcarAMarcha(){
   const gs=(iso+pol)/seg;
   if(!confirm('¿Guardar '+f(gs,2)+' g/s como MANGUERAS LIBRES de la marcha '+marchaCal+'?\n\nEl caudal que usan los cálculos es el del cabezal, que se mide aparte en Parámetros.')) return;
   DB.marchas[marchaCal]=Object.assign({},DB.marchas[marchaCal],{ seg:seg, g:+(iso+pol).toFixed(1), gs:gs });
+  DB.meta.marchasProducto=DB.producto.nombre||'';
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
   alert('Mangueras libres de la marcha '+marchaCal+': '+f(gs,2)+' g/s.'+(DB.marchas[marchaCal].rgs>0?'':'\n\nFalta medir el cabezal para que los segundos y el tanque salgan exactos.'));
 }
@@ -3133,7 +3168,8 @@ const GUIA=[
 <li><b>Volvé a medir los tres caudales por cabezal.</b> La caída depende del producto: con material distinto, el caudal real cambia.</li>
 <li><b>Tanques.</b> Ajustá las capacidades si los envases son de otro tamaño.</li>
 </ol>
-<p>Si te equivocaste tocando algo, hay un botón para volver a los valores del ALKURAN de una.</p>`},
+<p>Si te equivocaste tocando algo, hay un botón para volver a cargar la ficha del ALKURAN RI-2145_H3 de una.</p>
+<p><b>Ojo con las fichas en volumen.</b> La del RI-2145_H3 da la relación 1:1 en volumen. La app trabaja en peso: el ratio en PBW es 100 × peso específico ISO ÷ peso específico poliol. Con 1,235 y 1,12 da 110. Si el certificado del lote trae otras densidades, recalculalo y corregí ratio y pesos específicos juntos.</p>`},
 
 {t:'No perder los datos', i:'💾', c:`
 <p><b>Dónde viven.</b> Adentro de este dispositivo, guardados por duplicado en dos lugares distintos. No están en internet.</p>
@@ -3663,7 +3699,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v19';"
+      const sw="const CACHE='giovannetti-v21';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
@@ -3702,27 +3738,57 @@ dibujarLogo(document.getElementById('logo-header'),160,'compacto');
 cargarTodo();
 renderHistorial();
 
-// ── Migración v14: aviso si el producto sigue con ratio 156 (ficha vieja) ──
-setTimeout(function(){
-  if(!DB.meta.migV14 && DB.producto.ratio===156 && (DB.producto.nombre||'').includes('ALKURAN')){
-    const ok=confirm(
-      '📋 Actualización de ficha (enero 2026)\n\n'
-      +'La ficha del ALKURAN RF-30 H4 cambió:\n'
-      +'  · Ratio: 156 → 141\n'
-      +'  · Densidad libre: 38–42 → 27–32 kg/m³\n'
-      +'  · Temperatura de molde: 43±4 → 40 °C (±4)\n\n'
-      +'¿Actualizar los parámetros ahora?\n'
-      +'(También podés hacerlo luego en Parámetros → Volver a valores ALKURAN)'
-    );
-    if(ok){
-      DB.producto=Object.assign({},FICHA_ALKURAN);
-      guardarDB(); aplicarFicha(); pintarTodo();
-      alert('✅ Parámetros actualizados.\n\nOjo: recordá volver a medir los caudales por cabezal: la caída depende del producto.');
-    }
-    DB.meta.migV14=true;
-    guardarDB();
+// ── Migración v20: la app pasa del ALKURAN RF-30 H4 al RI-2145_H3 ──
+// Pregunta una sola vez por dispositivo. Si se dice que no (por ejemplo porque todavía
+// quedan tambores de RF-30), se cambia después desde Parámetros → Cargar la ficha del ALKURAN RI-2145_H3.
+setTimeout(function migracionV20(){
+  if(!LISTO){ setTimeout(migracionV20,500); return; }
+  DB.meta.migV14=true;
+  if(DB.meta.migV20) return;
+  const nom=(DB.producto.nombre||'');
+  if(nom.indexOf('RF-30')===-1 && DB.producto.ratio!==141 && DB.producto.ratio!==156){ DB.meta.migV20=true; guardarDB(); return; }
+  const ok=confirm(
+    '📋 Cambio de producto (v20)\n\n'
+    +'Esta versión trae la ficha del ALKURAN RI-2145_H3 / ISO-200 en lugar del RF-30 H4:\n'
+    +'  · Ratio: 141 → 110 PBW (la ficha dice 1:1 en volumen)\n'
+    +'  · Densidad libre: 27–32 → 40–45 kg/m³\n'
+    +'  · Crema: 27–33 → 17–21 s  ·  Hilos: 120–160 → 70–90 s\n'
+    +'  · Temperatura A/B: 20–23 → 20–22 °C\n'
+    +'  · Caudales de baja, media y alta: quedan en CERO para medirlos de nuevo\n\n'
+    +'Si todavía estás trabajando con tambores de RF-30, poné Cancelar y cambiá después desde '
+    +'Parámetros → Cargar la ficha del ALKURAN RI-2145_H3.\n\n¿Cambiar ahora?'
+  );
+  if(ok && pedirPin('cambiar el producto')){
+    DB.producto=Object.assign({},FICHA_ALKURAN);
+    marchasEnCero();
+    guardarDB(); aplicarFicha(); pintarTodo();
+    alert('✅ Producto cambiado a ALKURAN RI-2145_H3. Caudales en cero.\n\n'
+      +'Antes de producir:\n'
+      +'  1. Medí baja, media y alta con este producto (Parámetros → Caudales de inyección).\n'
+      +'  2. Confirmá el ratio con la densidad real del lote (certificado de Alkanos).\n'
+      +'  3. Esta espuma es más densa: la densidad aplicada en Inyección tiene que quedar arriba de 40–45.');
   }
+  DB.meta.migV20=true;
+  guardarDB();
 },800);
+
+// ── Migración v21: caudales viejos en un dispositivo que ya cambió de producto con v20 ──
+setTimeout(function migracionV21(){
+  if(!LISTO || !DB.meta.migV20){ setTimeout(migracionV21,700); return; }
+  if(DB.meta.migV21) return;
+  const hayCaudales=MARCHAS.some(([k])=>{ const m=DB.marchas[k]||{}; return m.gs>0||m.rgs>0; });
+  const esNuevo=(DB.producto.nombre||'').indexOf('RI-2145')!==-1;
+  if(esNuevo && hayCaudales && DB.meta.marchasProducto!==DB.producto.nombre){
+    if(confirm('⚙️ Caudales de inyección\n\n'
+      +'El producto ya es el ALKURAN RI-2145_H3, pero siguen cargados caudales de baja/media/alta '
+      +'que probablemente se midieron con el RF-30 (por ejemplo 700 g/s en alta).\n\n'
+      +'¿Ponerlos en CERO para medirlos de nuevo con el producto nuevo?\n\n'
+      +'(Cancelá solo si ya los mediste con el RI-2145_H3.)')){
+      marchasEnCero(); pintarTodo();
+    } else DB.meta.marchasProducto=DB.producto.nombre;
+  }
+  DB.meta.migV21=true; guardarDB();
+},1200);
 
 // ── Respaldo automático diario: se dispara solo la primera vez que se abre la app cada día ──
 setTimeout(function(){ chequearRespaldoDiario(); },2000);
