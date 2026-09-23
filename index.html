@@ -386,7 +386,8 @@
       </div>
     </div>
 
-    <div class="section-title" id="titulo-resultado">Resultado</div>
+    <div class="alerta verde" id="c-relacion" style="margin-bottom:12px;font-size:15px">—</div>
+      <div class="section-title" id="titulo-resultado">Resultado</div>
     <div class="resultados" id="resultados">
       <div class="res-card tipo-pol" id="rc-pol">
         <div class="res-etiqueta">Poliol medido</div>
@@ -465,7 +466,7 @@
         <div class="form-field">
           <label>Densidad aplicada</label>
           <input type="number" id="p-densidad" placeholder="0" min="0" step="any">
-          <div class="hint">kg/m³ — 40, 42, la que uses</div>
+          <div class="hint" id="hint-dapl">kg/m³ — arriba de la densidad libre (40–45)</div>
         </div>
         <div class="form-field">
           <label>Sobreempaque</label>
@@ -767,16 +768,16 @@
     <div class="anotador-form">
       <div class="form-titulo">🥤 Cómo se hace la prueba</div>
       <div class="alerta naranja">
-        <b>Antes de empezar, la temperatura.</b> La ficha pide los dos componentes entre <b>20 y 23 °C</b>.
+        <b>Antes de empezar, la temperatura.</b> La ficha pide los dos componentes entre <b><span class="fx-temp">20 y 22</span> °C</b>.
         Si están más fríos, la espuma sale más pesada y los tiempos se alargan; si están más calientes, al revés.
         Medí y anotá la temperatura de cada uno abajo: sin eso, el resultado no se puede comparar con nada.
       </div>
       <ol class="pasos-prueba">
-        <li>Acondicioná los componentes a 20–23 °C y agitá bien el poliol antes de sacar la muestra.</li>
+        <li>Acondicioná los componentes a <span class="fx-temp2">20–22</span> °C y agitá bien el poliol antes de sacar la muestra.</li>
         <li>Agarrá un vaso o recipiente de boca ancha. Pesalo vacío y anotá esa tara.</li>
         <li>Cargá el volumen del recipiente. La app te dice cuántos gramos pesar de cada componente.</li>
         <li>Pesá el poliol en el vaso de mezclado. Agregá el isocianato de una sola vez.</li>
-        <li>Mezclá enérgicamente y volcá enseguida en el recipiente. Tenés que estar volcando bastante antes de los 27 segundos, que es cuando arranca la crema.</li>
+        <li>Mezclá enérgicamente y volcá enseguida en el recipiente. Tenés que estar volcando bastante antes de los <span class="fx-crema0">17</span> segundos, que es cuando arranca la crema. Este producto es rápido: tené todo pesado y a mano antes de juntar los componentes.</li>
         <li>Arrancá el cronómetro al juntar los dos componentes. Anotá el <b>tiempo de crema</b>, cuando cambia de color y empieza a levantar.</li>
         <li>Anotá el <b>tiempo de hilos</b>, cuando al tocarla con un palito se estiran hilos pegajosos.</li>
         <li>Dejala curar diez o quince minutos, hasta que esté firme.</li>
@@ -790,6 +791,7 @@
 
     <div class="anotador-form">
       <div class="form-titulo">1 · Cuánto preparar</div>
+      <div class="alerta verde" id="d-relacion" style="margin-bottom:12px;font-size:15px">—</div>
       <div class="card-label">Recipiente</div>
       <div class="marchas" id="d-vasos"></div>
       <div class="form-grid" style="margin-top:14px">
@@ -846,22 +848,22 @@
         <div class="form-field">
           <label>⏳ Tiempo de crema</label>
           <input type="number" id="d-crema" placeholder="0" min="0" step="1">
-          <div class="hint">segundos — ficha: 27 a 33</div>
+          <div class="hint">segundos — ficha: <span class="fx-crema">17 a 21</span></div>
         </div>
         <div class="form-field">
           <label>🧵 Tiempo de hilos</label>
           <input type="number" id="d-hilos" placeholder="0" min="0" step="1">
-          <div class="hint">segundos — ficha: 120 a 160</div>
+          <div class="hint">segundos — ficha: <span class="fx-hilos">70 a 90</span></div>
         </div>
         <div class="form-field">
           <label>🌡️ Temp. poliol</label>
           <input type="number" id="d-tpol" placeholder="—" step="0.1">
-          <div class="hint">°C — ficha: 20 a 23</div>
+          <div class="hint">°C — ficha: <span class="fx-temp3">20 a 22</span></div>
         </div>
         <div class="form-field">
           <label>🌡️ Temp. isocianato</label>
           <input type="number" id="d-tiso" placeholder="—" step="0.1">
-          <div class="hint">°C — ficha: 20 a 23</div>
+          <div class="hint">°C — ficha: <span class="fx-temp3">20 a 22</span></div>
         </div>
         <div class="form-field full">
           <label>🏭 Temp. ambiente</label>
@@ -957,6 +959,16 @@
           <input type="number" id="pr-pe-iso" min="0" step="0.001">
           <div class="hint">g/ml — componente B</div>
         </div>
+        <div class="form-field">
+          <label>Densidad aplicada por defecto</label>
+          <input type="number" id="pr-dens-apl" min="0" step="any">
+          <div class="hint">kg/m³ — aparece sola en Inyección</div>
+        </div>
+        <div class="form-field">
+          <label>Sobreempaque por defecto</label>
+          <input type="number" id="pr-sobre-def" min="0" step="any">
+          <div class="hint">% — aparece solo en Inyección</div>
+        </div>
         <div class="form-field full">
           <label>Ancho de la tabla de ajuste</label>
           <input type="number" id="pr-tabla" min="1" max="15" step="1">
@@ -1024,19 +1036,13 @@
       <button class="btn-guardar" style="margin-top:9px" onclick="enviarRespaldo()">📲 Enviar respaldo por WhatsApp o mail</button>
       <button class="btn-sec" onclick="document.getElementById('file-restore').click()">📂 Restaurar desde un respaldo</button>
       <input type="file" id="file-restore" accept=".json,application/json" style="display:none" onchange="importarRespaldo(event)">
-      <button class="btn-sec" style="margin-top:9px;background:var(--naranja-light);color:#7A420F" onclick="restaurarEmergencia()">🆘 Restaurar respaldo de emergencia GENÉRICO (11-08, compartido entre instalaciones)</button>
-      <div class="hint" style="margin-top:6px">
-        ⚠️ Esta foto es la MISMA para todos los dispositivos donde esté instalada la app, sin importar la fábrica.
-        Usala solo si sabés que este dispositivo debería tener esos datos puntuales. Si este dispositivo se vacía,
-        primero se intenta solo con sus PROPIAS copias (abajo) — esta es el último recurso manual.
-      </div>
       <div class="logo-instrucciones">
         <div class="logo-instr-titulo">📌 Cómo no perder nada</div>
         <div class="logo-instr-item"><div class="logo-instr-num">1</div>Los datos se guardan por duplicado adentro del teléfono, en dos lugares distintos. Si uno se limpia, el otro los recupera.</div>
         <div class="logo-instr-item"><div class="logo-instr-num">2</div>El nivel de los tanques se guarda como número propio: no depende de que el historial esté completo.</div>
-        <div class="logo-instr-item"><div class="logo-instr-num">3</div>Además, cada 5 minutos de uso se guarda una copia propia de este dispositivo (abajo, "Copias internas"), y una foto diaria .json se descarga sola a Descargas.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">3</div>Cada 5 minutos se guarda una copia interna, en silencio (abajo, "Copias internas"). Y una vez por día, al abrir la app, se baja solo un respaldo a Descargas: giovannetti_respaldo_AAAA-MM-DD.json.</div>
         <div class="logo-instr-item"><div class="logo-instr-num">4</div>Si este dispositivo aparece vacío, la app se recupera sola con SU PROPIA última copia — nunca con la de otra instalación.</div>
-        <div class="logo-instr-item"><div class="logo-instr-num">5</div>Cuando te pase una versión nueva, abrila y usá "Restaurar desde un respaldo" antes de cargar nada.</div>
+        <div class="logo-instr-item"><div class="logo-instr-num">5</div>Actualizar la app (subir un index.html nuevo) NO borra nada: los datos quedan en el dispositivo. "Restaurar desde un respaldo" es solo para un equipo que aparezca vacío o uno nuevo.</div>
       </div>
     </div>
 
@@ -1058,10 +1064,7 @@
           <tbody id="tabla-ficha"></tbody>
         </table>
       </div>
-      <div class="alerta naranja" style="margin-top:14px">
-        ⚠️ El poliol lleva HFO-1233zd: arriba de 25 °C el tambor se sobrepresiona. Abrí despacio el tapón de 3/4"
-        antes de conectar. El ISO cristaliza bajo 5 °C sostenidos; se recupera calentando a 70–80 °C y agitando.
-      </div>
+      <div class="alerta naranja" style="margin-top:14px" id="aviso-almac">—</div>
     </div>
 
     <div class="logo-panel">
@@ -1133,7 +1136,7 @@
 <div id="hoja-impresion"></div>
 
 <script>
-const VERSION='v21 · 22-09-2026';
+const VERSION='v23 · 22-09-2026';
 
 // ═══════════════════════════════════════════════════════════════
 // RANGOS DE LA FICHA TÉCNICA — ALKURAN RI-2145_H3 / ISO-200 Rev. mayo 2024
@@ -1143,28 +1146,39 @@ let R_TEMP=[20,22], R_CREMA=[17,21], R_HILOS=[70,90];
 let R_LIBRE=[40,45], R_MOLDE_T=[36,44], R_MOLDE_D=[45,50], R_NUCLEO=[40,45];
 let VIDA_POL=6, VIDA_ISO=6;
 
-// FICHA_ALKURAN — ALKURAN RI-2145_H3 / ISO-200, Rev. mayo 2024 (v20, reemplaza al RF-30 H4)
+// FICHA_ALKURAN — ALKURAN RI-2145_H3 / ISO-200, Rev. mayo 2024 (producto de trabajo)
 // La ficha da la relación 1:1 EN VOLUMEN. La app trabaja en peso (PBW), así que:
 //   ratio PBW = 100 × peIso / pePol = 100 × 1,235 / 1,12 ≈ 110
 // usando el centro de los rangos de densidad de la ficha (poliol 1,07–1,17; ISO 1,22–1,25).
 // Con los extremos de esos rangos el ratio va de ~104 a ~117: confirmar con la densidad
 // real del lote (certificado de calidad) y corregir ratio + pesos específicos en Parámetros.
-// NO figuran en la ficha (criterio propio, provisorio): tolerancia ±2 %, temperatura de
-// molde 36–44 °C, densidad de molde 45–50 kg/m³, densidad de núcleo 40–45 kg/m³.
+// NO figuran en la ficha: tolerancia ±2 % (criterio propio), temperatura de molde 40–45 °C
+// (la que usa la planta en todos los moldes), densidad de molde 45–50 y núcleo 40–45 kg/m³ (provisorios).
 const FICHA_ALKURAN={
   nombre:'ALKURAN RI-2145_H3 / ISO-200', ratio:110, tol:2, tabla:4, pePol:1.12, peIso:1.235,
   temp:[20,22], crema:[17,21], hilos:[70,90], libre:[40,45],
-  moldeT:[36,44], moldeD:[45,50], nucleo:[40,45], vidaPol:6, vidaIso:6,
+  moldeT:[40,45], moldeD:[45,50], nucleo:[40,45], vidaPol:6, vidaIso:6,
   visc:'300–600 / 150–250 cps (a 25 °C)', nco:'30,2 – 32 %', cond:'No figura en la ficha',
   estab:'< 3 %Vol (14 días a −21 °C y 70 °C)', almac:'15–35 / 15–35 °C', envases:'220 / 250 kg',
-  relVol:'1 : 1 en volumen (ficha)', densEspuma:'> 40 kg/m³'
+  relVol:'1 : 1 en volumen (ficha)', densEspuma:'> 40 kg/m³',
+  densApl:45, sobreDef:10,   // arranque sugerido para Inyección (se ajusta con paneles de prueba)
+  avisoAlmac:'⚠️ Guardar los tambores entre 15 y 35 °C, a la sombra y bien cerrados: los dos componentes absorben humedad, '
+    +'y el poliol con agua da fallas al procesar. El ISO cristaliza si pasa mucho tiempo bajo 5 °C, y arriba de 50 °C '
+    +'aparecen sólidos que tapan la inyectora. Agitá el poliol antes de usarlo.'
 };
+
+// Rangos con los que se juzga un registro: los guardados en el registro; si no los tiene,
+// los de la ficha cargada hoy.
+function rangosDe(reg){
+  if(reg&&reg.rangos) return reg.rangos;
+  return {temp:R_TEMP, crema:R_CREMA, hilos:R_HILOS, libre:R_LIBRE, moldeT:R_MOLDE_T};
+}
 
 function aplicarFicha(){
   const p=DB.producto;
   const par=(v,d)=>(Array.isArray(v)&&v.length===2&&Number.isFinite(+v[0])&&Number.isFinite(+v[1]))?[+v[0],+v[1]]:d;
   R_TEMP=par(p.temp,[20,22]); R_CREMA=par(p.crema,[17,21]); R_HILOS=par(p.hilos,[70,90]);
-  R_LIBRE=par(p.libre,[40,45]); R_MOLDE_T=par(p.moldeT,[36,44]);
+  R_LIBRE=par(p.libre,[40,45]); R_MOLDE_T=par(p.moldeT,[40,45]);
   R_MOLDE_D=par(p.moldeD,[45,50]); R_NUCLEO=par(p.nucleo,[40,45]);
   VIDA_POL=Number.isFinite(+p.vidaPol)?+p.vidaPol:6;
   VIDA_ISO=Number.isFinite(+p.vidaIso)?+p.vidaIso:6;
@@ -1173,6 +1187,21 @@ function aplicarFicha(){
   if(hTmolde) hTmolde.textContent='°C — ficha: '+R_MOLDE_T[0]+' a '+R_MOLDE_T[1];
   const hDobj=document.getElementById('hint-dobj');
   if(hDobj) hDobj.textContent='kg/m³ — ficha: '+R_LIBRE[0]+' a '+R_LIBRE[1];
+  const pon=(sel,txt)=>document.querySelectorAll(sel).forEach(e=>{ e.textContent=txt; });
+  pon('.fx-temp',R_TEMP[0]+' y '+R_TEMP[1]);
+  pon('.fx-temp2',R_TEMP[0]+'–'+R_TEMP[1]);
+  pon('.fx-temp3',R_TEMP[0]+' a '+R_TEMP[1]);
+  pon('.fx-crema0',String(R_CREMA[0]));
+  pon('.fx-crema',R_CREMA[0]+' a '+R_CREMA[1]);
+  pon('.fx-hilos',R_HILOS[0]+' a '+R_HILOS[1]);
+  const dRel=document.getElementById('d-relacion');
+  if(dRel) dRel.innerHTML=textoRelacion();
+  const cRel=document.getElementById('c-relacion');
+  if(cRel) cRel.innerHTML=textoRelacion();
+  const hDapl=document.getElementById('hint-dapl');
+  if(hDapl) hDapl.textContent='kg/m³ — arriba de la densidad libre ('+R_LIBRE[0]+'–'+R_LIBRE[1]+'); molde '+R_MOLDE_D[0]+'–'+R_MOLDE_D[1];
+  const avA=document.getElementById('aviso-almac');
+  if(avA){ avA.textContent=p.avisoAlmac||'⚠️ Respetá las condiciones de almacenamiento de la ficha técnica del producto cargado.'; }
 }
 
 function fichaFilas(){
@@ -1201,78 +1230,7 @@ function fichaFilas(){
 }
 
 
-// ---------- Respaldo de emergencia embebido ----------
-// Si la app se abre sin NADA guardado en este navegador (ni localStorage ni
-// IndexedDB), en vez de arrancar vacía se auto-restaura con el último respaldo
-// conocido. Es una red de emergencia, no reemplaza los respaldos .json regulares:
-// esta foto queda fija en la fecha de abajo y no se actualiza sola.
-const RESPALDO_EMBEBIDO_FECHA='11-08-2026';
-const RESPALDO_EMBEBIDO={
-  "producto": {
-    "nombre": "ALKURAN RF-30 H4 / ISO-200",
-    "ratio": 141,
-    "tol": 2,
-    "tabla": 4,
-    "pePol": 1.09,
-    "peIso": 1.235,
-    "temp": [20, 23],
-    "crema": [27, 33],
-    "hilos": [120, 160],
-    "libre": [27, 32],
-    "moldeT": [36, 44],
-    "moldeD": [38, 42],
-    "nucleo": [36, 38],
-    "vidaPol": 4,
-    "vidaIso": 6,
-    "visc": "250 / 150–250 cps",
-    "nco": "30,2 – 32,0 %",
-    "cond": "0,022 – 0,023 W/m·K",
-    "estab": "< 3 %Vol",
-    "almac": "15–25 / 15–35 °C",
-    "envases": "220 (o IBC) / 250 kg"
-  },
-  "marchas": {
-    "baja": {"g":50,"seg":1,"gs":50,"rg":50,"rseg":1,"rgs":50,"caida":""},
-    "media": {"g":384,"seg":1,"gs":384,"rg":380,"rseg":1,"rgs":380,"caida":""},
-    "alta": {"g":750,"seg":1,"gs":750,"rg":700,"rseg":1,"rgs":700,"caida":""}
-  },
-  "densidades": [],
-  "tanques": {
-    "pol": {"cap":220,"kg":202.68001161825725,"lote":"1","elab":"2026-08-01","venc":"2026-12-01","alarma":60},
-    "iso": {"cap":250,"kg":225.57881638174266,"lote":"1","elab":"2026-08-01","venc":"2027-02-01","alarma":80}
-  },
-  "pruebas": [
-    {"id":1785775441961,"tipo":"cal","iso":320,"pol":225,"seg":10.5,"hzIso":1.6,"hzPol":1.3,"caudal":51.9,"tempIso":"25°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"baja","fecha":"2026-08-03","hora":"13:39","nota":"LISTO BAJA","ratio":142.22,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785774081043,"tipo":"cal","iso":335,"pol":225,"seg":10.2,"hzIso":1.7,"hzPol":1.3,"caudal":54.9,"tempIso":"25.4°C","tempPol":"23.7°C","tempAmb":"14°C","marcha":"baja","fecha":"2026-08-03","hora":"13:20","nota":"","ratio":148.89,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785773703107,"tipo":"cal","iso":315,"pol":230,"seg":10.2,"hzIso":1.3,"hzPol":1.3,"caudal":53.43,"tempIso":"25.6°C","tempPol":"23.7°C","tempAmb":"14°C","marcha":"baja","fecha":"2026-08-03","hora":"13:13","nota":"","ratio":136.96,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785772657254,"tipo":"cal","iso":315,"pol":215,"seg":10.2,"hzIso":1.6,"hzPol":1.2,"caudal":51.96,"tempIso":"26°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"baja","fecha":"2026-08-03","hora":"12:55","nota":"","ratio":146.51,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785772162256,"tipo":"cal","iso":225,"pol":175,"seg":9.8,"hzIso":1.3,"hzPol":1,"caudal":40.82,"tempIso":"","tempPol":"","tempAmb":"","marcha":"baja","fecha":"2026-08-03","hora":"12:41","nota":"","ratio":128.57,"ok":false,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785771459960,"tipo":"cal","iso":6770,"pol":4785,"seg":15.2,"hzIso":26,"hzPol":20.6,"caudal":760.2,"tempIso":"25.8°C","tempPol":"23.7°C","tempAmb":"15°C","marcha":"alta","fecha":"2026-08-03","hora":"12:35","nota":"","ratio":141.48,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785769351629,"tipo":"cal","iso":6720,"pol":4765,"seg":15.2,"hzIso":26,"hzPol":20.6,"caudal":755.59,"tempIso":"25.2°C","tempPol":"23.5°C","tempAmb":"14.2°C","marcha":"alta","fecha":"2026-08-03","hora":"11:59","nota":"","ratio":141.03,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785768048829,"tipo":"cal","iso":4580,"pol":3255,"seg":10.2,"hzIso":26,"hzPol":20.6,"caudal":768.14,"tempIso":"24.2°C","tempPol":"23.1°C","tempAmb":"12.7°C","marcha":"alta","fecha":"2026-08-03","hora":"11:22","nota":"","ratio":140.71,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141},
-    {"id":1785764856303,"tipo":"cal","iso":3360,"pol":2400,"seg":15,"hzIso":13,"hzPol":10.3,"caudal":384,"tempIso":"24.1°C","tempPol":"23.1°C","tempAmb":"12.7°C","marcha":"media","fecha":"2026-08-03","hora":"10:46","nota":"","ratio":140,"ok":true,"producto":"ALKURAN RF-30 H4 / ISO-200","ratioNom":141}
-  ],
-  "inyecciones": [
-    {"id":1786382747305,"tipo":"iny","fecha":"2026-08-10","hora":"14:25","nPaneles":1,"segTotal":2.64,"mezclaKg":1.848,"totPol":0.7668,"totIso":1.0812,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":21,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":46.2,"densReal":40,"mezclaKg":1.848,"segundos":2.64,"polKg":0.7668,"isoKg":1.0812,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1786213893765,"tipo":"iny","fecha":"2026-08-08","hora":"15:31","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"TECHO CANAPARO","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1786201345166,"tipo":"iny","fecha":"2026-08-08","hora":"12:02","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"PANEL TECHO CANAPARO","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1786127403799,"tipo":"iny","fecha":"2026-08-07","hora":"15:30","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1786039185964,"tipo":"iny","fecha":"2026-08-06","hora":"14:59","nPaneles":1,"segTotal":7.01,"mezclaKg":4.9104,"totPol":2.0375,"totIso":2.8729,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":10,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":122.76,"densReal":40,"mezclaKg":4.9104,"segundos":7.01,"polKg":2.0375,"isoKg":2.8729,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1785953172780,"tipo":"iny","fecha":"2026-08-05","hora":"15:06","nPaneles":1,"segTotal":2.24,"mezclaKg":1.5708,"totPol":0.6518,"totIso":0.919,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":21,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":39.27,"densReal":40,"mezclaKg":1.5708,"segundos":2.24,"polKg":0.6518,"isoKg":0.919,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1785948411549,"tipo":"iny","fecha":"2026-08-05","hora":"13:46","nPaneles":1,"segTotal":5.96,"mezclaKg":4.1738,"totPol":1.7319,"totIso":2.442,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":45,"estimado":false,"volL":104.346,"densReal":40,"mezclaKg":4.1738,"segundos":5.96,"polKg":1.7319,"isoKg":2.442,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1785866905612,"tipo":"iny","fecha":"2026-08-04","hora":"15:08","nPaneles":1,"segTotal":5.96,"mezclaKg":4.1738,"totPol":1.7319,"totIso":2.442,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":0,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":104.346,"densReal":40,"mezclaKg":4.1738,"segundos":5.96,"polKg":1.7319,"isoKg":2.442,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1785858535211,"tipo":"iny","fecha":"2026-08-04","hora":"12:48","nPaneles":1,"segTotal":6.26,"mezclaKg":4.3825,"totPol":1.8185,"totIso":2.5641,"fallados":0,"paneles":[{"nombre":"","largo":220,"ancho":55.8,"espesor":8.5,"densidad":40,"sobre":5,"marcha":"alta","gs":700,"tmolde":"","estimado":false,"volL":104.346,"densReal":42,"mezclaKg":4.3825,"segundos":6.26,"polKg":1.8185,"isoKg":2.5641,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141},
-    {"id":1785849361659,"tipo":"iny","fecha":"2026-08-04","hora":"10:16","nPaneles":1,"segTotal":8.5,"mezclaKg":5.9506,"totPol":2.4691,"totIso":3.4814,"fallados":0,"paneles":[{"nombre":"PISO CANAPARO","largo":220,"ancho":58.8,"espesor":10,"densidad":40,"sobre":15,"marcha":"alta","gs":700,"tmolde":40,"estimado":false,"volL":129.36,"densReal":46,"mezclaKg":5.9506,"segundos":8.5,"polKg":2.4691,"isoKg":3.4814,"ok":true}],"nota":"","producto":"ALKURAN RF-30 H4 / ISO-200","ratio":141}
-  ],
-  "movimientos": [
-    {"id":1785849275091,"tipo":"tq","mov":"carga","comp":"iso","fecha":"2026-08-04","hora":"10:14","kg":250,"lote":"","elab":"","venc":"","nota":""},
-    {"id":1785849270651,"tipo":"tq","mov":"carga","comp":"pol","fecha":"2026-08-04","hora":"10:14","kg":220,"lote":"","elab":"","venc":"","nota":""}
-  ],
-  "modelos": [],
-  "tanda": [],
-  "cfg": {"largo":"","ancho":"","espesor":"","densidad":"","sobre":"","marcha":"alta","pieza":"","tmolde":""},
-  "meta": {"ultimoRespaldo":1786461411202,"guardadoEn":1786461411202,"creado":1785618503253}
-};
+
 
 
 // ═══════════════════════════════════════════════════════════════
@@ -1390,25 +1348,6 @@ function leerLS(){
   }catch(e){}
   return null;
 }
-function restaurarEmergencia(){
-  if(typeof RESPALDO_EMBEBIDO==='undefined'){ alert('No hay respaldo de emergencia embebido en esta versión del archivo.'); return; }
-  if(!confirm('Se va a cargar el respaldo de emergencia del '+RESPALDO_EMBEBIDO_FECHA+'.\n\n'
-    +'Esto SUMA lo que traiga ese respaldo (calibraciones, inyecciones, movimientos) a lo que ya haya acá, '
-    +'y reemplaza el nivel de tanques por el del respaldo. El producto y los caudales cargados NO se tocan '
-    +'(la foto es de cuando se usaba el RF-30 H4).\n\n¿Seguimos?')) return;
-  try{
-    const d=normalizar(RESPALDO_EMBEBIDO);
-    DB.pruebas=unir(DB.pruebas,d.pruebas);
-    DB.inyecciones=unir(DB.inyecciones,d.inyecciones);
-    DB.movimientos=unir(DB.movimientos,d.movimientos);
-    const marchaSel=DB.cfg.marcha;
-    DB.tanques=d.tanques; DB.cfg=d.cfg; DB.cfg.marcha=marchaSel||DB.cfg.marcha;
-    guardarDB(); aplicarFicha(); pintarTodo(); renderHistorial();
-    alert('Listo. Se cargaron '+totalRegistros()+' registros en total.');
-  }catch(e){
-    alert('Se rompió algo al restaurar: '+e.message+'\n\nMandale esto a soporte tal cual aparece.');
-  }
-}
 
 function cargarTodo(){
   const desdeLS=leerLS();
@@ -1440,12 +1379,12 @@ function cargarTodo(){
             guardarDB();
             pintarTodo(); renderHistorial();
             const cuando=new Date(propia.ts).toLocaleString('es-AR');
-            alert('⚠️ Este dispositivo apareció con 0 registros y los tanques en 0 kg.\n\n'
+            aviso('⚠️ Este dispositivo apareció con 0 registros y los tanques en 0 kg.\n\n'
               +'Se restauró automáticamente con la ÚLTIMA COPIA PROPIA de ESTE dispositivo, guardada el '+cuando+' ('+totalRegistros()+' registros).\n\n'
               +'No se tocaron ni se mezclaron datos de ninguna otra instalación.');
           }catch(e){
             console.error('Fallo la restauración automática desde copia propia:',e);
-            alert('⚠️ Se detectó que no había datos y había una copia propia, pero la restauración falló.\n\n'
+            aviso('⚠️ Se detectó que no había datos y había una copia propia, pero la restauración falló.\n\n'
               +'Error: '+e.message+'\n\nUsá Parámetros → Respaldo de datos → "Copias internas por fecha" para restaurar a mano. Avisá a soporte con este mensaje.');
             LISTO=true; guardarDB(); pintarTodo();
           }
@@ -1454,12 +1393,6 @@ function cargarTodo(){
         // Este dispositivo nunca guardó nada propio: no hay de dónde recuperar solo.
         // NO se auto-aplica la foto embebida (es compartida entre todas las instalaciones).
         LISTO=true; guardarDB(); pintarTodo();
-        if(typeof RESPALDO_EMBEBIDO!=='undefined'){
-          alert('⚠️ Este dispositivo está vacío (0 registros, tanques en 0 kg) y todavía no tiene ninguna copia propia guardada acá.\n\n'
-            +'Si este dispositivo es una instalación NUEVA con SUS PROPIOS tanques, no hagas nada: seguí cargando los datos reales de acá.\n\n'
-            +'Si en cambio este dispositivo debería tener los datos de otra instalación conocida (por ejemplo, se le borró todo y no le quedó ninguna copia propia), '
-            +'andá a Parámetros → Respaldo de datos → "Restaurar respaldo de emergencia" y hacelo a mano, con cuidado — esa foto es compartida por todas las instalaciones.');
-        }
       });
       return;
     }
@@ -1479,13 +1412,13 @@ function guardarDB(){
   DB.meta.guardadoEn=Date.now();
   const txt=JSON.stringify(DB);
   try{ localStorage.setItem(LS_KEY,txt); }
-  catch(e){ alert('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Parámetros ya mismo.'); }
+  catch(e){ aviso('No se pudieron guardar los datos en el teléfono. Descargá un respaldo desde Parámetros ya mismo.'); }
   idbEscribir(JSON.parse(txt)).then(ok=>{
     if(ok){ IDB_FALLOS_SEGUIDOS=0; }
     else{
       IDB_FALLOS_SEGUIDOS++;
       if(IDB_FALLOS_SEGUIDOS===3){
-        alert('⚠️ El guardado interno de respaldo (IndexedDB) lleva varios intentos fallando en este navegador.\n\n'
+        aviso('⚠️ El guardado interno de respaldo (IndexedDB) lleva varios intentos fallando en este navegador.\n\n'
           +'El guardado principal sigue funcionando, pero perdiste la copia de seguridad de adentro del teléfono.\n\n'
           +'Descargá un respaldo (.json) ya mismo y avisá a soporte.');
       }
@@ -1493,7 +1426,6 @@ function guardarDB(){
   });
   guardarSnapshotDiario(txt);
   guardarSnapshotFrecuente(txt);
-  chequearRespaldoFrecuenteDescargas();
   actualizarContadores();
 }
 
@@ -1597,110 +1529,47 @@ function restaurarSnapshot(fecha){
     const t=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get('snap-'+fecha);
     t.onsuccess=()=>res(t.result); t.onerror=()=>rej(t.error);
   })).then(obj=>{
-    if(!obj){ alert('No se encontró ese snapshot.'); return; }
+    if(!obj){ aviso('No se encontró ese snapshot.'); return; }
     if(!confirm('Se va a REEMPLAZAR todo lo que hay ahora por la copia interna del '+fecha+'.\n\nEsto no se puede deshacer. ¿Seguimos?')) return;
     DB=normalizar(obj);
     LISTO=true; guardarDB(); pintarTodo(); renderHistorial();
-    alert('Restaurado desde la copia interna del '+fecha+'.');
-  }).catch(e=>alert('No se pudo leer ese snapshot: '+e.message));
+    aviso('Restaurado desde la copia interna del '+fecha+'.');
+  }).catch(e=>aviso('No se pudo leer ese snapshot: '+e.message));
 }
 function restaurarSnapshotFrecuente(clave){
   idbAbrir().then(db=>new Promise((res,rej)=>{
     const t=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get(clave);
     t.onsuccess=()=>res(t.result); t.onerror=()=>rej(t.error);
   })).then(obj=>{
-    if(!obj){ alert('No se encontró esa copia.'); return; }
+    if(!obj){ aviso('No se encontró esa copia.'); return; }
     const cuando=new Date(parseInt(clave.slice(6),10)).toLocaleString('es-AR');
     if(!confirm('Se va a REEMPLAZAR todo lo que hay ahora por la copia de las '+cuando+'.\n\nEsto no se puede deshacer. ¿Seguimos?')) return;
     DB=normalizar(obj);
     LISTO=true; guardarDB(); pintarTodo(); renderHistorial();
-    alert('Restaurado desde la copia de las '+cuando+'.');
-  }).catch(e=>alert('No se pudo leer esa copia: '+e.message));
+    aviso('Restaurado desde la copia de las '+cuando+'.');
+  }).catch(e=>aviso('No se pudo leer esa copia: '+e.message));
 }
 
 // ---------- respaldo automático diario (descarga el .json solo, una vez por día) ----------
+// UN respaldo por día a Descargas, sin mensajes. Se baja la primera vez que se abre la app
+// en el día (y, si queda abierta de un día para otro, al cambiar la fecha). Lleva todo lo
+// guardado hasta ese momento. Las copias internas cada 5 minutos siguen igual, en silencio.
+function fechaLocal(d){ d=d||new Date(); const z=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); }
 function chequearRespaldoDiario(){
+  if(!LISTO) return;
   if(totalRegistros()===0) return; // nada que respaldar todavía
-  const hoy=new Date().toISOString().slice(0,10);
-  if(DB.meta.autoRespaldoDia===hoy) return; // ya se descargó hoy
+  const hoy=fechaLocal();
+  if(DB.meta.autoRespaldoDia===hoy) return; // ya se bajó hoy
   DB.meta.autoRespaldoDia=hoy;
   DB.meta.ultimoRespaldo=Date.now();
   guardarDB();
-  descargarArchivo('giovannetti_respaldo_auto_'+hoy+'.json', JSON.stringify(DB,null,2), 'application/json');
+  descargarArchivo('giovannetti_respaldo_'+hoy+'.json', JSON.stringify(DB,null,2), 'application/json');
 }
 
-// ---------- respaldo frecuente a Descargas (v19 — con varias trabas independientes) ----------
-// El respaldo diario de arriba solo se descarga UNA VEZ, con los datos que había en ese momento.
-// Si el navegador vacía su almacenamiento interno (localStorage + IndexedDB juntos, algo que puede
-// pasar sin aviso por limpieza de espacio en disco), la ÚNICA copia que sobrevive es la que está
-// afuera del navegador, en la carpeta Descargas. Por eso esta copia se actualiza sola cada tanto
-// mientras se trabaja — pero con VARIAS trabas independientes entre sí, para que un problema en
-// una sola de ellas no pueda nunca hacer que esto se dispare sin control:
-//   1. Freno en memoria de esta pestaña (SESION_*): no depende de leer/escribir nada en el
-//      navegador, así que no puede fallar por lo mismo que estamos tratando de evitar.
-//   2. No se descarga si el contenido es idéntico al del último respaldo (nada nuevo que guardar).
-//   3. Tope duro de como máximo 8 descargas por día, pase lo que pase — un límite absoluto,
-//      no una expectativa.
-const RESPALDO_DESCARGAS_INTERVALO_MS = 20*60*1000; // cada 20 minutos como máximo, mientras se trabaja
-const RESPALDO_DESCARGAS_TOPE_DIARIO = 8; // freno duro: nunca más que esto en un mismo día, bajo ningún escenario
-let SESION_RESPALDO_TS = 0;        // en memoria de esta pestaña — se reinicia solo si se cierra la pestaña
-let SESION_RESPALDO_HUELLA = '';   // para no repetir si no cambió ningún dato real
-let SESION_RESPALDO_CONTADOR_DIA = ''; // 'YYYY-MM-DD:N' — tope duro por día, también en memoria
-function huellaDatos(){
-  // A propósito NO incluye DB.meta.guardadoEn (cambia en cada guardado, aunque no haya
-  // datos nuevos) — solo lo que realmente importa respaldar.
-  return [
-    DB.pruebas.length, DB.inyecciones.length, DB.movimientos.length, (DB.densidades||[]).length,
-    DB.pruebas[0]&&DB.pruebas[0].id, DB.inyecciones[0]&&DB.inyecciones[0].id, DB.movimientos[0]&&DB.movimientos[0].id,
-    DB.tanques.pol.kg, DB.tanques.iso.kg
-  ].join('|');
-}
-function chequearRespaldoFrecuenteDescargas(){
-  if(totalRegistros()===0) return; // nada que respaldar todavía
-  const ahora=Date.now();
-
-  // Traba 1: freno en memoria de esta pestaña. Es la traba principal — no depende de que
-  // localStorage/IndexedDB lean o escriban bien, así que funciona pase lo que pase con eso.
-  if(SESION_RESPALDO_TS && (ahora-SESION_RESPALDO_TS)<RESPALDO_DESCARGAS_INTERVALO_MS) return;
-
-  // Traba 2: si no cambió ningún dato real desde el último respaldo (por ejemplo, se guardó
-  // por tocar un campo que todavía no es un registro), no tiene sentido descargar de nuevo.
-  const huella=huellaDatos();
-  if(huella===SESION_RESPALDO_HUELLA) return;
-
-  // Traba 3: tope duro por día, en memoria, para que ni un error de programación pueda
-  // hacer que esto se dispare sin límite.
-  const hoy=new Date().toISOString().slice(0,10);
-  const partes=(SESION_RESPALDO_CONTADOR_DIA||'').split(':');
-  let n = partes[0]===hoy ? (parseInt(partes[1],10)||0) : 0;
-  if(n>=RESPALDO_DESCARGAS_TOPE_DIARIO) return;
-
-  SESION_RESPALDO_TS=ahora;
-  SESION_RESPALDO_HUELLA=huella;
-  SESION_RESPALDO_CONTADOR_DIA=hoy+':'+(n+1);
-  DB.meta.respaldoDescargasTs=ahora;
-  DB.meta.ultimoRespaldo=ahora;
-  const f=new Date(ahora);
-  const pad=n2=>String(n2).padStart(2,'0');
-  const nombre='giovannetti_respaldo_'+f.getFullYear()+'-'+pad(f.getMonth()+1)+'-'+pad(f.getDate())+'_'+pad(f.getHours())+'h'+pad(f.getMinutes())+'.json';
-  descargarArchivo(nombre, JSON.stringify(DB,null,2), 'application/json');
-}
 let ALMACEN_PERSISTENTE=null; // null=no se pudo chequear, true/false=resultado real
 function avisarPersistenciaSiCorresponde(){
-  // Antes este aviso solo se veía si alguien entraba a Parámetros por su cuenta. Se muestra
-  // ahora como alerta al abrir la app (una vez por día, para no ser molesto) porque es la
-  // única señal de que el navegador podría vaciar los datos sin avisar.
-  if(ALMACEN_PERSISTENTE!==false) return;
-  const hoy=new Date().toISOString().slice(0,10);
-  if(DB.meta.avisoPersistenciaDia===hoy) return;
-  DB.meta.avisoPersistenciaDia=hoy;
-  guardarDB();
-  alert('🚨 IMPORTANTE — este navegador NO garantizó guardado permanente para esta app.\n\n'
-    +'Esto quiere decir que el navegador podría vaciar los datos guardados acá adentro sin avisar, '
-    +'por ejemplo si el disco de la computadora anda escaso de espacio.\n\n'
-    +'La app ya descarga respaldos .json a la carpeta Descargas de forma automática mientras trabajás, '
-    +'como red de seguridad — no depende de esta memoria interna. Evitá usar limpiadores de disco o '
-    +'"borrar datos de navegación" en este navegador.');
+  // Sin ventanas: el estado queda a la vista en Parámetros → Respaldo de datos.
+  pintarEstadoDatos();
 }
 if(navigator.storage && navigator.storage.persist){
   navigator.storage.persist().then(ok=>{ ALMACEN_PERSISTENTE=ok; pintarEstadoDatos(); if(LISTO) avisarPersistenciaSiCorresponde(); else setTimeout(avisarPersistenciaSiCorresponde,2500); }).catch(()=>{});
@@ -1718,7 +1587,7 @@ function pedirPin(motivo){
   if(!pin) return true; // sin PIN configurado todavía, no bloquea
   const ingresado=prompt('PIN de 4 números para: '+motivo);
   if(ingresado===null) return false;
-  if(ingresado.trim()!==pin){ alert('PIN incorrecto.'); return false; }
+  if(ingresado.trim()!==pin){ aviso('PIN incorrecto.'); return false; }
   return true;
 }
 function configurarPin(){
@@ -1726,14 +1595,14 @@ function configurarPin(){
   if(actual){
     const viejo=prompt('Ingresá el PIN actual para cambiarlo:');
     if(viejo===null) return;
-    if(viejo.trim()!==actual){ alert('PIN incorrecto.'); return; }
+    if(viejo.trim()!==actual){ aviso('PIN incorrecto.'); return; }
   }
   const nuevo=prompt('Nuevo PIN de 4 números (dejalo vacío para quitar el PIN):');
   if(nuevo===null) return;
   const n=nuevo.trim();
-  if(n && !/^\d{4}$/.test(n)){ alert('Tiene que ser de 4 números exactos.'); return; }
+  if(n && !/^\d{4}$/.test(n)){ aviso('Tiene que ser de 4 números exactos.'); return; }
   DB.meta.pin=n; guardarDB();
-  alert(n?'PIN configurado.':'PIN quitado. Las acciones sensibles vuelven a quedar libres.');
+  aviso(n?'PIN configurado.':'PIN quitado. Las acciones sensibles vuelven a quedar libres.');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1742,7 +1611,16 @@ function configurarPin(){
 function f(n,d=1){ return Number.isFinite(n)?n.toFixed(d).replace('.',','):'—'; }
 function gv(id){ const v=parseFloat(document.getElementById(id).value); return Number.isFinite(v)?v:NaN; }
 function sv(id){ return document.getElementById(id).value; }
-function ratio(){ return DB.producto.ratio||156; }
+// Relación de uso del producto cargado, dicha de las dos formas (volumen de la ficha y peso de la balanza).
+function textoRelacion(){
+  const p=DB.producto, r=ratio();
+  const vol=p.pePol>0&&p.peIso>0 ? (r/100)*(p.pePol/p.peIso) : NaN;   // litros de ISO por litro de poliol
+  const volTxt=Number.isFinite(vol) ? '1 : '+f(vol,2).replace(/,00$/,'').replace(/(,\d)0$/,'$1') : '—';
+  return '⚖️ <b>Relación de uso — '+(p.nombre||'producto cargado')+'</b><br>'
+    +'En volumen: <b>'+volTxt+'</b> (misma cantidad de ml de cada uno) &nbsp;·&nbsp; '
+    +'En peso, en la balanza: <b>100 g de poliol + '+f(r,0)+' g de isocianato</b>';
+}
+function ratio(){ return DB.producto.ratio||FICHA_ALKURAN.ratio; }
 function factorIso(){ return ratio()/100; }
 function partes(){ return 1+factorIso(); }
 function totalRegistros(){ return DB.pruebas.length+DB.inyecciones.length+DB.movimientos.length+(DB.densidades||[]).length; }
@@ -1757,7 +1635,60 @@ function sumarMeses(iso,m){
 // ═══════════════════════════════════════════════════════════════
 // PINTAR GENERAL
 // ═══════════════════════════════════════════════════════════════
+function migrarV22(){
+  if(!LISTO || DB.meta.migV23) return;
+  const eraOtro=(DB.producto.nombre||'')!==FICHA_ALKURAN.nombre;
+  DB.producto=Object.assign({},FICHA_ALKURAN);
+  const caudalesViejos=DB.meta.marchasProducto!==FICHA_ALKURAN.nombre;
+  if(caudalesViejos) marchasEnCero();
+  const pd=document.getElementById('p-densidad'), ps=document.getElementById('p-sobre');
+  if(pd) pd.value=''; if(ps) ps.value='';
+  ponerDefectosInyeccion();
+  DB.meta.migV20=true; DB.meta.migV21=true; DB.meta.migV22=true; DB.meta.migV23=true;
+  guardarDB(); aplicarFicha(); pintarTodo(); renderHistorial();
+  avisoSuave('✅ <b>Ficha actualizada: ALKURAN RI-2145_H3 / ISO-200.</b> Ratio 110 PBW (1:1 en volumen), '
+    +'densidad libre 40–45, crema 17–21 s, hilos 70–90 s, molde 40–45 °C.'
+    +(caudalesViejos?' Los caudales de baja, media y alta quedaron en <b>cero</b>: cargalos cuando calibren.':'')
+    +' En Inyección ya aparecen densidad 45 kg/m³ y sobreempaque 10 %; se cambian en Parámetros → Producto.');
+}
+
+// Avisos que NO frenan la pantalla. Reemplazan a alert(): los de todo bien se van solos,
+// los de error o cuidado (⚠️ 🚨 🔴 o "No ...") quedan hasta que se cierran con la X.
+function aviso(msg){
+  msg=String(msg==null?'':msg);
+  let caja=document.getElementById('avisos-caja');
+  if(!caja){
+    caja=document.createElement('div'); caja.id='avisos-caja';
+    caja.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));width:94%;max-width:520px;z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none';
+    document.body.appendChild(caja);
+  }
+  const grave=/^(⚠️|🚨|🔴|No |Se rompió|Ese archivo|PIN incorrecto|Faltan|Falta|Completá|Poné|Ponele|Elegí|El ratio|Los pesos|En ")/.test(msg.trim());
+  const d=document.createElement('div');
+  d.style.cssText='pointer-events:auto;position:relative;border-radius:12px;padding:13px 42px 13px 16px;font-family:inherit;font-size:15px;font-weight:600;line-height:1.45;white-space:pre-line;box-shadow:0 6px 24px rgba(0,0,0,.25);'
+    +(grave?'background:#FEE9E9;color:#7F1D1D;border:1px solid #F5B5B5':'background:#0f2a5e;color:#fff');
+  d.textContent=msg.replace(/\n{3,}/g,'\n\n');
+  const x=document.createElement('button'); x.textContent='×'; x.setAttribute('aria-label','Cerrar');
+  x.style.cssText='position:absolute;top:4px;right:6px;background:transparent;border:none;font-size:22px;cursor:pointer;padding:4px 8px;color:inherit;opacity:.7';
+  x.onclick=()=>d.remove(); d.appendChild(x);
+  caja.appendChild(d);
+  while(caja.children.length>3) caja.firstChild.remove();
+  if(!grave) setTimeout(()=>{ if(d.parentNode) d.remove(); }, Math.min(9000, 3500+msg.length*30));
+}
+
+// Aviso que no bloquea: aparece arriba, se cierra con la X y no vuelve.
+function avisoSuave(html){
+  let d=document.getElementById('aviso-suave');
+  if(!d){
+    d=document.createElement('div'); d.id='aviso-suave'; d.className='aviso visible';
+    d.style.position='relative'; d.style.paddingRight='40px';
+    const m=document.querySelector('main'); m.insertBefore(d,m.firstChild);
+  }
+  d.innerHTML=html+'<button onclick="this.parentNode.remove()" aria-label="Cerrar" '
+    +'style="position:absolute;top:6px;right:6px;margin:0;background:transparent;color:#8A4B12;font-size:22px;padding:4px 10px">×</button>';
+}
+
 function pintarTodo(){
+  if(LISTO && !DB.meta.migV23){ migrarV22(); return; }
   document.getElementById('header-producto').textContent=DB.producto.nombre||'Sin producto cargado';
   document.getElementById('pie').innerHTML='Giovannetti Refrigeración · '+(DB.producto.nombre||'')+'<br>'
     +'Ratio '+ratio()+' PBW · Poliol '+f(DB.producto.pePol,3)+' g/ml · ISO '+f(DB.producto.peIso,3)+' g/ml'
@@ -1804,18 +1735,18 @@ function revisarAlarma(){
 }
 
 function revisarRespaldo(){
-  const aviso=document.getElementById('aviso-respaldo');
-  if(!aviso) return;
+  const caja=document.getElementById('aviso-respaldo');
+  if(!caja) return;
   const n=totalRegistros();
-  if(n===0){ aviso.classList.remove('visible'); return; }
+  if(n===0){ caja.classList.remove('visible'); return; }
   const ult=DB.meta.ultimoRespaldo;
   const dias=ult?(Date.now()-ult)/86400000:999;
   if(dias>=7){
     document.getElementById('aviso-texto').textContent=ult
       ? 'Tenés '+n+' registros y el último respaldo fue hace '+Math.floor(dias)+' días.'
       : 'Tenés '+n+' registros y todavía no hiciste ningún respaldo.';
-    aviso.classList.add('visible');
-  } else aviso.classList.remove('visible');
+    caja.classList.add('visible');
+  } else caja.classList.remove('visible');
 }
 
 function pintarSnapshots(){
@@ -1859,7 +1790,7 @@ function pintarEstadoDatos(){
   if(av){
     if(ALMACEN_PERSISTENTE===false){
       av.className='alerta naranja'; av.style.display='block';
-      av.innerHTML='🚨 Este navegador NO garantizó guardado permanente. Puede vaciarse solo, sin avisar, si el dispositivo anda bajo de espacio. <b>Descargá un respaldo después de cada turno, sin excepción.</b>';
+      av.innerHTML='⚠️ Este navegador no garantizó guardado permanente: si el equipo se queda sin espacio podría vaciar los datos. Por eso la app baja un respaldo por día a Descargas. No uses limpiadores ni "borrar datos de navegación" en este navegador.';
     } else if(ALMACEN_PERSISTENTE===true){
       av.className='alerta verde'; av.style.display='block';
       av.innerHTML='✅ Guardado permanente confirmado en este navegador.';
@@ -1892,6 +1823,8 @@ function pintarProducto(){
   document.getElementById('pr-tabla').value=DB.producto.tabla||4;
   document.getElementById('pr-pe-pol').value=DB.producto.pePol;
   document.getElementById('pr-pe-iso').value=DB.producto.peIso;
+  document.getElementById('pr-dens-apl').value=Number.isFinite(+DB.producto.densApl)&&DB.producto.densApl!==''?DB.producto.densApl:'';
+  document.getElementById('pr-sobre-def').value=Number.isFinite(+DB.producto.sobreDef)&&DB.producto.sobreDef!==''?DB.producto.sobreDef:'';
 }
 const CAMPOS_FICHA=[['temp',2],['crema',2],['hilos',2],['libre',2],['moldeT',2],['moldeD',2],['nucleo',2]];
 const CAMPOS_TEXTO=['visc','nco','cond','estab','almac','envases'];
@@ -1912,8 +1845,8 @@ function guardarFicha(){
   const nuevo={};
   for(const [k] of CAMPOS_FICHA){
     const a=gv('fi-'+k+'0'), b=gv('fi-'+k+'1');
-    if(!Number.isFinite(a)||!Number.isFinite(b)){ alert('Faltan valores en la ficha. Revisá que estén todos los mínimos y máximos.'); return; }
-    if(a>b){ alert('En "'+k+'" el mínimo es mayor que el máximo. Revisalo.'); return; }
+    if(!Number.isFinite(a)||!Number.isFinite(b)){ aviso('Faltan valores en la ficha. Revisá que estén todos los mínimos y máximos.'); return; }
+    if(a>b){ aviso('En "'+k+'" el mínimo es mayor que el máximo. Revisalo.'); return; }
     nuevo[k]=[a,b];
   }
   const vp=gv('fi-vidaPol'), vi=gv('fi-vidaIso');
@@ -1922,7 +1855,7 @@ function guardarFicha(){
   CAMPOS_TEXTO.forEach(k=>{ nuevo[k]=sv('fi-'+k).trim(); });
   DB.producto=Object.assign({},DB.producto,nuevo);
   guardarDB(); aplicarFicha(); pintarTodo();
-  alert('Ficha guardada.\n\nTodos los controles de la app ya usan estos rangos.');
+  aviso('Ficha guardada.\n\nTodos los controles de la app ya usan estos rangos.');
 }
 
 function restaurarAlkuran(){
@@ -1932,24 +1865,26 @@ function restaurarAlkuran(){
   DB.producto=Object.assign({},FICHA_ALKURAN);
   marchasEnCero();
   guardarDB(); aplicarFicha(); pintarTodo();
-  alert('Listo. Ficha del ALKURAN RI-2145_H3 cargada y caudales en cero.\n\nAntes de inyectar, medí baja, media y alta en Parámetros → Caudales de inyección.');
+  aviso('Listo. Ficha del ALKURAN RI-2145_H3 cargada y caudales en cero.\n\nAntes de inyectar, medí baja, media y alta en Parámetros → Caudales de inyección.');
 }
 
 function guardarProducto(){
   if(!pedirPin('cambiar el producto')) return;
   const nom=sv('pr-nombre').trim();
   const r=gv('pr-ratio'), tol=gv('pr-tol'), pp=gv('pr-pe-pol'), pi=gv('pr-pe-iso');
-  if(!nom){ alert('Ponele un nombre al producto.'); return; }
-  if(!(r>0)){ alert('El ratio tiene que ser un número mayor que cero.'); return; }
-  if(!(pp>0)||!(pi>0)){ alert('Los pesos específicos tienen que ser mayores que cero.'); return; }
+  if(!nom){ aviso('Ponele un nombre al producto.'); return; }
+  if(!(r>0)){ aviso('El ratio tiene que ser un número mayor que cero.'); return; }
+  if(!(pp>0)||!(pi>0)){ aviso('Los pesos específicos tienen que ser mayores que cero.'); return; }
   let anchoT=gv('pr-tabla');
   if(!Number.isFinite(anchoT)||anchoT<1) anchoT=4;
   anchoT=Math.min(15,Math.round(anchoT));
   const cambioNombre=(nom!==(DB.producto.nombre||''));
-  DB.producto=Object.assign({},DB.producto,{ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi });
+  const da=gv('pr-dens-apl'), sd=gv('pr-sobre-def');
+  DB.producto=Object.assign({},DB.producto,{ nombre:nom, ratio:r, tol:Number.isFinite(tol)?tol:2, tabla:anchoT, pePol:pp, peIso:pi,
+    densApl:(da>0)?da:'', sobreDef:(sd>=0)?sd:'' });
   if(cambioNombre){ delete DB.producto.relVol; delete DB.producto.densEspuma; marchasEnCero(); }
   guardarDB(); pintarTodo();
-  alert('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.'
+  aviso('Producto guardado.\n\nTodos los cálculos ya usan el ratio '+r+' y los pesos específicos nuevos.'
     +(cambioNombre?'\n\nComo cambió el producto, los caudales de baja, media y alta quedaron en CERO. Medilos de nuevo antes de inyectar.'
                   :'\n\nIMPORTANTE: la caída del cabezal depende del producto. Si cambiaste de material, volvé a medir los tres caudales.'));
 }
@@ -2027,7 +1962,7 @@ function guardarMarchas(){
   DB.meta.marchasProducto=DB.producto.nombre||'';
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
   const sinCabezal=MARCHAS.filter(([k])=>esEstimado(k)).map(([,n])=>n);
-  alert('Caudales de inyección guardados.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
+  aviso('Caudales de inyección guardados.'+(sinCabezal.length?'\n\nOjo: '+sinCabezal.join(', ')+' todavía no tiene medición de cabezal. Los segundos y el descuento de tanque salen de un estimado.':''));
 }
 
 function pintarMarchasSel(){
@@ -2178,6 +2113,14 @@ function precargarInyeccion(){
   // Las medidas que se repiten se recuperan con un toque desde Modelos guardados.
   ['p-largo','p-ancho','p-espesor','p-densidad','p-sobre','p-pieza','p-tmolde']
     .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ponerDefectosInyeccion();
+}
+// Densidad y sobreempaque son del producto, no del panel: se precargan con los valores
+// por defecto del producto (Parámetros → Producto). Las medidas del panel arrancan vacías.
+function ponerDefectosInyeccion(){
+  const pd=document.getElementById('p-densidad'), ps=document.getElementById('p-sobre');
+  if(pd && pd.value==='' && +DB.producto.densApl>0) pd.value=DB.producto.densApl;
+  if(ps && ps.value==='' && DB.producto.sobreDef!=='' && Number.isFinite(+DB.producto.sobreDef)) ps.value=DB.producto.sobreDef;
 }
 
 // ---------- cálculo de un panel ----------
@@ -2244,8 +2187,8 @@ function calcularInyeccion(){
 // ---------- la tanda ----------
 function agregarATanda(){
   const d=panelDelFormulario();
-  if(!Number.isFinite(d.mezclaKg)||d.mezclaKg<=0){ alert('Completá largo, ancho, espesor y densidad.'); return; }
-  if(!(d.gs>0)){ alert('Elegí un caudal que tenga medición cargada.\n\nSe cargan en Parámetros → Caudales de inyección.'); return; }
+  if(!Number.isFinite(d.mezclaKg)||d.mezclaKg<=0){ aviso('Completá largo, ancho, espesor y densidad.'); return; }
+  if(!(d.gs>0)){ aviso('Elegí un caudal que tenga medición cargada.\n\nSe cargan en Parámetros → Caudales de inyección.'); return; }
   for(let i=0;i<d.n;i++){
     DB.tanda.push(Object.assign({},d,{uid:Date.now()+'-'+Math.random().toString(36).slice(2,7),n:1}));
   }
@@ -2330,7 +2273,7 @@ function renderTanda(){
 }
 
 function registrarTanda(){
-  if(!DB.tanda.length){ alert('La tanda está vacía.'); return; }
+  if(!DB.tanda.length){ aviso('La tanda está vacía.'); return; }
   const t=totalesTanda();
   if(t.pol>DB.tanques.pol.kg||t.iso>DB.tanques.iso.kg){
     if(!confirm('No alcanza el material en tanque. ¿Registrar igual?')) return;
@@ -2361,16 +2304,17 @@ function registrarTanda(){
   document.getElementById('p-nota').value='';
   ['p-largo','p-ancho','p-espesor','p-densidad','p-sobre','p-pieza','p-tmolde']
     .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ponerDefectosInyeccion();
   renderTanda(); renderTanques(); revisarAlarma(); renderUltimasTandas(); renderConteo(); calcularInyeccion();
-  alert('Tanda registrada: '+t.n+' paneles.\n\nPoliol: −'+f(t.pol,2)+' kg  (quedan '+f(DB.tanques.pol.kg,1)+')\nISO: −'+f(t.iso,2)+' kg  (quedan '+f(DB.tanques.iso.kg,1)+')');
+  aviso('Tanda registrada: '+t.n+' paneles.\n\nPoliol: −'+f(t.pol,2)+' kg  (quedan '+f(DB.tanques.pol.kg,1)+')\nISO: −'+f(t.iso,2)+' kg  (quedan '+f(DB.tanques.iso.kg,1)+')');
 }
 
 // ---------- modelos guardados ----------
 function guardarModelo(){
   const nombre=sv('p-pieza').trim();
   const largo=gv('p-largo'), ancho=gv('p-ancho'), espesor=gv('p-espesor');
-  if(!nombre){ alert('Ponele un nombre al panel para poder guardarlo.'); return; }
-  if(!(largo>0&&ancho>0&&espesor>0)){ alert('Completá largo, ancho y espesor.'); return; }
+  if(!nombre){ aviso('Ponele un nombre al panel para poder guardarlo.'); return; }
+  if(!(largo>0&&ancho>0&&espesor>0)){ aviso('Completá largo, ancho y espesor.'); return; }
   const existente=DB.modelos.find(m=>m.nombre.toLowerCase()===nombre.toLowerCase());
   if(existente){
     if(!confirm('Ya existe un modelo llamado "'+nombre+'". ¿Lo actualizo con estas medidas?')) return;
@@ -2381,7 +2325,7 @@ function guardarModelo(){
   }
   DB.modelos.sort((a,b)=>a.nombre.localeCompare(b.nombre));
   guardarDB(); renderModelos();
-  alert('Modelo guardado. Ahora lo cargás con un toque.');
+  aviso('Modelo guardado. Ahora lo cargás con un toque.');
 }
 
 function usarModelo(id){
@@ -2489,7 +2433,7 @@ function renderConteo(){
 
 function imprimirConteo(){
   const lista=DB.inyecciones;
-  if(!lista.length){ alert('No hay inyecciones registradas.'); return; }
+  if(!lista.length){ aviso('No hay inyecciones registradas.'); return; }
   let totalPol=0,totalIso=0,totalPaneles=0;
   lista.forEach(p=>{ totalPol+=p.totPol||0; totalIso+=p.totIso||0; totalPaneles+=(p.nPaneles||p.n||1); });
   const now=new Date().toLocaleDateString('es-AR');
@@ -2514,7 +2458,7 @@ function imprimirConteo(){
 
 function exportarConteoCSV(){
   const lista=DB.inyecciones;
-  if(!lista.length){ alert('No hay inyecciones registradas.'); return; }
+  if(!lista.length){ aviso('No hay inyecciones registradas.'); return; }
   const cab=['Fecha','Hora','Paneles','Mezcla_kg','Poliol_kg','ISO_kg','Fallados','Nota','Producto','Ratio'];
   const rows=lista.map(p=>[
     p.fecha,p.hora,(p.nPaneles||p.n||1),
@@ -2582,7 +2526,7 @@ function cargarTanque(completo){
   const comp=sv('tq-comp');
   const t=DB.tanques[comp];
   const kg=completo?t.cap:gv('tq-kg');
-  if(!Number.isFinite(kg)||kg<=0){ alert('Poné cuántos kilos entraron.'); return; }
+  if(!Number.isFinite(kg)||kg<=0){ aviso('Poné cuántos kilos entraron.'); return; }
   const lote=sv('tq-lote').trim(), elab=sv('tq-elab');
   const venc=sumarMeses(elab,comp==='pol'?VIDA_POL:VIDA_ISO);
   t.kg=Math.min(t.cap,t.kg+kg);
@@ -2596,14 +2540,14 @@ function cargarTanque(completo){
   });
   guardarDB(); renderTanques(); calcularInyeccion(); renderUltimosMov();
   document.getElementById('tq-kg').value=''; document.getElementById('tq-nota').value='';
-  alert('Cargado: '+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg en tanque.');
+  aviso('Cargado: '+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg en tanque.');
 }
 
 function fijarNivel(){
   if(!pedirPin('corregir el nivel del tanque')) return;
   const comp=sv('tq-comp');
   const kg=gv('tq-kg');
-  if(!Number.isFinite(kg)||kg<0){ alert('Poné los kilos que medisté en el tanque.'); return; }
+  if(!Number.isFinite(kg)||kg<0){ aviso('Poné los kilos que medisté en el tanque.'); return; }
   const t=DB.tanques[comp];
   const antes=t.kg;
   t.kg=Math.min(t.cap,kg);
@@ -2620,7 +2564,7 @@ function fijarNivel(){
 function registrarPurga(){
   const comp=sv('tq-comp');
   const kg=gv('tq-kg');
-  if(!Number.isFinite(kg)||kg<=0){ alert('Poné cuántos kilos se fueron en la purga.'); return; }
+  if(!Number.isFinite(kg)||kg<=0){ aviso('Poné cuántos kilos se fueron en la purga.'); return; }
   const t=DB.tanques[comp];
   t.kg=Math.max(0,t.kg-kg);
   const now=new Date();
@@ -2631,7 +2575,7 @@ function registrarPurga(){
   });
   guardarDB(); renderTanques(); calcularInyeccion(); renderUltimosMov();
   document.getElementById('tq-kg').value=''; document.getElementById('tq-nota').value='';
-  alert('Purga registrada: −'+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg.');
+  aviso('Purga registrada: −'+f(kg,1)+' kg. Quedan '+f(t.kg,1)+' kg.');
 }
 
 function guardarCapacidades(){
@@ -2642,7 +2586,7 @@ function guardarCapacidades(){
   if(Number.isFinite(ap)&&ap>=0) DB.tanques.pol.alarma=ap;
   if(Number.isFinite(ai)&&ai>=0) DB.tanques.iso.alarma=ai;
   guardarDB(); renderTanques();
-  alert('Guardado.');
+  aviso('Guardado.');
 }
 
 function reconciliarTanques(){
@@ -2658,7 +2602,7 @@ function reconciliarTanques(){
     DB.tanques[comp].kg=Math.max(0,Math.min(DB.tanques[comp].cap,kg));
   });
   guardarDB(); renderTanques(); calcularInyeccion();
-  alert('Niveles reconstruidos.\n\nPoliol: '+f(DB.tanques.pol.kg,1)+' kg\nISO: '+f(DB.tanques.iso.kg,1)+' kg');
+  aviso('Niveles reconstruidos.\n\nPoliol: '+f(DB.tanques.pol.kg,1)+' kg\nISO: '+f(DB.tanques.iso.kg,1)+' kg');
 }
 
 document.getElementById('tq-elab').addEventListener('change',function(){
@@ -2767,13 +2711,13 @@ function pintarCajaMarchaCal(){
 
 function volcarAMarcha(){
   const iso=gv('an-iso'), pol=gv('an-pol'), seg=gv('an-seg');
-  if(!(iso>0&&pol>0&&seg>0)){ alert('Faltan isocianato, poliol o segundos.'); return; }
+  if(!(iso>0&&pol>0&&seg>0)){ aviso('Faltan isocianato, poliol o segundos.'); return; }
   const gs=(iso+pol)/seg;
   if(!confirm('¿Guardar '+f(gs,2)+' g/s como MANGUERAS LIBRES de la marcha '+marchaCal+'?\n\nEl caudal que usan los cálculos es el del cabezal, que se mide aparte en Parámetros.')) return;
   DB.marchas[marchaCal]=Object.assign({},DB.marchas[marchaCal],{ seg:seg, g:+(iso+pol).toFixed(1), gs:gs });
   DB.meta.marchasProducto=DB.producto.nombre||'';
   guardarDB(); pintarMarchasConfig(); pintarMarchasSel(); pintarMarchasCal(); calcularInyeccion();
-  alert('Mangueras libres de la marcha '+marchaCal+': '+f(gs,2)+' g/s.'+(DB.marchas[marchaCal].rgs>0?'':'\n\nFalta medir el cabezal para que los segundos y el tanque salgan exactos.'));
+  aviso('Mangueras libres de la marcha '+marchaCal+': '+f(gs,2)+' g/s.'+(DB.marchas[marchaCal].rgs>0?'':'\n\nFalta medir el cabezal para que los segundos y el tanque salgan exactos.'));
 }
 
 function renderChequeos(){
@@ -2803,7 +2747,7 @@ function renderChequeos(){
 function guardarPrueba(){
   const isoV=gv('an-iso'), polV=gv('an-pol');
   const fecha=sv('an-fecha'), hora=sv('an-hora');
-  if(!isoV||!polV||!fecha||!hora){ alert('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
+  if(!isoV||!polV||!fecha||!hora){ aviso('Completá al menos: Isocianato, Poliol, Fecha y Hora'); return; }
   // Siempre guardamos en gramos, sin importar la unidad activa
   const iso=aGramosComp(isoV,unidadAn,DB.producto.peIso);
   const pol=aGramosComp(polV,unidadAn,DB.producto.pePol);
@@ -2848,7 +2792,7 @@ function elegirVaso(v){ document.getElementById('d-vol').value=v; calcularDensid
 
 function calcularDensidad(){
   const vol=gv('d-vol');
-  const obj=Number.isFinite(gv('d-obj'))?gv('d-obj'):40;
+  const obj=Number.isFinite(gv('d-obj'))?gv('d-obj'):(R_LIBRE[0]+R_LIBRE[1])/2;
   const margen=Number.isFinite(gv('d-margen'))?gv('d-margen'):20;
 
   // --- cuánto preparar, repartido por componente ---
@@ -2866,7 +2810,10 @@ function calcularDensidad(){
   let av='';
   if(Number.isFinite(total)&&total<25)
     av+='<div class="alerta naranja">⚠️ Son cantidades muy chicas para pesar y mezclar bien. Con un recipiente de medio litro o más la prueba sale más confiable.</div>';
-  av+='<div class="alerta azul">Pesás <b>'+f(gPol,1)+' g</b> de poliol y le agregás <b>'+f(gIso,1)+' g</b> de isocianato, que es el ratio '+ratio()+' del producto cargado.</div>';
+  const pp=DB.producto.pePol, pi=DB.producto.peIso;
+  av+='<div class="alerta azul">Pesás <b>'+f(gPol,1)+' g</b> de poliol y le agregás <b>'+f(gIso,1)+' g</b> de isocianato.'
+    +(Number.isFinite(gPol)&&pp>0&&pi>0?' En volumen son <b>'+f(gPol/pp,0)+' ml</b> de poliol y <b>'+f(gIso/pi,0)+' ml</b> de isocianato.':'')
+    +'</div>';
   document.getElementById('d-avisos').innerHTML=av;
   pintarVasos();
 
@@ -2907,7 +2854,7 @@ function calcularDensidad(){
     if(dens<R_LIBRE[0]) al='<div class="alerta roja">🔴 Espuma liviana. Revisá el ratio y que el poliol esté bien agitado.</div>';
     else if(dens>R_LIBRE[1]) al='<div class="alerta roja">🔴 Espuma pesada. Puede ser temperatura baja, o que el tambor haya perdido agente de expansión por calor.</div>';
   }
-  if(friosOcalientes) al+='<div class="alerta naranja">⚠️ Los componentes están fuera de 20–23 °C. Este resultado no sirve para comparar: acondicioná y repetí.</div>';
+  if(friosOcalientes) al+='<div class="alerta naranja">⚠️ Los componentes están fuera de '+R_TEMP[0]+'–'+R_TEMP[1]+' °C. Este resultado no sirve para comparar: acondicioná y repetí.</div>';
   document.getElementById('d-alertas').innerHTML=al;
 
   return {vol,obj,margen,total,gPol,gIso,tara,bruto,neto,dens};
@@ -2915,7 +2862,7 @@ function calcularDensidad(){
 
 function guardarDensidad(){
   const d=calcularDensidad();
-  if(!Number.isFinite(d.dens)){ alert('Completá el volumen del recipiente y el peso con la espuma.'); return; }
+  if(!Number.isFinite(d.dens)){ aviso('Completá el volumen del recipiente y el peso con la espuma.'); return; }
   const now=new Date();
   DB.densidades.unshift({
     id:Date.now(), tipo:'den',
@@ -2925,12 +2872,13 @@ function guardarDensidad(){
     crema:sv('d-crema'), hilos:sv('d-hilos'),
     tpol:sv('d-tpol'), tiso:sv('d-tiso'), tamb:sv('d-tamb'),
     ok:(d.dens>=R_LIBRE[0]&&d.dens<=R_LIBRE[1]),
-    nota:sv('d-nota').trim(), producto:DB.producto.nombre, ratio:ratio()
+    nota:sv('d-nota').trim(), producto:DB.producto.nombre, ratio:ratio(),
+    rangos:{temp:R_TEMP.slice(), crema:R_CREMA.slice(), hilos:R_HILOS.slice(), libre:R_LIBRE.slice(), moldeT:R_MOLDE_T.slice()}
   });
   guardarDB();
   ['d-bruto','d-crema','d-hilos','d-nota'].forEach(id=>document.getElementById(id).value='');
   calcularDensidad(); renderDensidades();
-  alert('Prueba guardada.');
+  aviso('Prueba guardada.');
 }
 
 function borrarDensidad(id){
@@ -3168,7 +3116,7 @@ const GUIA=[
 <li><b>Volvé a medir los tres caudales por cabezal.</b> La caída depende del producto: con material distinto, el caudal real cambia.</li>
 <li><b>Tanques.</b> Ajustá las capacidades si los envases son de otro tamaño.</li>
 </ol>
-<p>Si te equivocaste tocando algo, hay un botón para volver a cargar la ficha del ALKURAN RI-2145_H3 de una.</p>
+<p>Si te equivocaste tocando algo, el botón "Cargar la ficha del ALKURAN RI-2145_H3" vuelve a poner todos los valores de la ficha de una.</p>
 <p><b>Ojo con las fichas en volumen.</b> La del RI-2145_H3 da la relación 1:1 en volumen. La app trabaja en peso: el ratio en PBW es 100 × peso específico ISO ÷ peso específico poliol. Con 1,235 y 1,12 da 110. Si el certificado del lote trae otras densidades, recalculalo y corregí ratio y pesos específicos juntos.</p>`},
 
 {t:'No perder los datos', i:'💾', c:`
@@ -3332,11 +3280,12 @@ function hojaDe(p){
         +fila('Ambiente',p.tempAmb)+'</table>';
     }
   } else if(p.tipo==='den'){
-    s+=encabezadoHoja('Prueba de densidad libre','',p.fecha+' '+p.hora);
+    const rg=rangosDe(p);
+    s+=encabezadoHoja('Prueba de densidad libre',p.producto||'',p.fecha+' '+p.hora);
     s+='<h3>Resultado</h3><table>'
-      +fila('Densidad libre',rango(p.dens,R_LIBRE,'kg/m³',1))
-      +fila('Tiempo de crema',rango(parseFloat(p.crema),R_CREMA,'seg',0))
-      +fila('Tiempo de hilos',rango(parseFloat(p.hilos),R_HILOS,'seg',0))
+      +fila('Densidad libre',rango(p.dens,rg.libre,'kg/m³',1))
+      +fila('Tiempo de crema',rango(parseFloat(p.crema),rg.crema,'seg',0))
+      +fila('Tiempo de hilos',rango(parseFloat(p.hilos),rg.hilos,'seg',0))
       +'</table>';
     s+='<h3>Medición</h3><table>'
       +fila('Recipiente',f(p.vol,2)+' litros')
@@ -3347,8 +3296,8 @@ function hojaDe(p){
       +fila('Isocianato pesado',p.gIso?f(p.gIso,1)+' g':'')
       +'</table>';
     s+='<h3>Condiciones</h3><table>'
-      +fila('Temperatura poliol',rango(parseFloat(p.tpol),R_TEMP,'°C',1))
-      +fila('Temperatura isocianato',rango(parseFloat(p.tiso),R_TEMP,'°C',1))
+      +fila('Temperatura poliol',rango(parseFloat(p.tpol),rg.temp,'°C',1))
+      +fila('Temperatura isocianato',rango(parseFloat(p.tiso),rg.temp,'°C',1))
       +fila('Temperatura ambiente',p.tamb?f(parseFloat(p.tamb),1)+' °C':'')
       +'</table>';
   } else if(p.tipo==='iny'){
@@ -3390,7 +3339,7 @@ function hojaDe(p){
 }
 
 function imprimirTandaBorrador(){
-  if(!DB.tanda.length){ alert('La tanda está vacía.'); return; }
+  if(!DB.tanda.length){ aviso('La tanda está vacía.'); return; }
   const t=totalesTanda();
   const hoy=new Date();
   let s='<div class="hoja">';
@@ -3425,14 +3374,14 @@ function buscarRegistro(tipo,id){
 
 function imprimirRegistro(tipo,id){
   const r=buscarRegistro(tipo,id);
-  if(!r){ alert('No encontré ese registro.'); return; }
+  if(!r){ aviso('No encontré ese registro.'); return; }
   document.getElementById('hoja-impresion').innerHTML=hojaDe(r);
   setTimeout(()=>window.print(),150);
 }
 
 function imprimirFiltro(){
   const items=itemsHistorial();
-  if(!items.length){ alert('No hay registros para imprimir.'); return; }
+  if(!items.length){ aviso('No hay registros para imprimir.'); return; }
   if(items.length>30 && !confirm('Son '+items.length+' registros, van a salir '+items.length+' hojas. ¿Seguimos?')) return;
   document.getElementById('hoja-impresion').innerHTML=items.map(hojaDe).join('');
   setTimeout(()=>window.print(),200);
@@ -3456,7 +3405,7 @@ function exportarRespaldo(){
   guardarDB();
   descargarArchivo('giovannetti_respaldo_'+new Date().toISOString().slice(0,10)+'.json',
     JSON.stringify(DB,null,2),'application/json');
-  alert('Respaldo descargado.\n\nGuardalo o mandátelo por mail: con ese archivo recuperás todo, incluido el nivel de los tanques.');
+  aviso('Respaldo descargado.\n\nGuardalo o mandátelo por mail: con ese archivo recuperás todo, incluido el nivel de los tanques.');
 }
 
 function enviarRespaldo(){
@@ -3474,7 +3423,7 @@ function enviarRespaldo(){
     }
   }catch(e){}
   descargarArchivo(nombre,texto,'application/json');
-  alert('Tu teléfono no permite compartir directo, así que se descargó el archivo.\n\nMandátelo por WhatsApp o mail desde la carpeta de descargas.');
+  aviso('Tu teléfono no permite compartir directo, así que se descargó el archivo.\n\nMandátelo por WhatsApp o mail desde la carpeta de descargas.');
 }
 
 function importarRespaldo(ev){
@@ -3489,10 +3438,15 @@ function importarRespaldo(ev){
       DB.pruebas=unir(DB.pruebas,d.pruebas);
       DB.inyecciones=unir(DB.inyecciones,d.inyecciones);
       DB.movimientos=unir(DB.movimientos,d.movimientos);
-      DB.tanques=d.tanques; DB.producto=d.producto; DB.marchas=d.marchas; DB.cfg=d.cfg;
-      guardarDB(); pintarTodo(); renderHistorial();
-      alert('Listo. Datos restaurados.');
-    }catch(e){ alert('Ese archivo no es un respaldo válido de la app.'); }
+      // Si el respaldo es de otro producto, se traen los registros y
+      // los tanques, pero NO el producto ni los caudales: siguen los del producto actual.
+      const mismoProducto=(d.producto&&d.producto.nombre)===DB.producto.nombre;
+      DB.tanques=d.tanques; DB.cfg=d.cfg;
+      if(mismoProducto){ DB.producto=d.producto; DB.marchas=d.marchas; DB.meta.marchasProducto=d.meta.marchasProducto||DB.meta.marchasProducto; }
+      guardarDB(); aplicarFicha(); pintarTodo(); renderHistorial();
+      aviso('Listo. Datos restaurados.'+(mismoProducto?'':'\n\nEl respaldo era de '+((d.producto&&d.producto.nombre)||'otro producto')
+        +': se trajeron los registros y los tanques, pero se mantuvieron el producto y los caudales actuales.'));
+    }catch(e){ aviso('Ese archivo no es un respaldo válido de la app.'); }
   };
   reader.readAsText(file);
   ev.target.value='';
@@ -3518,7 +3472,7 @@ function borrarTodo(){
 }
 
 function exportarCSV(){
-  if(!totalRegistros()){ alert('No hay registros para exportar'); return; }
+  if(!totalRegistros()){ aviso('No hay registros para exportar'); return; }
   const q=v=>'"'+String(v===undefined||v===null?'':v).replace(/"/g,'""')+'"';
   const L=[];
   L.push('PRODUCTO,'+q(DB.producto.nombre)+',Ratio,'+DB.producto.ratio+',PE Poliol,'+DB.producto.pePol+',PE ISO,'+DB.producto.peIso);
@@ -3699,7 +3653,7 @@ function descargarLogo(size,modo){
 
     if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
       // RED PRIMERO: si hay internet siempre trae la última versión; el caché queda de respaldo offline.
-      const sw="const CACHE='giovannetti-v21';"
+      const sw="const CACHE='giovannetti-v23';"
         +"self.addEventListener('install',e=>{self.skipWaiting()});"
         +"self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});"
         +"self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"
@@ -3738,60 +3692,19 @@ dibujarLogo(document.getElementById('logo-header'),160,'compacto');
 cargarTodo();
 renderHistorial();
 
-// ── Migración v20: la app pasa del ALKURAN RF-30 H4 al RI-2145_H3 ──
-// Pregunta una sola vez por dispositivo. Si se dice que no (por ejemplo porque todavía
-// quedan tambores de RF-30), se cambia después desde Parámetros → Cargar la ficha del ALKURAN RI-2145_H3.
-setTimeout(function migracionV20(){
-  if(!LISTO){ setTimeout(migracionV20,500); return; }
-  DB.meta.migV14=true;
-  if(DB.meta.migV20) return;
-  const nom=(DB.producto.nombre||'');
-  if(nom.indexOf('RF-30')===-1 && DB.producto.ratio!==141 && DB.producto.ratio!==156){ DB.meta.migV20=true; guardarDB(); return; }
-  const ok=confirm(
-    '📋 Cambio de producto (v20)\n\n'
-    +'Esta versión trae la ficha del ALKURAN RI-2145_H3 / ISO-200 en lugar del RF-30 H4:\n'
-    +'  · Ratio: 141 → 110 PBW (la ficha dice 1:1 en volumen)\n'
-    +'  · Densidad libre: 27–32 → 40–45 kg/m³\n'
-    +'  · Crema: 27–33 → 17–21 s  ·  Hilos: 120–160 → 70–90 s\n'
-    +'  · Temperatura A/B: 20–23 → 20–22 °C\n'
-    +'  · Caudales de baja, media y alta: quedan en CERO para medirlos de nuevo\n\n'
-    +'Si todavía estás trabajando con tambores de RF-30, poné Cancelar y cambiá después desde '
-    +'Parámetros → Cargar la ficha del ALKURAN RI-2145_H3.\n\n¿Cambiar ahora?'
-  );
-  if(ok && pedirPin('cambiar el producto')){
-    DB.producto=Object.assign({},FICHA_ALKURAN);
-    marchasEnCero();
-    guardarDB(); aplicarFicha(); pintarTodo();
-    alert('✅ Producto cambiado a ALKURAN RI-2145_H3. Caudales en cero.\n\n'
-      +'Antes de producir:\n'
-      +'  1. Medí baja, media y alta con este producto (Parámetros → Caudales de inyección).\n'
-      +'  2. Confirmá el ratio con la densidad real del lote (certificado de Alkanos).\n'
-      +'  3. Esta espuma es más densa: la densidad aplicada en Inyección tiene que quedar arriba de 40–45.');
-  }
-  DB.meta.migV20=true;
-  guardarDB();
-},800);
-
-// ── Migración v21: caudales viejos en un dispositivo que ya cambió de producto con v20 ──
-setTimeout(function migracionV21(){
-  if(!LISTO || !DB.meta.migV20){ setTimeout(migracionV21,700); return; }
-  if(DB.meta.migV21) return;
-  const hayCaudales=MARCHAS.some(([k])=>{ const m=DB.marchas[k]||{}; return m.gs>0||m.rgs>0; });
-  const esNuevo=(DB.producto.nombre||'').indexOf('RI-2145')!==-1;
-  if(esNuevo && hayCaudales && DB.meta.marchasProducto!==DB.producto.nombre){
-    if(confirm('⚙️ Caudales de inyección\n\n'
-      +'El producto ya es el ALKURAN RI-2145_H3, pero siguen cargados caudales de baja/media/alta '
-      +'que probablemente se midieron con el RF-30 (por ejemplo 700 g/s en alta).\n\n'
-      +'¿Ponerlos en CERO para medirlos de nuevo con el producto nuevo?\n\n'
-      +'(Cancelá solo si ya los mediste con el RI-2145_H3.)')){
-      marchasEnCero(); pintarTodo();
-    } else DB.meta.marchasProducto=DB.producto.nombre;
-  }
-  DB.meta.migV21=true; guardarDB();
-},1200);
+// ── Migración v22 (automática, sin preguntas) ──
+// Deja cargada la ficha completa del ALKURAN RI-2145_H3 y pone en cero los caudales que
+// no se hayan medido con este producto. Corre al abrir la app y también después de
+// cualquier restauración (pintarTodo la vuelve a chequear), para que un respaldo viejo
+// de otro producto no vuelva a meter el producto o los caudales anteriores.
+setTimeout(function esperarMigracion(){
+  if(!LISTO){ setTimeout(esperarMigracion,500); return; }
+  migrarV22();
+},600);
 
 // ── Respaldo automático diario: se dispara solo la primera vez que se abre la app cada día ──
-setTimeout(function(){ chequearRespaldoDiario(); },2000);
+setTimeout(function(){ chequearRespaldoDiario(); },3000);
+setInterval(function(){ chequearRespaldoDiario(); }, 30*60*1000);  // por si la app queda abierta de un día para otro
 setInterval(function(){ if(LISTO) guardarSnapshotFrecuente(JSON.stringify(DB)); }, SNAP5_INTERVALO_MS);
 </script>
 </body>
